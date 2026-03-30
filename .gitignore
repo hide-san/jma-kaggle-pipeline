@@ -1,0 +1,12 @@
+.env
+.idea/
+__pycache__/
+*.py[cod]
+*.egg-info/
+dist/
+build/
+venv/
+.venv/
+logs/
+*.csv
+kaggle.json
