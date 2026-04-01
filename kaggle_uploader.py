@@ -6,18 +6,21 @@ import os
 import shutil
 import tempfile
 from pathlib import Path
+from typing import TYPE_CHECKING
 
 import pandas as pd
-from kaggle.api.kaggle_api_extended import KaggleApiExtended
 
 from logger import get_logger
+
+if TYPE_CHECKING:
+    from kaggle.api.kaggle_api_extended import KaggleApiExtended
 
 log = get_logger(__name__)
 
 
 class KaggleUploader:
     def __init__(self):
-        self._api: KaggleApiExtended | None = None
+        self._api: "KaggleApiExtended | None" = None
 
     # ------------------------------------------------------------------ #
     # Authentication                                                       #
@@ -26,6 +29,7 @@ class KaggleUploader:
     def authenticate(self) -> bool:
         """Authenticate with Kaggle. Returns True on success."""
         try:
+            from kaggle.api.kaggle_api_extended import KaggleApiExtended
             api = KaggleApiExtended()
             api.authenticate()
             self._api = api
@@ -36,7 +40,7 @@ class KaggleUploader:
             return False
 
     @property
-    def api(self) -> KaggleApiExtended:
+    def api(self) -> "KaggleApiExtended":
         if self._api is None:
             raise RuntimeError("Call authenticate() before using the API.")
         return self._api
