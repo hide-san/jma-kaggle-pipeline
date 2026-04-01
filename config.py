@@ -4,7 +4,7 @@ from dotenv import load_dotenv
 load_dotenv()
 
 KAGGLE_USERNAME = os.getenv("KAGGLE_USERNAME")
-KAGGLE_KEY = os.getenv("KAGGLE_KEY")
+KAGGLE_API_TOKEN = os.getenv("KAGGLE_API_TOKEN")
 
 # JMA API base URLs
 JMA_BASE_URL = "https://www.jma.go.jp/bosai"
