@@ -8,5 +8,6 @@ build/
 venv/
 .venv/
 logs/
+data/
 *.csv
 kaggle.json

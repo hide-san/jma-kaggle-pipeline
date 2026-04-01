@@ -38,5 +38,8 @@ DATASETS = [
 RETRY_ATTEMPTS = 3
 RETRY_WAIT_SECONDS = 5
 
+# Local data storage
+DATA_DIR = "data"
+
 # Logging
 LOG_FILE = "logs/pipeline.log"
