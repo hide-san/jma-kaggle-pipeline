@@ -40,6 +40,7 @@ RETRY_WAIT_SECONDS = 5
 
 # Local data storage
 DATA_DIR = "data"
+RAW_DATA_DIR = os.path.join(DATA_DIR, "raw")
 
 # Logging
 LOG_FILE = "logs/pipeline.log"

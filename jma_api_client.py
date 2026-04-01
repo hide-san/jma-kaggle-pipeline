@@ -9,6 +9,8 @@ Endpoints used:
 - Cherry blossom: https://www.data.jma.go.jp/sakura/data/sakura{year}_obs.csv
 """
 
+import json
+import os
 import re
 from datetime import datetime, timezone
 
@@ -47,6 +49,9 @@ class JMAApiClient:
         log.info("Fetching cherry blossom data: %s", url)
 
         resp = _get(url)
+        # Save raw response
+        _save_raw("cherry_blossom.csv", resp.content)
+
         # JMA CSV uses Shift-JIS encoding
         from io import StringIO
         text = resp.content.decode("shift_jis", errors="replace")
@@ -80,7 +85,10 @@ class JMAApiClient:
         # 2. Fetch the map snapshot
         map_url = f"{config.JMA_BASE_URL}/amedas/data/map/{map_key}.json"
         log.info("Fetching AMeDAS map: %s", map_url)
-        observations = _get(map_url).json()  # {station_no: {temp: [...], ...}, ...}
+        resp = _get(map_url)
+        observations = resp.json()  # {station_no: {temp: [...], ...}, ...}
+        # Save raw response
+        _save_raw("temperatures.json", resp.content)
 
         # 3. Fetch station metadata (lat/lon/name) — cached once per session
         if not hasattr(self, "_amedas_table"):
@@ -119,7 +127,10 @@ class JMAApiClient:
         """Fetch the latest earthquake list from JMA."""
         url = f"{config.JMA_BASE_URL}/quake/data/list.json"
         log.info("Fetching earthquake list: %s", url)
-        items = _get(url).json()  # list of dicts
+        resp = _get(url)
+        items = resp.json()  # list of dicts
+        # Save raw response
+        _save_raw("earthquakes.json", resp.content)
 
         rows = []
         for item in items:
@@ -170,3 +181,12 @@ def _parse_latlon(cod: str) -> tuple[float | None, float | None]:
         except ValueError:
             pass
     return None, None
+
+
+def _save_raw(filename: str, content: bytes) -> None:
+    """Save raw API response to data/raw/ directory."""
+    path = os.path.join(config.RAW_DATA_DIR, filename)
+    os.makedirs(config.RAW_DATA_DIR, exist_ok=True)
+    with open(path, "wb") as f:
+        f.write(content)
+    log.info("Saved raw response to %s", path)
