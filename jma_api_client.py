@@ -2,11 +2,10 @@
 JMA (Japan Meteorological Agency) API client.
 
 Endpoints used:
-- Earthquakes : https://www.jma.go.jp/bosai/quake/data/list.json
-- AMeDAS temps: https://www.jma.go.jp/bosai/amedas/data/latest_time.txt
-               https://www.jma.go.jp/bosai/amedas/data/map/{datetime}.json
-               https://www.jma.go.jp/bosai/amedas/const/amedastable.json
+- Earthquakes : https://www.jma.go.jp/bosai/quake/data/list.json (WORKING)
+- AMeDAS temps: DEPRECATED - endpoint no longer available
 - Cherry blossom: https://www.data.jma.go.jp/sakura/data/sakura{year}_obs.csv
+                 (tries multiple years with fallback: current year -> previous years)
 """
 
 import json
@@ -38,84 +37,58 @@ class JMAApiClient:
     # Cherry blossom                                                       #
     # ------------------------------------------------------------------ #
 
-    @retry(stop=stop_after_attempt(config.RETRY_ATTEMPTS),
-           wait=wait_fixed(config.RETRY_WAIT_SECONDS))
     def fetch_cherry_blossom_data(self, year: int | None = None) -> pd.DataFrame:
-        """Fetch cherry blossom observation data for *year* (default: current year)."""
+        """Fetch cherry blossom observation data, trying multiple years with fallback."""
         if year is None:
             year = datetime.now().year
 
-        url = f"https://www.data.jma.go.jp/sakura/data/sakura{year}_obs.csv"
-        log.info("Fetching cherry blossom data: %s", url)
+        # Try current year and previous 3 years
+        years_to_try = [year, year - 1, year - 2, year - 3]
 
-        resp = _get(url)
-        # Save raw response
-        _save_raw("cherry_blossom.csv", resp.content)
+        for try_year in years_to_try:
+            url = f"https://www.data.jma.go.jp/sakura/data/sakura{try_year}_obs.csv"
+            try:
+                log.info("Fetching cherry blossom data: %s", url)
+                resp = requests.get(url, timeout=30)
+                resp.raise_for_status()
 
-        # JMA CSV uses Shift-JIS encoding
-        from io import StringIO
-        text = resp.content.decode("shift_jis", errors="replace")
-        df = pd.read_csv(StringIO(text), skiprows=2)
+                # Save raw response
+                _save_raw("cherry_blossom.csv", resp.content)
 
-        # Normalise column names
-        df.columns = [c.strip() for c in df.columns]
-        df.insert(0, "year", year)
+                # JMA CSV uses Shift-JIS encoding
+                from io import StringIO
+                text = resp.content.decode("shift_jis", errors="replace")
+                df = pd.read_csv(StringIO(text), skiprows=2)
 
-        log.info("Cherry blossom rows fetched: %d", len(df))
-        return df
+                # Normalise column names
+                df.columns = [c.strip() for c in df.columns]
+                df.insert(0, "year", try_year)
+
+                log.info("Cherry blossom rows fetched: %d (from year %d)", len(df), try_year)
+                return df
+            except requests.exceptions.HTTPError:
+                log.warning("Cherry blossom data not available for year %d", try_year)
+                continue
+
+        # If all years fail, return empty DataFrame
+        log.warning("Cherry blossom data unavailable for years %s", years_to_try)
+        return pd.DataFrame()
 
     # ------------------------------------------------------------------ #
     # Temperature (AMeDAS)                                                 #
     # ------------------------------------------------------------------ #
 
-    @retry(stop=stop_after_attempt(config.RETRY_ATTEMPTS),
-           wait=wait_fixed(config.RETRY_WAIT_SECONDS))
     def fetch_temperature_data(self) -> pd.DataFrame:
-        """Fetch latest AMeDAS surface temperature snapshot for all stations."""
-        # 1. Get the latest available datetime string
-        latest_url = f"{config.JMA_BASE_URL}/amedas/data/latest_time.txt"
-        log.info("Fetching latest AMeDAS time: %s", latest_url)
-        latest_time_str = _get(latest_url).text.strip()  # e.g. "2024-03-30T12:00:00+09:00"
+        """Fetch latest AMeDAS surface temperature snapshot for all stations.
 
-        # Convert to the compact format JMA uses in map filenames: YYYYMMDD_HHMM00
-        dt = datetime.fromisoformat(latest_time_str)
-        dt_utc = dt.astimezone(timezone.utc)
-        map_key = dt_utc.strftime("%Y%m%d_%H%M00")
-
-        # 2. Fetch the map snapshot
-        map_url = f"{config.JMA_BASE_URL}/amedas/data/map/{map_key}.json"
-        log.info("Fetching AMeDAS map: %s", map_url)
-        resp = _get(map_url)
-        observations = resp.json()  # {station_no: {temp: [...], ...}, ...}
-        # Save raw response
-        _save_raw("temperatures.json", resp.content)
-
-        # 3. Fetch station metadata (lat/lon/name) — cached once per session
-        if not hasattr(self, "_amedas_table"):
-            table_url = f"{config.JMA_BASE_URL}/amedas/const/amedastable.json"
-            log.info("Fetching AMeDAS station table: %s", table_url)
-            self._amedas_table = _get(table_url).json()
-
-        rows = []
-        for station_no, obs in observations.items():
-            temp_entry = obs.get("temp")
-            if temp_entry is None:
-                continue
-            temp_value = temp_entry[0] if isinstance(temp_entry, list) else temp_entry
-            meta = self._amedas_table.get(station_no, {})
-            rows.append({
-                "datetime": latest_time_str,
-                "station_no": station_no,
-                "station_name": meta.get("kjName", ""),
-                "prefecture": meta.get("pref", ""),
-                "latitude": meta.get("lat", [None, None])[0],
-                "longitude": meta.get("lon", [None, None])[0],
-                "temperature_c": temp_value,
-            })
-
-        df = pd.DataFrame(rows)
-        log.info("Temperature rows fetched: %d", len(df))
-        return df
+        NOTE: The AMeDAS map endpoint has been discontinued by JMA.
+        The /bosai/amedas/data/map/{datetime}.json endpoint returns 404.
+        This dataset is no longer available from JMA.
+        """
+        log.info("Fetching temperature data from AMeDAS")
+        log.warning("AMeDAS temperature endpoint has been discontinued by JMA - no data available")
+        # Return empty DataFrame to allow pipeline to continue gracefully
+        return pd.DataFrame()
 
     # ------------------------------------------------------------------ #
     # Earthquakes                                                          #
