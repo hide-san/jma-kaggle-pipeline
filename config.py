@@ -12,20 +12,6 @@ JMA_BASE_URL = "https://www.jma.go.jp/bosai"
 # Dataset configurations
 DATASETS = [
     {
-        "name": "cherry-blossom-observations",
-        "kaggle_dataset": f"{KAGGLE_USERNAME}/cherry-blossom-observations",
-        "csv_filename": "cherry_blossom.csv",
-        "merge_keys": ["year", "station_no"],
-        "description": "Cherry blossom blooming observations by JMA",
-    },
-    {
-        "name": "japan-city-temperatures",
-        "kaggle_dataset": f"{KAGGLE_USERNAME}/japan-city-temperatures",
-        "csv_filename": "temperatures.csv",
-        "merge_keys": ["datetime", "station_no"],
-        "description": "Daily temperature observations at major cities in Japan by JMA",
-    },
-    {
         "name": "japan-earthquakes",
         "kaggle_dataset": f"{KAGGLE_USERNAME}/japan-earthquakes",
         "csv_filename": "earthquakes.csv",

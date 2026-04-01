@@ -4,20 +4,18 @@ Automated data pipeline that fetches meteorological and seismic data from the **
 
 ## Features
 
-- **Multiple Data Sources**: Earthquake data (real-time), cherry blossom observations (annual), with graceful handling of API limitations
+- **Real-time Earthquake Data**: Fetches latest JMA earthquake list with magnitudes and seismic intensity
 - **Automated Daily Updates**: Runs at 09:00 JST via GitHub Actions
 - **Intelligent Merging**: Deduplicates on configurable keys; newer data takes precedence
-- **Error Handling**: Retry logic for API calls, graceful degradation when endpoints unavailable, automatic issue creation on pipeline failure
+- **Error Handling**: Retry logic for API calls, automatic issue creation on pipeline failure
 - **Logging**: Full pipeline execution logs for debugging and monitoring
 - **Data Persistence**: Saves both raw API responses and parsed data locally to `data/` directory
 
-## Data Sources
+## Data Source
 
-| Dataset | Source | Status | Update Frequency |
-|---------|--------|--------|------------------|
-| **Cherry Blossom Observations** | JMA Sakura Data | ⚠️ Limited availability | Annual (spring) |
-| **City Temperatures** | AMeDAS Network | ❌ Endpoint deprecated | N/A |
-| **Earthquakes** | JMA Seismic Data | ✅ Working | Real-time |
+| Dataset | Source | Update Frequency |
+|---------|--------|------------------|
+| **Earthquakes** | JMA Seismic Data | Real-time |
 
 ## Prerequisites
 
@@ -108,34 +106,11 @@ Tests focus on merge logic and handle edge cases like missing keys and empty dat
 
 ### API Details
 
-- **Cherry Blossom**: CSV from `data.jma.go.jp` (Shift-JIS encoded, tries multiple years with fallback)
-- **Temperature**: ~~JSON snapshots from AMeDAS network~~ **DEPRECATED** - Endpoint no longer available
-- **Earthquakes**: JSON list from JMA seismic database (`jma.go.jp/bosai/quake/data/list.json`)
+- **Earthquakes**: JSON list from JMA seismic database
+  - Endpoint: `https://www.jma.go.jp/bosai/quake/data/list.json`
+  - Data: Event ID, origin time, magnitude, seismic intensity, epicentre location
 
 All requests include retry logic (3 attempts, 5-second wait).
-
-## API Limitations
-
-**Note**: Two of the three JMA APIs have limitations:
-
-### Cherry Blossom Data
-- **Status**: Limited availability
-- **Issue**: JMA does not consistently publish sakura data files for recent years
-- **Solution**: Pipeline tries current year, then falls back to previous 3 years
-- **Example**: If 2026 data unavailable, tries 2025 → 2024 → 2023
-- **Result**: Returns empty DataFrame if no data found for any recent year
-
-### Temperature (AMeDAS)
-- **Status**: ❌ Endpoint deprecated
-- **Issue**: JMA discontinued the `/bosai/amedas/data/map/{datetime}.json` endpoint
-- **Impact**: Temperature dataset will not be updated
-- **Solution**: Pipeline logs warning and continues gracefully with empty data
-- **Reference**: https://www.jma.go.jp/bosai/amedas/
-
-### Earthquakes
-- **Status**: ✅ Fully operational
-- **Data**: Real-time earthquake list with magnitudes and seismic intensity
-- **Reliability**: Consistent and stable endpoint
 
 ## CI/CD
 
