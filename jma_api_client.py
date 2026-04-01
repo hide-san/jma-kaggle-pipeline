@@ -185,8 +185,13 @@ def _parse_latlon(cod: str) -> tuple[float | None, float | None]:
 
 def _save_raw(filename: str, content: bytes) -> None:
     """Save raw API response to data/raw/ directory."""
-    path = os.path.join(config.RAW_DATA_DIR, filename)
-    os.makedirs(config.RAW_DATA_DIR, exist_ok=True)
-    with open(path, "wb") as f:
-        f.write(content)
-    log.info("Saved raw response to %s", path)
+    try:
+        path = os.path.join(config.RAW_DATA_DIR, filename)
+        os.makedirs(config.RAW_DATA_DIR, exist_ok=True)
+        with open(path, "wb") as f:
+            f.write(content)
+        # Use forward slashes for consistent cross-platform logging
+        log_path = path.replace(os.sep, '/')
+        log.info("Saved raw response to %s", log_path)
+    except Exception as exc:
+        log.warning("Failed to save raw response for %s: %s", filename, exc)

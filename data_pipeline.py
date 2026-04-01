@@ -43,11 +43,12 @@ def run_pipeline() -> bool:
             fetch_fn = fetchers[name]
             new_df = fetch_fn()
 
-            # 1.5. Save raw data locally
+            # 1.5. Save parsed data locally
             os.makedirs(config.DATA_DIR, exist_ok=True)
-            raw_path = os.path.join(config.DATA_DIR, dataset_cfg["csv_filename"])
-            new_df.to_csv(raw_path, index=False)
-            log.info("Saved raw data to %s", raw_path)
+            parsed_path = os.path.join(config.DATA_DIR, dataset_cfg["csv_filename"])
+            new_df.to_csv(parsed_path, index=False)
+            log_path = parsed_path.replace(os.sep, '/')
+            log.info("Saved parsed data to %s", log_path)
 
             # 2. Download current Kaggle dataset
             existing_df = kaggle.download_dataset(
