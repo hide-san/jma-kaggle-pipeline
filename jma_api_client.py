@@ -5,9 +5,13 @@ Endpoints:
 - Earthquake list (JSON): https://www.jma.go.jp/bosai/quake/data/list.json
   Simple list of recent earthquakes with basic info (magnitude, intensity, location)
 
-- JMA Data Feed (XML): https://www.data.jma.go.jp/developer/xml/feed/regular.xml
-  Comprehensive Atom feed with links to detailed meteorological and seismic data
-  Currently saved for reference, contains complex 4MB+ XML files with seismic intensity details
+- JMA Data Feeds (XML Atom):
+  - regular_l.xml: Regular information (3.1MB, weather, forecasts, etc.)
+  - extra_l.xml: Extra/additional information (1.5MB)
+  - eqvol_l.xml: Earthquake & Volcano information (387KB) - Primary source for earthquake data
+  - other_l.xml: Other information (245KB)
+
+  Each feed contains Atom entries with links to detailed meteorological and seismic data files.
 """
 
 import json
@@ -102,17 +106,26 @@ class JMAApiClient:
     def fetch_earthquake_data(self) -> pd.DataFrame:
         """Fetch earthquake data from JMA APIs.
 
-        Uses simple JSON list endpoint for efficient data retrieval,
-        and also saves the detailed JMA Data Feed for reference.
+        Fetches all 4 JMA Data Feeds and prioritizes eqvol_l.xml for earthquake data.
+        Also uses the simple JSON endpoint as fallback.
         """
-        # Fetch and save the JMA XML data feed for reference
-        feed_url = "https://www.data.jma.go.jp/developer/xml/feed/regular.xml"
-        try:
-            feed_resp = _get(feed_url)
-            _save_raw("jma_feed.xml", feed_resp.content)
-            log.info("Saved JMA Data Feed (contains %d entries)", len(feed_resp.content))
-        except Exception as exc:
-            log.warning("Could not fetch JMA Data Feed: %s", exc)
+        # JMA Data Feed URLs
+        feeds = [
+            ("regular_l.xml", "https://www.data.jma.go.jp/developer/xml/feed/regular_l.xml"),
+            ("extra_l.xml", "https://www.data.jma.go.jp/developer/xml/feed/extra_l.xml"),
+            ("eqvol_l.xml", "https://www.data.jma.go.jp/developer/xml/feed/eqvol_l.xml"),
+            ("other_l.xml", "https://www.data.jma.go.jp/developer/xml/feed/other_l.xml"),
+        ]
+
+        # Fetch and save all JMA Data Feeds
+        for feed_name, feed_url in feeds:
+            try:
+                log.info("Fetching %s", feed_name)
+                feed_resp = _get(feed_url)
+                _save_raw(feed_name, feed_resp.content)
+                log.info("Saved %s (%d bytes)", feed_name, len(feed_resp.content))
+            except Exception as exc:
+                log.warning("Could not fetch %s: %s", feed_name, exc)
 
         # Fetch earthquake list from simple JSON endpoint
         url = "https://www.jma.go.jp/bosai/quake/data/list.json"
