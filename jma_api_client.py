@@ -1,16 +1,19 @@
 """
 JMA (Japan Meteorological Agency) API client.
 
-Endpoints used:
-- Earthquakes : https://www.jma.go.jp/bosai/quake/data/list.json (WORKING)
-- AMeDAS temps: DEPRECATED - endpoint no longer available
-- Cherry blossom: https://www.data.jma.go.jp/sakura/data/sakura{year}_obs.csv
-                 (tries multiple years with fallback: current year -> previous years)
+Endpoints:
+- Earthquake list (JSON): https://www.jma.go.jp/bosai/quake/data/list.json
+  Simple list of recent earthquakes with basic info (magnitude, intensity, location)
+
+- JMA Data Feed (XML): https://www.data.jma.go.jp/developer/xml/feed/regular.xml
+  Comprehensive Atom feed with links to detailed meteorological and seismic data
+  Currently saved for reference, contains complex 4MB+ XML files with seismic intensity details
 """
 
 import json
 import os
 import re
+import xml.etree.ElementTree as ET
 from datetime import datetime, timezone
 
 import pandas as pd
@@ -97,8 +100,22 @@ class JMAApiClient:
     @retry(stop=stop_after_attempt(config.RETRY_ATTEMPTS),
            wait=wait_fixed(config.RETRY_WAIT_SECONDS))
     def fetch_earthquake_data(self) -> pd.DataFrame:
-        """Fetch the latest earthquake list from JMA."""
-        url = f"{config.JMA_BASE_URL}/quake/data/list.json"
+        """Fetch earthquake data from JMA APIs.
+
+        Uses simple JSON list endpoint for efficient data retrieval,
+        and also saves the detailed JMA Data Feed for reference.
+        """
+        # Fetch and save the JMA XML data feed for reference
+        feed_url = "https://www.data.jma.go.jp/developer/xml/feed/regular.xml"
+        try:
+            feed_resp = _get(feed_url)
+            _save_raw("jma_feed.xml", feed_resp.content)
+            log.info("Saved JMA Data Feed (contains %d entries)", len(feed_resp.content))
+        except Exception as exc:
+            log.warning("Could not fetch JMA Data Feed: %s", exc)
+
+        # Fetch earthquake list from simple JSON endpoint
+        url = "https://www.jma.go.jp/bosai/quake/data/list.json"
         log.info("Fetching earthquake list: %s", url)
         resp = _get(url)
         items = resp.json()  # list of dicts
