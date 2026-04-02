@@ -11,6 +11,7 @@ from tenacity import retry, stop_after_attempt, wait_fixed
 import config
 from logger import get_logger
 from .utils import get, is_numeric, parse_latlon, save_raw
+from .translate import translate_ja_to_en
 
 log = get_logger(__name__)
 
@@ -62,15 +63,16 @@ def fetch_earthquake_data() -> pd.DataFrame:
         cod = item.get("cod", "")        # "lat lon" string
         lat, lon = parse_latlon(cod)
 
-        rows.append({
+        row = {
             "event_id": event_id,
             "origin_time": at,
-            "epicentre": anm,
+            "epicentre": translate_ja_to_en(anm) if anm else anm,
             "latitude": lat,
             "longitude": lon,
             "magnitude": mag,
             "max_intensity": maxi,
-        })
+        }
+        rows.append(row)
 
     df = pd.DataFrame(rows)
     log.info("Earthquake rows fetched: %d", len(df))
@@ -250,7 +252,9 @@ def _parse_earthquake_xml(root: ET.Element, data_url: str) -> dict | None:
                 elif child_tag == 'MaxInt' and child.text:
                     pref_intensity = child.text
             if pref_name and pref_intensity:
-                prefectures[pref_name] = pref_intensity
+                # Translate prefecture name to English
+                pref_name_en = translate_ja_to_en(pref_name)
+                prefectures[pref_name_en] = pref_intensity
 
     if prefectures:
         eq_data['prefectures_intensity_json'] = json.dumps(prefectures, ensure_ascii=False)

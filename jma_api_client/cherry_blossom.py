@@ -12,6 +12,7 @@ import requests
 import config
 from logger import get_logger
 from .utils import save_raw
+from .translate import translate_ja_to_en
 
 log = get_logger(__name__)
 
@@ -146,7 +147,7 @@ def _parse_cherry_blossom_xml(root: ET.Element, data_url: str) -> dict | None:
             for child in elem:
                 child_tag = sn(child.tag)
                 if child_tag == 'Name' and child.text:
-                    cherry_data['phenophase'] = child.text
+                    cherry_data['phenophase'] = translate_ja_to_en(child.text)
                 elif child_tag == 'Code' and child.text:
                     cherry_data['phenophase_code'] = child.text
 
@@ -155,8 +156,8 @@ def _parse_cherry_blossom_xml(root: ET.Element, data_url: str) -> dict | None:
             for child in elem:
                 child_tag = sn(child.tag)
                 if child_tag == 'Name' and child.text:
-                    cherry_data['station_name'] = child.text
+                    cherry_data['station_name'] = translate_ja_to_en(child.text)
                 elif child_tag == 'Location' and child.text:
-                    cherry_data['station_location'] = child.text
+                    cherry_data['station_location'] = translate_ja_to_en(child.text)
 
     return cherry_data if len(cherry_data) > 2 else None

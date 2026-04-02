@@ -9,6 +9,7 @@ from tenacity import retry, stop_after_attempt, wait_fixed
 import config
 from logger import get_logger
 from .utils import get
+from .translate import translate_ja_to_en
 
 log = get_logger(__name__)
 
@@ -156,12 +157,12 @@ def _parse_sea_xml(root: ET.Element, data_type: str) -> dict | None:
                         if item_child_tag == 'Kind':
                             for kind_child in item_child:
                                 if sn(kind_child.tag) == 'Name' and kind_child.text:
-                                    sea_data[warning_type_key] = kind_child.text
+                                    sea_data[warning_type_key] = translate_ja_to_en(kind_child.text)
                         elif item_child_tag == 'Area':
                             for area_child in item_child:
                                 area_child_tag = sn(area_child.tag)
                                 if area_child_tag == 'Name' and area_child.text:
-                                    sea_data['region_name'] = area_child.text
+                                    sea_data['region_name'] = translate_ja_to_en(area_child.text)
                                 elif area_child_tag == 'Code' and area_child.text:
                                     sea_data['region_code'] = area_child.text
 

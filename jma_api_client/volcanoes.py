@@ -9,6 +9,7 @@ from tenacity import retry, stop_after_attempt, wait_fixed
 import config
 from logger import get_logger
 from .utils import get, save_raw
+from .translate import translate_ja_to_en
 
 log = get_logger(__name__)
 
@@ -139,7 +140,7 @@ def _parse_volcanic_ash_xml(root: ET.Element, data_url: str) -> dict | None:
     ash_data = {
         'event_id': event_id,
         'report_datetime': report_datetime,
-        'volcano_name': volcano_name or '',
+        'volcano_name': translate_ja_to_en(volcano_name) if volcano_name else '',
     }
 
     # Find all AshInfo entries (should be 6 time windows)
@@ -171,10 +172,11 @@ def _parse_volcanic_ash_xml(root: ET.Element, data_url: str) -> dict | None:
                                     if sn(area_child.tag) == 'Name' and area_child.text:
                                         affected_areas.append(area_child.text)
 
-        # Store window data
+        # Store window data (translate area names)
+        translated_areas = [translate_ja_to_en(area) for area in affected_areas]
         ash_data[f'window_{window_idx}_start'] = start_time
         ash_data[f'window_{window_idx}_end'] = end_time
-        ash_data[f'window_{window_idx}_areas'] = ', '.join(affected_areas) if affected_areas else ''
+        ash_data[f'window_{window_idx}_areas'] = ', '.join(translated_areas) if translated_areas else ''
 
     return ash_data
 
@@ -307,11 +309,11 @@ def _parse_volcano_status_xml(root: ET.Element, data_url: str) -> dict | None:
                             for kind_child in item_child:
                                 kind_tag = sn(kind_child.tag)
                                 if kind_tag == 'Name' and kind_child.text:
-                                    volcano_data['alert_level'] = kind_child.text
+                                    volcano_data['alert_level'] = translate_ja_to_en(kind_child.text)
                                 elif kind_tag == 'Code' and kind_child.text:
                                     volcano_data['alert_level_code'] = kind_child.text
                                 elif kind_tag == 'Condition' and kind_child.text:
-                                    volcano_data['alert_condition'] = kind_child.text
+                                    volcano_data['alert_condition'] = translate_ja_to_en(kind_child.text)
 
                     # Extract volcano name from Areas
                     for item_child in child:
@@ -320,7 +322,7 @@ def _parse_volcano_status_xml(root: ET.Element, data_url: str) -> dict | None:
                                 if sn(area.tag) == 'Area':
                                     for area_child in area:
                                         if sn(area_child.tag) == 'Name' and area_child.text:
-                                            volcano_data['volcano_name'] = area_child.text
+                                            volcano_data['volcano_name'] = translate_ja_to_en(area_child.text)
                                             break
 
         # Get activity and prevention summaries from VolcanoInfoContent
@@ -328,8 +330,8 @@ def _parse_volcano_status_xml(root: ET.Element, data_url: str) -> dict | None:
             for content_child in elem:
                 content_tag = sn(content_child.tag)
                 if content_tag == 'VolcanoActivity' and content_child.text:
-                    volcano_data['activity_summary'] = content_child.text.strip()
+                    volcano_data['activity_summary'] = translate_ja_to_en(content_child.text.strip())
                 elif content_tag == 'VolcanoPrevention' and content_child.text:
-                    volcano_data['prevention_summary'] = content_child.text.strip()
+                    volcano_data['prevention_summary'] = translate_ja_to_en(content_child.text.strip())
 
     return volcano_data if len(volcano_data) > 2 else None
