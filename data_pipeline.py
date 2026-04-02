@@ -26,7 +26,7 @@ def run_pipeline() -> bool:
 
     # Map dataset name → fetch function
     fetchers = {
-        "cherry-blossom-observations": jma.fetch_cherry_blossom_data,
+        "cherry-blossom-observations": jma.fetch_cherry_blossom_observations,
         "japan-city-temperatures": jma.fetch_temperature_data,
         "japan-earthquakes": jma.fetch_earthquake_data,
         "japan-earthquakes-enhanced": jma.fetch_earthquakes_enhanced,
