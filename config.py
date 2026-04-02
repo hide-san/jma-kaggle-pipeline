@@ -18,6 +18,13 @@ DATASETS = [
         "merge_keys": ["event_id"],
         "description": "Earthquake data reported by JMA",
     },
+    {
+        "name": "japan-earthquakes-enhanced",
+        "kaggle_dataset": f"{KAGGLE_USERNAME}/japan-earthquakes-enhanced",
+        "csv_filename": "earthquakes_enhanced.csv",
+        "merge_keys": ["event_id"],
+        "description": "Enhanced earthquake data from JMA XML with hypocenter details and per-prefecture intensity",
+    },
 ]
 
 # Retry settings for API calls
