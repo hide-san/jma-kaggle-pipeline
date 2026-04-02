@@ -9,7 +9,7 @@ import os
 import sys
 
 import config
-from jma_api_client import JMAApiClient
+import jma_api_client
 from kaggle_uploader import KaggleUploader
 from logger import get_logger
 
@@ -17,7 +17,6 @@ log = get_logger(__name__)
 
 
 def run_pipeline() -> bool:
-    jma = JMAApiClient()
     kaggle = KaggleUploader()
 
     if not kaggle.authenticate():
@@ -26,14 +25,14 @@ def run_pipeline() -> bool:
 
     # Map dataset name → fetch function
     fetchers = {
-        "cherry-blossom-observations": jma.fetch_cherry_blossom_observations,
-        "japan-city-temperatures": jma.fetch_temperature_data,
-        "japan-earthquakes": jma.fetch_earthquake_data,
-        "japan-earthquakes-enhanced": jma.fetch_earthquakes_enhanced,
-        "volcanic-ash-forecasts": jma.fetch_volcanic_ash_forecasts,
-        "volcano-status": jma.fetch_volcano_status,
-        "sea-warnings": jma.fetch_sea_warnings,
-        "sea-forecasts": jma.fetch_sea_forecasts,
+        "cherry-blossom-observations": jma_api_client.fetch_cherry_blossom_observations,
+        "japan-city-temperatures": jma_api_client.fetch_temperature_data,
+        "japan-earthquakes": jma_api_client.fetch_earthquake_data,
+        "japan-earthquakes-enhanced": jma_api_client.fetch_earthquakes_enhanced,
+        "volcanic-ash-forecasts": jma_api_client.fetch_volcanic_ash_forecasts,
+        "volcano-status": jma_api_client.fetch_volcano_status,
+        "sea-warnings": jma_api_client.fetch_sea_warnings,
+        "sea-forecasts": jma_api_client.fetch_sea_forecasts,
     }
 
     results: dict[str, bool] = {}
