@@ -180,10 +180,12 @@ class KaggleUploader:
             log.info("Uploading %d rows to %s", len(df), kaggle_dataset)
 
             # Write dataset-metadata.json required by the CLI
+            # Note: isPrivate=true ensures datasets are created as private
             metadata = {
                 "title": dataset_slug.replace("-", " ").title(),
                 "id": kaggle_dataset,
                 "licenses": [{"name": "CC0-1.0"}],
+                "isPrivate": True,  # JSON encoder converts this to 'true'
             }
             (Path(tmpdir) / "dataset-metadata.json").write_text(
                 json.dumps(metadata, ensure_ascii=False), encoding="utf-8"
