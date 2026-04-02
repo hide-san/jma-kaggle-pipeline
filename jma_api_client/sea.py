@@ -144,6 +144,7 @@ def _parse_sea_xml(root: ET.Element, data_type: str) -> dict | None:
 
     # Extract warning/forecast type and affected region
     warning_type_key = 'warning_type' if data_type == 'VPCU51' else 'forecast_type'
+    warning_type_en_key = warning_type_key + '_en'
 
     for elem in body.iter():
         tag = sn(elem.tag)
@@ -157,12 +158,14 @@ def _parse_sea_xml(root: ET.Element, data_type: str) -> dict | None:
                         if item_child_tag == 'Kind':
                             for kind_child in item_child:
                                 if sn(kind_child.tag) == 'Name' and kind_child.text:
-                                    sea_data[warning_type_key] = translate_ja_to_en(kind_child.text)
+                                    sea_data[warning_type_key] = kind_child.text
+                                    sea_data[warning_type_en_key] = translate_ja_to_en(kind_child.text)
                         elif item_child_tag == 'Area':
                             for area_child in item_child:
                                 area_child_tag = sn(area_child.tag)
                                 if area_child_tag == 'Name' and area_child.text:
-                                    sea_data['region_name'] = translate_ja_to_en(area_child.text)
+                                    sea_data['region_name'] = area_child.text
+                                    sea_data['region_name_en'] = translate_ja_to_en(area_child.text)
                                 elif area_child_tag == 'Code' and area_child.text:
                                     sea_data['region_code'] = area_child.text
 

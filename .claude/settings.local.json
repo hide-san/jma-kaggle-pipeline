@@ -6,7 +6,11 @@
       "Bash(python3:*)",
       "Bash(/tmp/jma_analysis_report.txt:*)",
       "Read(//tmp/**)",
-      "Bash(ls:*)"
+      "Bash(ls:*)",
+      "Bash(pip install:*)",
+      "Bash(dir C:tmpPycharmProjectsjma-kaggle-pipelinedata)",
+      "Bash(git:*)",
+      "Bash(git -C:*)"
     ]
   }
 }

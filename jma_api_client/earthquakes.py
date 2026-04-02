@@ -66,7 +66,8 @@ def fetch_earthquake_data() -> pd.DataFrame:
         row = {
             "event_id": event_id,
             "origin_time": at,
-            "epicentre": translate_ja_to_en(anm) if anm else anm,
+            "epicentre": anm,
+            "epicentre_en": translate_ja_to_en(anm) if anm else "",
             "latitude": lat,
             "longitude": lon,
             "magnitude": mag,
@@ -240,6 +241,7 @@ def _parse_earthquake_xml(root: ET.Element, data_url: str) -> dict | None:
 
     # Extract per-prefecture intensity data
     prefectures = {}
+    prefectures_en = {}
     for elem in body.iter():
         tag = sn(elem.tag)
         if tag == 'Pref':
@@ -252,11 +254,12 @@ def _parse_earthquake_xml(root: ET.Element, data_url: str) -> dict | None:
                 elif child_tag == 'MaxInt' and child.text:
                     pref_intensity = child.text
             if pref_name and pref_intensity:
-                # Translate prefecture name to English
+                prefectures[pref_name] = pref_intensity
                 pref_name_en = translate_ja_to_en(pref_name)
-                prefectures[pref_name_en] = pref_intensity
+                prefectures_en[pref_name_en] = pref_intensity
 
     if prefectures:
         eq_data['prefectures_intensity_json'] = json.dumps(prefectures, ensure_ascii=False)
+        eq_data['prefectures_intensity_en_json'] = json.dumps(prefectures_en, ensure_ascii=False)
 
     return eq_data if len(eq_data) > 1 else None  # Return only if has data beyond event_id
