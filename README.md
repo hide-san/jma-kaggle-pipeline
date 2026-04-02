@@ -4,18 +4,25 @@ Automated data pipeline that fetches meteorological and seismic data from the **
 
 ## Features
 
-- **Real-time Earthquake Data**: Fetches latest JMA earthquake list with magnitudes and seismic intensity
+- **Multi-Source JMA Data**: Earthquakes, volcanic ash, volcano status, cherry blossoms, sea warnings/forecasts
+- **Dual-Language CSVs**: Original Japanese text + English translations for all fields
 - **Automated Daily Updates**: Runs at 09:00 JST via GitHub Actions
 - **Intelligent Merging**: Deduplicates on configurable keys; newer data takes precedence
 - **Error Handling**: Retry logic for API calls, automatic issue creation on pipeline failure
 - **Logging**: Full pipeline execution logs for debugging and monitoring
 - **Data Persistence**: Saves both raw API responses and parsed data locally to `data/` directory
 
-## Data Source
+## Data Sources
 
-| Dataset | Source | Update Frequency |
-|---------|--------|------------------|
-| **Earthquakes** | JMA Seismic Data | Real-time |
+| Dataset | Code | Source | Records | Update Frequency |
+|---------|------|--------|---------|------------------|
+| **Earthquakes** | VXSE53 | JMA eqvol_l.xml | 108 | Real-time |
+| **Enhanced Earthquakes** | VXSE53 | JMA eqvol_l.xml | 108 | Real-time |
+| **Volcanic Ash Forecasts** | VFVO53 | JMA eqvol_l.xml | 896 | Real-time |
+| **Volcano Status** | VFVO51 | JMA eqvol_l.xml | 24 | Real-time |
+| **Cherry Blossom Observations** | VGSK55 | JMA other_l.xml | 68 | Seasonal (Mar-May) |
+| **Sea Warnings** | VPCU51 | JMA other_l.xml | 612 | Real-time |
+| **Sea Forecasts** | VPCY51 | JMA other_l.xml | 336 | Real-time |
 
 ## Prerequisites
 
@@ -90,6 +97,28 @@ pytest tests/test_pipeline.py::test_merge_deduplication_new_wins -v
 
 Tests focus on merge logic and handle edge cases like missing keys and empty datasets.
 
+## Translation Features
+
+All generated CSV files include dual-language support:
+
+- **Original Japanese columns**: Preserve authentic JMA data
+- **English translation columns** (suffixed `_en`): Machine-translated using deep_translator
+
+Example:
+```
+earthquakes.csv:
+  epicentre: "宮城県沖"
+  epicentre_en: "Off the coast of Miyagi Prefecture"
+
+volcano_status.csv:
+  alert_level: "レベル２（火口周辺規制）"
+  alert_level_en: "Level 2 (Regulations around the crater)"
+  volcano_name: "草津白根山（白根山（湯釜付近））"
+  volcano_name_en: "Mt. Kusatsu Shirane (Mt. Shirane (near Yugama))"
+```
+
+Translation results are cached for performance optimization.
+
 ## How It Works
 
 ```
@@ -106,9 +135,26 @@ Tests focus on merge logic and handle edge cases like missing keys and empty dat
 
 ### API Details
 
-- **Earthquakes**: JSON list from JMA seismic database
-  - Endpoint: `https://www.jma.go.jp/bosai/quake/data/list.json`
-  - Data: Event ID, origin time, magnitude, seismic intensity, epicentre location
+**JMA Data Feeds** (4 XML Atom feeds):
+- `regular_l.xml` (3.1 MB) - Weather forecasts & seasonal data
+- `extra_l.xml` (1.5 MB) - Weather warnings & alerts
+- `eqvol_l.xml` (387 KB) - **Earthquakes, volcanoes, tsunamis**
+- `other_l.xml` (245 KB) - **Cherry blossoms, marine data**
+
+**Data Type Codes** (from 気象庁防災情報XML):
+| Code | Description | Records |
+|------|-------------|---------|
+| VXSE53 | Earthquake & seismic intensity info | 108 |
+| VFVO53 | Volcanic ash forecast (regular) | 896 |
+| VFVO51 | Volcano status explanation | 24 |
+| VGSK55 | Biological seasonal observation (cherry blossom) | 68 |
+| VPCU51 | Regional sea warnings | 612 |
+| VPCY51 | Regional sea forecasts | 336 |
+
+**Reference Documentation**:
+- [JMA XML Technical Materials](https://xml.kishou.go.jp/tec_material.html) - Official JMA XML specification and technical resources
+- [JMA Disaster Prevention Information XML Specification](https://xml.kishou.go.jp/jmaxml_20260129_format_v1_3_hyo1_1.pdf) - Complete list of 90+ data type codes available from JMA (as of 2026-01-29)
+- [JMA Information Catalog](https://www.data.jma.go.jp/add/suishin/catalogue/catalogue.html) - Detailed descriptions of each dataset
 
 All requests include retry logic (3 attempts, 5-second wait).
 
@@ -156,17 +202,37 @@ Example log output:
 
 ```
 jma-kaggle-pipeline/
-├── data_pipeline.py          # Main orchestrator
-├── jma_api_client.py         # JMA API client
-├── kaggle_uploader.py        # Kaggle integration
-├── config.py                 # Configuration
-├── logger.py                 # Logging setup
-├── requirements.txt          # Python dependencies
-├── .env.example              # Environment template
+├── data_pipeline.py                # Main orchestrator
+├── kaggle_uploader.py              # Kaggle integration
+├── config.py                       # Configuration
+├── logger.py                       # Logging setup
+├── requirements.txt                # Python dependencies
+├── .env.example                    # Environment template
+├── jma_api_client/                 # JMA API client (modular)
+│   ├── __init__.py                 # Package exports
+│   ├── earthquakes.py              # VXSE53 earthquake data extraction
+│   ├── volcanoes.py                # VFVO53/VFVO51 volcanic data
+│   ├── cherry_blossom.py           # VGSK55 cherry blossom observations
+│   ├── sea.py                      # VPCU51/VPCY51 sea warnings & forecasts
+│   ├── temperature.py              # Temperature data (discontinued)
+│   ├── translate.py                # Japanese-to-English translation utilities
+│   └── utils.py                    # Shared utilities (HTTP, parsing, logging)
 ├── tests/
-│   └── test_pipeline.py      # Merge logic tests
-└── .github/workflows/
-    └── daily-update.yml      # GitHub Actions workflow
+│   └── test_pipeline.py            # Merge logic tests
+├── .github/
+│   ├── actions/python-setup/
+│   │   └── action.yml              # Reusable Python setup composite action
+│   └── workflows/
+│       └── daily-update.yml        # GitHub Actions daily pipeline trigger
+└── data/                           # Generated CSV files & raw XML caches
+    ├── earthquakes.csv
+    ├── earthquakes_enhanced.csv
+    ├── volcanic_ash_forecasts.csv
+    ├── cherry_blossom_observations.csv
+    ├── volcano_status.csv
+    ├── sea_warnings.csv
+    ├── sea_forecasts.csv
+    └── raw/                        # Cached JMA XML feeds
 ```
 
 ## License
