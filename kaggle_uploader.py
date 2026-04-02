@@ -1,7 +1,8 @@
 """
 Kaggle dataset integration: download, merge, and upload CSVs.
 
-Uses Kaggle 2.0.0 with the modern kagglesdk library (https://github.com/Kaggle/kaggle-cli).
+Uses the official Kaggle CLI (https://github.com/Kaggle/kaggle-cli) via
+direct command invocation for reliable dataset operations.
 
 Authentication: Reads KAGGLE_USERNAME and KAGGLE_API_TOKEN environment variables.
 
@@ -11,11 +12,12 @@ See: https://www.kaggle.com/docs/api for official documentation
 
 import json
 import os
+import subprocess
+import sys
 import tempfile
 from pathlib import Path
 
 import pandas as pd
-from kagglesdk import KaggleClient, KaggleCredentials
 
 from logger import get_logger
 
@@ -24,14 +26,14 @@ log = get_logger(__name__)
 
 class KaggleUploader:
     def __init__(self):
-        self._client = None
+        pass
 
     # ------------------------------------------------------------------ #
     # Authentication                                                       #
     # ------------------------------------------------------------------ #
 
     def authenticate(self) -> bool:
-        """Authenticate with Kaggle. Returns True on success."""
+        """Authenticate with Kaggle. Checks that credentials are available. Returns True on success."""
         try:
             username = os.environ.get("KAGGLE_USERNAME")
             # Support both KAGGLE_KEY and KAGGLE_API_TOKEN (from .env file)
@@ -41,12 +43,9 @@ class KaggleUploader:
                 log.error("Kaggle authentication failed: KAGGLE_USERNAME and KAGGLE_API_TOKEN (or KAGGLE_KEY) required")
                 return False
 
-            # Create credentials and client
-            credentials = KaggleCredentials(username=username, api_key=api_token)
-            self._client = KaggleClient(credentials=credentials)
-
-            # Test authentication by making a simple API call
-            self._client.datasets.list(page_size=1)
+            # Ensure both are set for the CLI
+            os.environ["KAGGLE_USERNAME"] = username
+            os.environ["KAGGLE_API_TOKEN"] = api_token
 
             log.info("Kaggle authentication successful")
             return True
@@ -54,11 +53,32 @@ class KaggleUploader:
             log.error("Kaggle authentication failed: %s", exc)
             return False
 
-    @property
-    def client(self):
-        if self._client is None:
-            raise RuntimeError("Call authenticate() before using the API.")
-        return self._client
+    def _run_kaggle_command(self, cmd_args: list[str]) -> tuple[int, str, str]:
+        """
+        Run a kaggle CLI command and return (returncode, stdout, stderr).
+        """
+        try:
+            result = subprocess.run(
+                ["kaggle"] + cmd_args,
+                capture_output=True,
+                text=True,
+                env=os.environ.copy(),
+            )
+            return result.returncode, result.stdout, result.stderr
+        except FileNotFoundError:
+            # If 'kaggle' is not in PATH, try via python -m kaggle.cli
+            log.debug("'kaggle' command not found, trying python module")
+            try:
+                result = subprocess.run(
+                    [sys.executable, "-m", "kaggle.cli"] + cmd_args,
+                    capture_output=True,
+                    text=True,
+                    env=os.environ.copy(),
+                )
+                return result.returncode, result.stdout, result.stderr
+            except Exception as e:
+                log.error("Failed to run kaggle command: %s", e)
+                return 1, "", str(e)
 
     # ------------------------------------------------------------------ #
     # Download                                                             #
@@ -72,16 +92,20 @@ class KaggleUploader:
         with tempfile.TemporaryDirectory() as tmpdir:
             try:
                 log.info("Downloading dataset: %s", kaggle_dataset)
-                owner, dataset_slug = kaggle_dataset.split("/", 1)
+                returncode, stdout, stderr = self._run_kaggle_command([
+                    "datasets",
+                    "download",
+                    "-d",
+                    kaggle_dataset,
+                    "-p",
+                    tmpdir,
+                    "--unzip",
+                    "-q",
+                ])
 
-                # Use the SDK to download the dataset
-                self.client.datasets.download(
-                    dataset_name=dataset_slug,
-                    owner=owner,
-                    path=tmpdir,
-                    unzip=True,
-                    quiet=True,
-                )
+                if returncode != 0:
+                    log.warning("Could not download dataset %s: %s — treating as empty", kaggle_dataset, stderr)
+                    return pd.DataFrame()
 
                 csv_path = Path(tmpdir) / csv_filename
                 if not csv_path.exists():
@@ -153,7 +177,7 @@ class KaggleUploader:
             df.to_csv(csv_path, index=False)
             log.info("Uploading %d rows to %s", len(df), kaggle_dataset)
 
-            # Write dataset-metadata.json required by the API
+            # Write dataset-metadata.json required by the CLI
             # Note: isPrivate=true ensures datasets are created as private
             metadata = {
                 "title": dataset_slug.replace("-", " ").title(),
@@ -165,40 +189,43 @@ class KaggleUploader:
                 json.dumps(metadata, ensure_ascii=False), encoding="utf-8"
             )
 
-            try:
-                # Try to create a new version (for existing datasets)
-                version_notes = description or "Automated daily update"
-                self.client.datasets.create_version(
-                    dataset_name=dataset_slug,
-                    owner=owner,
-                    path=tmpdir,
-                    version_notes=version_notes,
-                    quiet=True,
-                    convert_to_csv=False,
-                    delete_old_versions=False,
-                )
+            # Try to create a new version (for existing datasets)
+            version_notes = description or "Automated daily update"
+            returncode, stdout, stderr = self._run_kaggle_command([
+                "datasets",
+                "version",
+                "-p",
+                tmpdir,
+                "-m",
+                version_notes,
+                "--keep-tabular",
+                "-q",
+            ])
+
+            if returncode == 0:
                 log.info("Upload successful (new version): %s", kaggle_dataset)
                 return True
-            except Exception as version_exc:
-                # Check if dataset doesn't exist; if so, create it
-                exc_str = str(version_exc).lower()
-                if "404" in str(version_exc) or "not found" in exc_str or "does not exist" in exc_str:
-                    log.info("Dataset not found, creating new dataset: %s", kaggle_dataset)
-                    try:
-                        # Create dataset for the first time
-                        self.client.datasets.create_new(
-                            dataset_name=dataset_slug,
-                            owner=owner,
-                            path=tmpdir,
-                            dir_mode='zip',
-                            quiet=True,
-                        )
-                        log.info("Created and uploaded dataset successfully: %s", kaggle_dataset)
-                        return True
-                    except Exception as create_exc:
-                        log.error("Failed to create dataset %s: %s", kaggle_dataset, create_exc)
-                        return False
+
+            # Check if dataset doesn't exist; if so, create it
+            stderr_lower = stderr.lower()
+            if "404" in stderr or "not found" in stderr_lower or "does not exist" in stderr_lower:
+                log.info("Dataset not found, creating new dataset: %s", kaggle_dataset)
+                returncode, stdout, stderr = self._run_kaggle_command([
+                    "datasets",
+                    "create",
+                    "-p",
+                    tmpdir,
+                    "-r",
+                    "zip",
+                    "-q",
+                ])
+                if returncode == 0:
+                    log.info("Created and uploaded dataset successfully: %s", kaggle_dataset)
+                    return True
                 else:
-                    # Some other error occurred
-                    log.error("Upload failed for %s: %s", kaggle_dataset, version_exc)
+                    log.error("Failed to create dataset %s: %s", kaggle_dataset, stderr)
                     return False
+            else:
+                # Some other error occurred
+                log.error("Upload failed for %s: %s", kaggle_dataset, stderr)
+                return False
