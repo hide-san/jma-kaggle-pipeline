@@ -46,6 +46,20 @@ DATASETS = [
         "merge_keys": ["event_id"],
         "description": "Volcano status reports from JMA with alert levels and activity summaries",
     },
+    {
+        "name": "sea-warnings",
+        "kaggle_dataset": f"{KAGGLE_USERNAME}/sea-warnings",
+        "csv_filename": "sea_warnings.csv",
+        "merge_keys": ["event_id"],
+        "description": "Regional sea warnings from JMA with warning types and affected areas",
+    },
+    {
+        "name": "sea-forecasts",
+        "kaggle_dataset": f"{KAGGLE_USERNAME}/sea-forecasts",
+        "csv_filename": "sea_forecasts.csv",
+        "merge_keys": ["event_id"],
+        "description": "Regional sea forecasts from JMA with forecast types and affected areas",
+    },
 ]
 
 # Retry settings for API calls
