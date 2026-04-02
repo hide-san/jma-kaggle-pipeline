@@ -31,6 +31,7 @@ def run_pipeline() -> bool:
         "japan-earthquakes": jma.fetch_earthquake_data,
         "japan-earthquakes-enhanced": jma.fetch_earthquakes_enhanced,
         "volcanic-ash-forecasts": jma.fetch_volcanic_ash_forecasts,
+        "volcano-status": jma.fetch_volcano_status,
     }
 
     results: dict[str, bool] = {}

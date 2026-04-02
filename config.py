@@ -39,6 +39,13 @@ DATASETS = [
         "merge_keys": ["event_id"],
         "description": "Cherry blossom phenophase observations from JMA stations with locations",
     },
+    {
+        "name": "volcano-status",
+        "kaggle_dataset": f"{KAGGLE_USERNAME}/volcano-status",
+        "csv_filename": "volcano_status.csv",
+        "merge_keys": ["event_id"],
+        "description": "Volcano status reports from JMA with alert levels and activity summaries",
+    },
 ]
 
 # Retry settings for API calls
