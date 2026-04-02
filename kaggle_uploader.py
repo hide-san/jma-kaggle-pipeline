@@ -1,5 +1,19 @@
 """
 Kaggle dataset integration: download, merge, and upload CSVs.
+
+Uses the Python SDK (kaggle PyPI package) instead of:
+- Official Kaggle CLI: More direct but requires subprocess calls
+- REST API: More control but manual auth header management
+
+The SDK wrapper is the standard choice for Python scripts because:
+1. Cleaner API - high-level methods (download_dataset, upload_dataset)
+2. Automatic auth - reads ~/.kaggle/kaggle.json without manual headers
+3. Community standard - widely used in Kaggle competitions & data science
+4. Better error handling - built-in exception management
+5. Less boilerplate - no subprocess or HTTP request construction needed
+
+See: https://github.com/Kaggle/kaggle-cli for official Kaggle API
+See: https://www.kaggle.com/docs/api for official documentation
 """
 
 import os
