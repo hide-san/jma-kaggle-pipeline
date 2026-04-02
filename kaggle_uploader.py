@@ -136,7 +136,8 @@ class KaggleUploader:
         description: str = "",
     ) -> bool:
         """
-        Write *df* to a temporary CSV and push it as a new version of *kaggle_dataset*.
+        Write *df* to a temporary CSV and push it to *kaggle_dataset*.
+        Automatically creates the dataset if it doesn't exist yet.
         Returns True on success.
         """
         owner, dataset_slug = kaggle_dataset.split("/", 1)
@@ -158,6 +159,7 @@ class KaggleUploader:
             )
 
             try:
+                # Try to create a new version (for existing datasets)
                 self.api.dataset_create_version(
                     folder=tmpdir,
                     version_notes=description or "Automated daily update",
@@ -165,8 +167,26 @@ class KaggleUploader:
                     convert_to_csv=False,
                     delete_old_versions=False,
                 )
-                log.info("Upload successful: %s", kaggle_dataset)
+                log.info("Upload successful (new version): %s", kaggle_dataset)
                 return True
-            except Exception as exc:
-                log.error("Upload failed for %s: %s", kaggle_dataset, exc)
-                return False
+            except Exception as version_exc:
+                # Check if dataset doesn't exist (404 or "not found" error)
+                exc_str = str(version_exc).lower()
+                if "404" in str(version_exc) or "not found" in exc_str or "does not exist" in exc_str:
+                    log.info("Dataset not found, creating new dataset: %s", kaggle_dataset)
+                    try:
+                        # Create dataset for the first time
+                        self.api.dataset_create(
+                            folder=tmpdir,
+                            dir_mode='zip',
+                            quiet=True,
+                        )
+                        log.info("Created and uploaded dataset successfully: %s", kaggle_dataset)
+                        return True
+                    except Exception as create_exc:
+                        log.error("Failed to create dataset %s: %s", kaggle_dataset, create_exc)
+                        return False
+                else:
+                    # Some other error occurred
+                    log.error("Upload failed for %s: %s", kaggle_dataset, version_exc)
+                    return False
