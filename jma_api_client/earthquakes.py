@@ -207,6 +207,7 @@ def _parse_earthquake_xml(root: ET.Element, data_url: str) -> dict | None:
                         child_tag = sn(area_child.tag)
                         if child_tag == 'Name' and area_child.text:
                             eq_data['hypocenter_area'] = area_child.text
+                            eq_data['hypocenter_area_en'] = translate_ja_to_en(area_child.text)
                         elif child_tag == 'Coordinate' and area_child.text:
                             # Parse "+lat+lon-depth/" format (coordinates without spaces)
                             coord_str = area_child.text.strip().replace('/', '')
