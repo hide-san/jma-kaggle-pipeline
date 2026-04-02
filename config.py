@@ -25,6 +25,13 @@ DATASETS = [
         "merge_keys": ["event_id"],
         "description": "Enhanced earthquake data from JMA XML with hypocenter details and per-prefecture intensity",
     },
+    {
+        "name": "volcanic-ash-forecasts",
+        "kaggle_dataset": f"{KAGGLE_USERNAME}/volcanic-ash-forecasts",
+        "csv_filename": "volcanic_ash_forecasts.csv",
+        "merge_keys": ["event_id"],
+        "description": "Volcanic ash forecasts from JMA with 6-window time predictions and affected areas",
+    },
 ]
 
 # Retry settings for API calls
