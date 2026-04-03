@@ -56,12 +56,12 @@ class KaggleUploader:
 
     def _run_kaggle_command(self, cmd_args: list[str]) -> tuple[int, str, str]:
         """
-        Run a kaggle CLI command via sys.executable -m kaggle for cross-platform compatibility.
+        Run a kaggle CLI command via sys.executable -m kaggle.cli for cross-platform compatibility.
         Returns (returncode, stdout, stderr).
         """
         try:
             result = subprocess.run(
-                [sys.executable, "-m", "kaggle"] + cmd_args,
+                [sys.executable, "-m", "kaggle.cli"] + cmd_args,
                 capture_output=True,
                 text=True,
                 env=os.environ.copy(),
