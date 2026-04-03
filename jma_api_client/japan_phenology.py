@@ -35,9 +35,9 @@ class PhenologicalObservation(JMADatasetBase):
     FEED_NAME = "other_l.xml"
     TYPE_CODES = ("VGSK55",)
     MERGE_KEYS = ["event_id"]
-    DESCRIPTION = "Phenological observations including cherry blossom blooming stages from JMA"
-    SUBTITLE = "Annual cherry blossom and seasonal phenological data"
-    KEYWORDS = ["jma", "japan", "cherry-blossom", "phenology", "observation"]
+    DESCRIPTION = "Phenological observations (VGSK55) tracking cherry blossom blooming phenophases from JMA monitoring stations nationwide. Includes observation dates, blooming stages, and station locations for seasonal research."
+    SUBTITLE = "Cherry blossom and tree phenophase observations by monitoring station and date"
+    KEYWORDS = ["jma", "japan", "cherry-blossom", "phenology", "observation", "bloom", "seasonal"]
     MAX_ENTRIES = 100
 
     def parse_entry(self, root: ET.Element, data_url: str) -> dict | None:
@@ -98,9 +98,9 @@ class SeasonalObservation(JMADatasetBase):
     FEED_NAME = "other_l.xml"
     TYPE_CODES = ("VGSK50",)
     MERGE_KEYS = ["event_id"]
-    DESCRIPTION = "General seasonal observations from JMA stations"
-    SUBTITLE = "Seasonal phenophase observations for various species"
-    KEYWORDS = ["jma", "japan", "seasonal", "observation", "phenology"]
+    DESCRIPTION = "Seasonal observations (VGSK50) of various tree and plant phenophases from nationwide JMA monitoring stations. Records observation dates, phenophase types, and station information for seasonal ecology research."
+    SUBTITLE = "Seasonal tree and plant phenophase observations with station data"
+    KEYWORDS = ["jma", "japan", "seasonal", "observation", "phenology", "plants", "trees"]
     MAX_ENTRIES = 100
 
     def parse_entry(self, root: ET.Element, data_url: str) -> dict | None:
@@ -155,9 +155,9 @@ class SpecialWeatherReport(JMADatasetBase):
     FEED_NAME = "other_l.xml"
     TYPE_CODES = ("VGSK60",)
     MERGE_KEYS = ["event_id"]
-    DESCRIPTION = "Special weather reports from JMA"
-    SUBTITLE = "Reports of unusual or notable weather phenomena"
-    KEYWORDS = ["jma", "japan", "weather", "special", "report"]
+    DESCRIPTION = "Special weather reports (VGSK60) documenting unusual or notable weather phenomena observed nationwide. Includes phenomenon type, location, and observation details for meteorological documentation."
+    SUBTITLE = "Notable weather phenomena reports with locations and descriptions"
+    KEYWORDS = ["jma", "japan", "weather", "special-report", "phenomenon", "unusual"]
     MAX_ENTRIES = 100
 
     def parse_entry(self, root: ET.Element, data_url: str) -> dict | None:

@@ -31,9 +31,9 @@ class TyphoonInfoGeneral(JMADatasetBase):
     FEED_NAME = "regular_l.xml"
     TYPE_CODES = ("VPTI50",)
     MERGE_KEYS = ["event_id"]
-    DESCRIPTION = "General typhoon information from JMA"
-    SUBTITLE = "Typhoon position, intensity, and movement forecasts"
-    KEYWORDS = ["jma", "japan", "typhoon", "tropical", "cyclone"]
+    DESCRIPTION = "General typhoon information (VPTI50) with current position, central pressure, maximum wind speed, and forecast track. Updated regularly during typhoon seasons."
+    SUBTITLE = "Typhoon position, intensity (pressure/wind), and forecast track information"
+    KEYWORDS = ["jma", "japan", "typhoon", "tropical", "cyclone", "forecast", "position", "intensity"]
     MAX_ENTRIES = 100
 
     def parse_entry(self, root: ET.Element, data_url: str) -> dict | None:
@@ -86,9 +86,9 @@ class TyphoonInfoStandardized(JMADatasetBase):
     FEED_NAME = "regular_l.xml"
     TYPE_CODES = ("VPTI51",)
     MERGE_KEYS = ["event_id"]
-    DESCRIPTION = "Standardized typhoon information from JMA"
-    SUBTITLE = "Structured typhoon data in standardized format"
-    KEYWORDS = ["jma", "japan", "typhoon", "standardized", "cyclone"]
+    DESCRIPTION = "Standardized typhoon information (VPTI51) in fixed format for automated processing. Includes pressure, wind speed, and observation times in consistent structure."
+    SUBTITLE = "Standardized-format typhoon data with pressure and wind speed"
+    KEYWORDS = ["jma", "japan", "typhoon", "standardized", "cyclone", "data-format"]
     MAX_ENTRIES = 100
 
     def parse_entry(self, root: ET.Element, data_url: str) -> dict | None:
@@ -132,9 +132,9 @@ class TyphoonInfoDetailed(JMADatasetBase):
     FEED_NAME = "regular_l.xml"
     TYPE_CODES = ("VPTI52",)
     MERGE_KEYS = ["event_id"]
-    DESCRIPTION = "Detailed typhoon information from JMA"
-    SUBTITLE = "Comprehensive typhoon data with extended forecasts"
-    KEYWORDS = ["jma", "japan", "typhoon", "detailed", "forecast"]
+    DESCRIPTION = "Detailed typhoon information (VPTI52) with extended forecast positions and impacts. Provides comprehensive data for serious typhoon impacts on Japan."
+    SUBTITLE = "Detailed typhoon forecasts with extended track and impact predictions"
+    KEYWORDS = ["jma", "japan", "typhoon", "detailed", "forecast", "extended", "impacts"]
     MAX_ENTRIES = 100
 
     def parse_entry(self, root: ET.Element, data_url: str) -> dict | None:

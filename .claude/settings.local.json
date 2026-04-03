@@ -19,7 +19,8 @@
       "Bash(mv jma_api_client/sea.py jma_api_client/japan_sea.py)",
       "Bash(mv:*)",
       "WebFetch(domain:xml.kishou.go.jp)",
-      "Bash(wc -l jma_api_client/japan_*.py)"
+      "Bash(wc -l jma_api_client/japan_*.py)",
+      "Bash(tee /tmp/pipeline_run.log)"
     ]
   }
 }

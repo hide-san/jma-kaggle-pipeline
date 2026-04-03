@@ -26,9 +26,9 @@ class RegionalSeaAlert(JMADatasetBase):
     FEED_NAME = "other_l.xml"
     TYPE_CODES = ("VPCU51",)
     MERGE_KEYS = ["event_id"]
-    DESCRIPTION = "Regional maritime alert warnings from JMA"
-    SUBTITLE = "Sea alert warnings including tsunami and high-wave notices"
-    KEYWORDS = ["jma", "japan", "sea", "alert", "maritime"]
+    DESCRIPTION = "Regional sea alert warnings (VPCU51) for maritime hazards including tsunamis, high waves, and strong winds. Provides affected regions and warning types for maritime safety operations."
+    SUBTITLE = "Regional maritime hazard alerts with warning types and affected coastal regions"
+    KEYWORDS = ["jma", "japan", "sea", "alert", "maritime", "tsunami", "high-wave", "coastal"]
     MAX_ENTRIES = 250
 
     def parse_entry(self, root: ET.Element, data_url: str) -> dict | None:
@@ -94,9 +94,9 @@ class RegionalSeaForecast(JMADatasetBase):
     FEED_NAME = "other_l.xml"
     TYPE_CODES = ("VPCY51",)
     MERGE_KEYS = ["event_id"]
-    DESCRIPTION = "Regional maritime forecasts from JMA"
-    SUBTITLE = "Sea forecasts including wave heights and conditions"
-    KEYWORDS = ["jma", "japan", "sea", "forecast", "maritime"]
+    DESCRIPTION = "Regional sea forecasts (VPCY51) predicting maritime conditions including wave heights, wind, and swell for Japanese coastal regions. Essential for maritime operations and safety planning."
+    SUBTITLE = "Maritime forecasts with predicted wave heights, wind, and conditions by region"
+    KEYWORDS = ["jma", "japan", "sea", "forecast", "maritime", "wave-height", "wind", "coastal"]
     MAX_ENTRIES = 250
 
     def parse_entry(self, root: ET.Element, data_url: str) -> dict | None:

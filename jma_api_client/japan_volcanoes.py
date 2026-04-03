@@ -36,9 +36,9 @@ class VolcanoStatusExplanation(JMADatasetBase):
     FEED_NAME = "eqvol_l.xml"
     TYPE_CODES = ("VFVO51",)
     MERGE_KEYS = ["event_id"]
-    DESCRIPTION = "Volcano status explanation with alert levels from JMA"
-    SUBTITLE = "Alert levels and activity summaries for active volcanoes"
-    KEYWORDS = ["jma", "japan", "volcano", "alert", "volcanology"]
+    DESCRIPTION = "Detailed volcano status explanations (VFVO51) with JMA alert levels (1-5) for all active Japanese volcanoes. Explains current volcanic activity, alert level justifications, and relevant monitoring observations."
+    SUBTITLE = "Volcano alert level explanations (level 1-5) with activity and prevention summaries"
+    KEYWORDS = ["jma", "japan", "volcano", "alert-level", "monitoring", "hazard", "volcanology"]
     MAX_ENTRIES = 100
 
     def parse_entry(self, root: ET.Element, data_url: str) -> dict | None:
@@ -116,9 +116,9 @@ class VolcanicAshForecast(JMADatasetBase):
     FEED_NAME = "eqvol_l.xml"
     TYPE_CODES = ("VFVO53",)
     MERGE_KEYS = ["event_id"]
-    DESCRIPTION = "Volcanic ash forecasts with affected areas from JMA"
-    SUBTITLE = "6-hour window volcanic ash predictions and affected regions"
-    KEYWORDS = ["jma", "japan", "volcano", "ash", "forecast"]
+    DESCRIPTION = "Volcanic ash forecasts (VFVO53) with 6-hour time windows predicting ash dispersion and affected regions. Includes multiple forecast windows per eruption and affected prefectures/regions for aviation and public safety planning."
+    SUBTITLE = "6-hour window volcanic ash dispersion forecasts with affected regions and dates"
+    KEYWORDS = ["jma", "japan", "volcano", "ash", "forecast", "dispersion", "hazard", "aviation"]
     MAX_ENTRIES = 100
 
     def parse_entry(self, root: ET.Element, data_url: str) -> dict | None:
@@ -198,9 +198,9 @@ class EruptionWarning(JMADatasetBase):
     FEED_NAME = "eqvol_l.xml"
     TYPE_CODES = ("VFVO50",)
     MERGE_KEYS = ["event_id"]
-    DESCRIPTION = "Eruption warnings and forecasts from JMA"
-    SUBTITLE = "Alert levels and warnings for volcanic activity"
-    KEYWORDS = ["jma", "japan", "volcano", "eruption", "warning"]
+    DESCRIPTION = "Eruption warnings and forecasts (VFVO50) providing alert levels (1-5) for Japanese volcanoes. Indicates level of volcanic danger and expected eruption impacts (ash fall, pyroclastic flows, lahars)."
+    SUBTITLE = "Eruption warning levels (1-5) with expected volcanic hazards and impact areas"
+    KEYWORDS = ["jma", "japan", "volcano", "eruption", "warning", "alert-level", "hazard"]
     MAX_ENTRIES = 100
 
     def parse_entry(self, root: ET.Element, data_url: str) -> dict | None:
@@ -256,9 +256,9 @@ class EruptionFlashReport(JMADatasetBase):
     FEED_NAME = "eqvol_l.xml"
     TYPE_CODES = ("VFVO56",)
     MERGE_KEYS = ["event_id"]
-    DESCRIPTION = "Flash reports of volcanic eruptions from JMA"
-    SUBTITLE = "Rapid notifications of ongoing or imminent eruptions"
-    KEYWORDS = ["jma", "japan", "volcano", "eruption", "flash", "report"]
+    DESCRIPTION = "Eruption flash reports (VFVO56) issued within minutes of confirmed eruptions. Provides rapid notification with eruption type, time, and affected volcano for emergency response."
+    SUBTITLE = "Rapid eruption notifications with eruption type and affected volcano"
+    KEYWORDS = ["jma", "japan", "volcano", "eruption", "flash-report", "alert", "emergency"]
     MAX_ENTRIES = 100
 
     def parse_entry(self, root: ET.Element, data_url: str) -> dict | None:
@@ -312,9 +312,9 @@ class EruptionObservation(JMADatasetBase):
     FEED_NAME = "eqvol_l.xml"
     TYPE_CODES = ("VFVO52",)
     MERGE_KEYS = ["event_id"]
-    DESCRIPTION = "Volcanic observation reports related to eruptions from JMA"
-    SUBTITLE = "Detailed observations of volcanic activity and eruptions"
-    KEYWORDS = ["jma", "japan", "volcano", "eruption", "observation"]
+    DESCRIPTION = "Eruption observation reports (VFVO52) from ground and satellite observations detailing volcanic activity characteristics, eruption phenomena, and plume information. Provides detailed monitoring data during active eruptions."
+    SUBTITLE = "Detailed eruption observations with activity characteristics and plume data"
+    KEYWORDS = ["jma", "japan", "volcano", "eruption", "observation", "monitoring", "activity"]
     MAX_ENTRIES = 100
 
     def parse_entry(self, root: ET.Element, data_url: str) -> dict | None:
@@ -368,9 +368,9 @@ class EstimatedPlumeDirection(JMADatasetBase):
     FEED_NAME = "eqvol_l.xml"
     TYPE_CODES = ("VFVO60",)
     MERGE_KEYS = ["event_id"]
-    DESCRIPTION = "Estimated volcanic plume flow direction from JMA"
-    SUBTITLE = "Predicted ash plume movement based on atmospheric conditions"
-    KEYWORDS = ["jma", "japan", "volcano", "plume", "ash", "direction"]
+    DESCRIPTION = "Estimated volcanic plume direction (VFVO60) predicting ash dispersal direction based on wind fields and atmospheric conditions. Multiple time-stamped forecasts showing expected plume movement for aviation and public safety."
+    SUBTITLE = "Volcanic ash plume direction forecasts with time-stamped directional predictions"
+    KEYWORDS = ["jma", "japan", "volcano", "plume", "ash", "direction", "wind", "forecast"]
     MAX_ENTRIES = 100
 
     def parse_entry(self, root: ET.Element, data_url: str) -> dict | None:

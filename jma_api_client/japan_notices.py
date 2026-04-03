@@ -29,9 +29,9 @@ class EarthquakeTsunamiNotice(JMADatasetBase):
     FEED_NAME = "eqvol_l.xml"
     TYPE_CODES = ("VZSE40",)
     MERGE_KEYS = ["event_id"]
-    DESCRIPTION = "Informational notices about earthquakes and tsunamis from JMA"
-    SUBTITLE = "Explanatory information and clarifications regarding seismic events"
-    KEYWORDS = ["jma", "japan", "earthquake", "tsunami", "notice"]
+    DESCRIPTION = "Earthquake and tsunami informational notices (VZSE40) providing explanatory information, clarifications, and updates from JMA. Includes textual descriptions of seismic events and impacts."
+    SUBTITLE = "Explanatory notices and clarifications about earthquake/tsunami events"
+    KEYWORDS = ["jma", "japan", "earthquake", "tsunami", "notice", "information", "clarification"]
     MAX_ENTRIES = 100
 
     def parse_entry(self, root: ET.Element, data_url: str) -> dict | None:
@@ -80,9 +80,9 @@ class VolcanoNotice(JMADatasetBase):
     FEED_NAME = "eqvol_l.xml"
     TYPE_CODES = ("VZVO40",)
     MERGE_KEYS = ["event_id"]
-    DESCRIPTION = "Informational notices about volcanoes from JMA"
-    SUBTITLE = "Explanatory information and announcements regarding volcanic activity"
-    KEYWORDS = ["jma", "japan", "volcano", "notice", "alert"]
+    DESCRIPTION = "Volcano informational notices (VZVO40) providing explanatory information and announcements from JMA about volcanic activity. Includes textual descriptions and updates on active volcanoes."
+    SUBTITLE = "Explanatory notices and announcements about volcanic activity"
+    KEYWORDS = ["jma", "japan", "volcano", "notice", "activity", "information", "alert"]
     MAX_ENTRIES = 100
 
     def parse_entry(self, root: ET.Element, data_url: str) -> dict | None:

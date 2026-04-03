@@ -31,9 +31,9 @@ class WeatherWarning(JMADatasetBase):
     FEED_NAME = "regular_l.xml"
     TYPE_CODES = ("VPWW53", "VPWW54", "VPWW55", "VPWW56", "VPWW57", "VPWW58", "VPWW59", "VPWW60", "VPWW61")
     MERGE_KEYS = ["event_id"]
-    DESCRIPTION = "Weather warnings and advisories from JMA"
-    SUBTITLE = "Alerts for severe weather including rain, snow, wind, and flooding"
-    KEYWORDS = ["jma", "japan", "weather", "warning", "advisory"]
+    DESCRIPTION = "Weather warnings and advisories (VPWW53-61) covering severe weather hazards including heavy rain, snow, strong winds, high waves, flooding, and lightning. Issued nationwide with affected regions and warning levels."
+    SUBTITLE = "Severe weather alerts (rain, snow, wind, waves, floods) by region and warning type"
+    KEYWORDS = ["jma", "japan", "weather", "warning", "advisory", "hazard", "rain", "snow", "wind"]
     MAX_ENTRIES = 500
 
     def parse_entry(self, root: ET.Element, data_url: str) -> dict | None:
@@ -83,9 +83,9 @@ class HeavyRainWarning(JMADatasetBase):
     FEED_NAME = "regular_l.xml"
     TYPE_CODES = ("VPOA50",)
     MERGE_KEYS = ["event_id"]
-    DESCRIPTION = "Record short-term heavy rain alerts from JMA"
-    SUBTITLE = "Notifications of exceptional rainfall events"
-    KEYWORDS = ["jma", "japan", "rain", "heavy", "warning"]
+    DESCRIPTION = "Record short-term heavy rain alerts (VPOA50) reporting exceptionally intense rainfall events that may cause flooding or landslides. Issued with affected regions for emergency response."
+    SUBTITLE = "Exceptional rainfall event alerts with affected regions and intensity"
+    KEYWORDS = ["jma", "japan", "rain", "heavy", "rainfall", "alert", "flooding"]
     MAX_ENTRIES = 100
 
     def parse_entry(self, root: ET.Element, data_url: str) -> dict | None:
@@ -132,9 +132,9 @@ class TornadoWatchInfo(JMADatasetBase):
     FEED_NAME = "regular_l.xml"
     TYPE_CODES = ("VPHW50", "VPHW51")
     MERGE_KEYS = ["event_id"]
-    DESCRIPTION = "Tornado watch information from JMA"
-    SUBTITLE = "Alerts for potential tornado formation and development"
-    KEYWORDS = ["jma", "japan", "tornado", "watch", "weather"]
+    DESCRIPTION = "Tornado watch information (VPHW50/51) alerting to atmospheric conditions favorable for tornado development. Provides watch zones and time windows for severe weather preparedness."
+    SUBTITLE = "Tornado watch alerts with affected areas and atmospheric conditions"
+    KEYWORDS = ["jma", "japan", "tornado", "watch", "severe-weather", "alert"]
     MAX_ENTRIES = 100
 
     def parse_entry(self, root: ET.Element, data_url: str) -> dict | None:

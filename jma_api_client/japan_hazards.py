@@ -29,9 +29,9 @@ class RiverFloodForecast(JMADatasetBase):
     FEED_NAME = "regular_l.xml"
     TYPE_CODES = tuple(f"VXKO{i:02d}" for i in range(50, 90))
     MERGE_KEYS = ["event_id"]
-    DESCRIPTION = "Designated river flood forecasts from JMA"
-    SUBTITLE = "River flood risk levels and inundation forecasts"
-    KEYWORDS = ["jma", "japan", "river", "flood", "forecast"]
+    DESCRIPTION = "Designated river flood forecasts (VXKO50-89) for 63 major rivers in Japan. Provides flood stage forecasts, timing predictions, and affected regions for emergency preparedness."
+    SUBTITLE = "River flood forecasts by designated river with stage predictions and timing"
+    KEYWORDS = ["jma", "japan", "river", "flood", "forecast", "hazard", "emergency"]
     MAX_ENTRIES = 500
 
     def parse_entry(self, root: ET.Element, data_url: str) -> dict | None:
@@ -81,9 +81,9 @@ class LandslideHazardAlert(JMADatasetBase):
     FEED_NAME = "regular_l.xml"
     TYPE_CODES = ("VXWW50",)
     MERGE_KEYS = ["event_id"]
-    DESCRIPTION = "Landslide hazard alerts from JMA"
-    SUBTITLE = "Landslide risk warnings and precautions"
-    KEYWORDS = ["jma", "japan", "landslide", "hazard", "alert"]
+    DESCRIPTION = "Landslide hazard alerts (VXWW50) issued when rainfall conditions trigger increased landslide risks. Includes alert levels and affected regions for public safety."
+    SUBTITLE = "Landslide risk alerts with trigger conditions and affected areas"
+    KEYWORDS = ["jma", "japan", "landslide", "hazard", "alert", "rainfall", "emergency"]
     MAX_ENTRIES = 100
 
     def parse_entry(self, root: ET.Element, data_url: str) -> dict | None:

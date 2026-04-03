@@ -31,9 +31,9 @@ class GeneralMarineWarning(JMADatasetBase):
     FEED_NAME = "regular_l.xml"
     TYPE_CODES = ("VPZU50", "VPZU54", "VPZU51")
     MERGE_KEYS = ["event_id"]
-    DESCRIPTION = "General marine warnings from JMA"
-    SUBTITLE = "Sea state warnings for open ocean and coastal areas"
-    KEYWORDS = ["jma", "japan", "marine", "warning", "sea", "ocean"]
+    DESCRIPTION = "General marine warnings (VPZU50/51/54) for open ocean and adjacent coastal areas. Covers strong winds, high waves, fog, and icing conditions affecting shipping and maritime operations."
+    SUBTITLE = "Open ocean marine warnings with sea state and wind hazard information"
+    KEYWORDS = ["jma", "japan", "marine", "warning", "sea", "ocean", "wave", "wind", "shipping"]
     MAX_ENTRIES = 250
 
     def parse_entry(self, root: ET.Element, data_url: str) -> dict | None:
@@ -83,9 +83,9 @@ class RegionalTidalInfo(JMADatasetBase):
     FEED_NAME = "other_l.xml"
     TYPE_CODES = ("VMCJ51",)
     MERGE_KEYS = ["event_id"]
-    DESCRIPTION = "Regional tidal information from JMA"
-    SUBTITLE = "Tidal predictions and observations by region"
-    KEYWORDS = ["jma", "japan", "tidal", "tide", "ocean", "marine"]
+    DESCRIPTION = "Regional tidal information (VMCJ51) with tidal predictions for specified coastal regions. Includes high/low tide times and heights for maritime operations and tsunami monitoring."
+    SUBTITLE = "Tidal predictions with high/low tide times and heights by coastal region"
+    KEYWORDS = ["jma", "japan", "tidal", "tide", "ocean", "marine", "predictions", "coastal"]
     MAX_ENTRIES = 100
 
     def parse_entry(self, root: ET.Element, data_url: str) -> dict | None:
@@ -135,9 +135,9 @@ class GeneralTidalInfo(JMADatasetBase):
     FEED_NAME = "other_l.xml"
     TYPE_CODES = ("VMCJ50",)
     MERGE_KEYS = ["event_id"]
-    DESCRIPTION = "General tidal information from JMA"
-    SUBTITLE = "National tidal forecasts and anomaly information"
-    KEYWORDS = ["jma", "japan", "tidal", "tide", "coast", "marine"]
+    DESCRIPTION = "General tidal information (VMCJ50) covering nationwide tidal forecasts and anomaly observations. Includes tidal anomaly types and event information for tsunami detection and marine monitoring."
+    SUBTITLE = "National tidal forecasts with tidal anomaly observations and event details"
+    KEYWORDS = ["jma", "japan", "tidal", "tide", "coast", "marine", "anomaly", "forecast"]
     MAX_ENTRIES = 100
 
     def parse_entry(self, root: ET.Element, data_url: str) -> dict | None:

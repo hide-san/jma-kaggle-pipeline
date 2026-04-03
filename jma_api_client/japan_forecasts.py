@@ -29,9 +29,9 @@ class GeneralSeasonalForecast(JMADatasetBase):
     FEED_NAME = "regular_l.xml"
     TYPE_CODES = ("VPZK50",)
     MERGE_KEYS = ["event_id"]
-    DESCRIPTION = "General seasonal forecasts from JMA"
-    SUBTITLE = "1-month, 3-month, and seasonal temperature/precipitation forecasts"
-    KEYWORDS = ["jma", "japan", "forecast", "seasonal", "monthly"]
+    DESCRIPTION = "General seasonal forecasts (VPZK50) providing 1-month, 3-month, and warm/cold season predictions for Japan. Includes temperature and precipitation anomaly forecasts."
+    SUBTITLE = "1-month, 3-month, and warm/cold season temperature and precipitation forecasts"
+    KEYWORDS = ["jma", "japan", "forecast", "seasonal", "monthly", "temperature", "precipitation"]
     MAX_ENTRIES = 100
 
     def parse_entry(self, root: ET.Element, data_url: str) -> dict | None:
@@ -78,9 +78,9 @@ class RegionalSeasonalForecast(JMADatasetBase):
     FEED_NAME = "regular_l.xml"
     TYPE_CODES = ("VPCK50",)
     MERGE_KEYS = ["event_id"]
-    DESCRIPTION = "Regional seasonal forecasts from JMA"
-    SUBTITLE = "Regional 1-month, 3-month, and seasonal predictions"
-    KEYWORDS = ["jma", "japan", "regional", "forecast", "seasonal"]
+    DESCRIPTION = "Regional seasonal forecasts (VPCK50) providing district-level 1-month, 3-month, and seasonal predictions. Detailed regional temperature and precipitation anomaly forecasts."
+    SUBTITLE = "Regional 1-month, 3-month, and seasonal forecasts by district"
+    KEYWORDS = ["jma", "japan", "regional", "forecast", "seasonal", "district", "temperature"]
     MAX_ENTRIES = 100
 
     def parse_entry(self, root: ET.Element, data_url: str) -> dict | None:

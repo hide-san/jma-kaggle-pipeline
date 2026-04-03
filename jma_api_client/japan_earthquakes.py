@@ -118,9 +118,9 @@ class EarthquakeIntensityInfo(JMADatasetBase):
     FEED_NAME = "eqvol_l.xml"
     TYPE_CODES = ("VXSE53",)
     MERGE_KEYS = ["event_id"]
-    DESCRIPTION = "Earthquake and seismic intensity information from JMA"
-    SUBTITLE = "Detailed earthquake data with magnitude, intensity, and hypocenter"
-    KEYWORDS = ["jma", "japan", "earthquake", "seismic", "intensity"]
+    DESCRIPTION = "Comprehensive earthquake and seismic intensity data from Japan Meteorological Agency (VXSE53). Contains hypocenter coordinates (latitude/longitude/depth), magnitude values, maximum seismic intensity, and detailed per-prefecture intensity observations. Updated with each significant earthquake event."
+    SUBTITLE = "Detailed earthquake hypocenter, magnitude (Mjma), and per-prefecture seismic intensity observations"
+    KEYWORDS = ["jma", "japan", "earthquake", "seismic", "intensity", "hypocenter", "magnitude", "hazard"]
     MAX_ENTRIES = 50
 
     def parse_entry(self, root: ET.Element, data_url: str) -> dict | None:
@@ -219,9 +219,9 @@ class SeismicIntensityReport(JMADatasetBase):
     FEED_NAME = "eqvol_l.xml"
     TYPE_CODES = ("VXSE51",)
     MERGE_KEYS = ["event_id"]
-    DESCRIPTION = "Rapid seismic intensity reports from JMA"
-    SUBTITLE = "Quick seismic intensity observations following earthquakes"
-    KEYWORDS = ["jma", "japan", "earthquake", "seismic", "intensity", "report"]
+    DESCRIPTION = "Rapid seismic intensity reports (VXSE51) issued within minutes of earthquake detection. Provides preliminary maximum seismic intensity across Japan with per-prefecture observations. Essential for rapid hazard assessment and early warning."
+    SUBTITLE = "Fast preliminary seismic intensity reports with per-prefecture maximum intensity values"
+    KEYWORDS = ["jma", "japan", "earthquake", "seismic", "intensity", "report", "rapid", "early-warning"]
     MAX_ENTRIES = 100
 
     def parse_entry(self, root: ET.Element, data_url: str) -> dict | None:
@@ -278,9 +278,9 @@ class TsunamiWarning(JMADatasetBase):
     FEED_NAME = "eqvol_l.xml"
     TYPE_CODES = ("VTSE41",)
     MERGE_KEYS = ["event_id"]
-    DESCRIPTION = "Tsunami warnings and advisories from JMA"
-    SUBTITLE = "Coastal tsunami threat assessments and estimates"
-    KEYWORDS = ["jma", "japan", "tsunami", "warning", "advisory"]
+    DESCRIPTION = "Tsunami warnings, advisories, and forecasts (VTSE41) for Japanese coasts. Provides estimated wave heights by coastal region, arrival times, and threat levels. Critical for coastal hazard management and public safety."
+    SUBTITLE = "Coastal tsunami threat alerts with estimated wave heights and arrival times by region"
+    KEYWORDS = ["jma", "japan", "tsunami", "warning", "advisory", "coastal", "wave-height", "hazard"]
     MAX_ENTRIES = 100
 
     def parse_entry(self, root: ET.Element, data_url: str) -> dict | None:
@@ -363,9 +363,9 @@ class EarthquakeEarlyWarning(JMADatasetBase):
     FEED_NAME = "eqvol_l.xml"
     TYPE_CODES = ("VXSE43", "VXSE44")
     MERGE_KEYS = ["event_id"]
-    DESCRIPTION = "Earthquake early warning alerts from JMA"
-    SUBTITLE = "Real-time earthquake motion predictions for hazard mitigation"
-    KEYWORDS = ["jma", "japan", "earthquake", "early", "warning"]
+    DESCRIPTION = "Real-time Earthquake Early Warning (EEW) alerts (VXSE43/44) issued seconds after earthquake detection. Predicts strong motion intensities by region to enable automated protective actions. Updated continuously as more data arrives."
+    SUBTITLE = "Real-time EEW ground motion predictions with automated broadcast alerts for hazard mitigation"
+    KEYWORDS = ["jma", "japan", "earthquake", "early-warning", "eew", "strong-motion", "real-time"]
     MAX_ENTRIES = 100
 
     def parse_entry(self, root: ET.Element, data_url: str) -> dict | None:
@@ -419,9 +419,9 @@ class TsunamiInfo(JMADatasetBase):
     FEED_NAME = "eqvol_l.xml"
     TYPE_CODES = ("VTSE51",)
     MERGE_KEYS = ["event_id"]
-    DESCRIPTION = "Tsunami observation data from coastal stations"
-    SUBTITLE = "Recorded tsunami wave heights and arrival times"
-    KEYWORDS = ["jma", "japan", "tsunami", "observation", "wave"]
+    DESCRIPTION = "Tsunami observation data (VTSE51) from coastal seismic stations and tide gauges across Japan. Records actual wave heights, arrival times, and propagation patterns for forecast validation and hazard assessment."
+    SUBTITLE = "Observed tsunami wave heights and arrival times from coastal monitoring stations"
+    KEYWORDS = ["jma", "japan", "tsunami", "observation", "wave-height", "coastal", "tide-gauge", "hazard"]
     MAX_ENTRIES = 100
 
     def parse_entry(self, root: ET.Element, data_url: str) -> dict | None:
@@ -478,9 +478,9 @@ class EarthquakeActivityInfo(JMADatasetBase):
     FEED_NAME = "eqvol_l.xml"
     TYPE_CODES = ("VXSE56",)
     MERGE_KEYS = ["event_id"]
-    DESCRIPTION = "Earthquake activity status information from JMA"
-    SUBTITLE = "Reports on ongoing or recent seismic activity trends"
-    KEYWORDS = ["jma", "japan", "earthquake", "activity", "status"]
+    DESCRIPTION = "Earthquake activity status updates (VXSE56) summarizing recent seismic trends, aftershock sequences, and foreshock patterns. Includes frequency distribution and intensity statistics for ongoing seismic swarms."
+    SUBTITLE = "Seismic activity summaries with aftershock sequence stats and ongoing trend reports"
+    KEYWORDS = ["jma", "japan", "earthquake", "activity", "aftershock", "foreshock", "seismic-swarm", "trend"]
     MAX_ENTRIES = 100
 
     def parse_entry(self, root: ET.Element, data_url: str) -> dict | None:
@@ -520,9 +520,9 @@ class SeismicObservationInfo(JMADatasetBase):
     FEED_NAME = "eqvol_l.xml"
     TYPE_CODES = ("VXSE60", "VXSE61", "VXSE62")
     MERGE_KEYS = ["event_id"]
-    DESCRIPTION = "Seismic observation status information from JMA"
-    SUBTITLE = "Earthquake counts, long-period oscillations, and observation updates"
-    KEYWORDS = ["jma", "japan", "seismic", "observation", "status"]
+    DESCRIPTION = "Seismic observation status (VXSE60-62) from nationwide network monitoring earthquake counts, long-period oscillation data, and instrument health. Provides operational summaries of network performance and anomalies."
+    SUBTITLE = "Seismic network status with earthquake counts, long-period oscillations, and sensor health"
+    KEYWORDS = ["jma", "japan", "seismic", "observation", "network", "long-period", "monitoring", "status"]
     MAX_ENTRIES = 100
 
     def parse_entry(self, root: ET.Element, data_url: str) -> dict | None:
