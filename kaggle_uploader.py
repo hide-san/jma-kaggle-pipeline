@@ -142,6 +142,9 @@ class KaggleUploader:
             combined = combined.sort_values(
                 by=valid_keys, ascending=False, key=lambda col: col.astype(str)
             ).reset_index(drop=True)
+            # Move key columns to the leftmost positions
+            other_cols = [c for c in combined.columns if c not in valid_keys]
+            combined = combined[valid_keys + other_cols]
 
         log.info(
             "Merged: existing=%d + new=%d → combined=%d rows",
