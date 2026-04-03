@@ -1,9 +1,9 @@
-name: Daily JMA Data Pipeline
+name: Hourly JMA Data Pipeline
 
 on:
   schedule:
-    # Daily at 09:00 JST (00:00 UTC)
-    - cron: "0 0 * * *"
+    # Every hour at minute 0 (UTC)
+    - cron: "0 * * * *"
   workflow_dispatch:  # allow manual runs
 
 jobs:
@@ -14,10 +14,16 @@ jobs:
       fail-fast: false
       matrix:
         include:
-          - name: Earthquakes & Volcanoes
-            datasets: "japan-earthquake-and-seismic-information,japan-volcano-status-explanation,japan-volcanic-ash-forecast"
-          - name: Marine & Phenology
-            datasets: "japan-phenological-observation,japan-regional-sea-alert,japan-regional-sea-forecast"
+          - name: Earthquakes & Seismic
+            datasets: "japan-earthquake-activity-information,japan-earthquake-and-seismic-information,japan-earthquake-early-warning,japan-seismic-intensity-report,japan-seismic-observation-information,japan-earthquake-tsunami-notice"
+          - name: Volcanoes & Eruptions
+            datasets: "japan-eruption-flash-report,japan-eruption-observation,japan-eruption-warning,japan-estimated-plume-direction,japan-volcanic-ash-forecast,japan-volcano-status-explanation,japan-volcano-notice"
+          - name: Tsunamis & Marine
+            datasets: "japan-tsunami-information,japan-tsunami-warning,japan-general-marine-warning,japan-regional-tidal-information,japan-general-tidal-information"
+          - name: Weather & Hazards
+            datasets: "japan-weather-warning,japan-heavy-rain-warning,japan-tornado-watch,japan-special-weather-report,japan-river-flood-forecast,japan-landslide-hazard-alert"
+          - name: Forecasts & Observations
+            datasets: "japan-typhoon-information,japan-typhoon-information-standardized,japan-typhoon-information-detailed,japan-general-seasonal-forecast,japan-regional-seasonal-forecast,japan-phenological-observation,japan-regional-sea-alert,japan-regional-sea-forecast,japan-seasonal-observation"
 
     steps:
       - name: Checkout repository
