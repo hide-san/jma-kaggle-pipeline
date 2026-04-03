@@ -196,8 +196,7 @@ class KaggleUploader:
                 "--dir-mode",
                 "zip",
             ])
-            output = (stdout + stderr).lower()
-            create_ok = returncode == 0 and "error" not in output
+            create_ok = returncode == 0
 
             if create_ok:
                 log.info("Created new dataset successfully: %s", kaggle_dataset)

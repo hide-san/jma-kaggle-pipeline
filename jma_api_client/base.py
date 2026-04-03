@@ -12,7 +12,7 @@ from abc import ABC, abstractmethod
 from typing import ClassVar, Generator
 
 import pandas as pd
-from tenacity import retry, stop_after_attempt, wait_fixed
+from tenacity import retry, stop_after_attempt, wait_fixed, Retrying
 
 from logger import get_logger
 from .translate import translate_ja_to_en
@@ -67,16 +67,21 @@ def fetch_all_feeds() -> None:
 
     Must be called once at the start of the pipeline before any dataset
     fetch() call, since get_feed() reads from the local cache.
+    Raises RuntimeError if any feed fails to download.
     """
     from .utils import get as http_get, save_raw
     os.makedirs(config.RAW_DATA_DIR, exist_ok=True)
+    failed = []
     for feed_name, feed_url in JMA_FEED_URLS.items():
         try:
             log.info("Fetching feed %s", feed_name)
             resp = http_get(feed_url)
             save_raw(feed_name, resp.content)
         except Exception as exc:
-            log.warning("Could not fetch feed %s: %s", feed_name, exc)
+            log.error("Could not fetch feed %s: %s", feed_name, exc)
+            failed.append(feed_name)
+    if failed:
+        raise RuntimeError("Failed to fetch feeds: %s" % ", ".join(failed))
 
 
 def get_feed(feed_name: str) -> ET.Element | None:
@@ -85,7 +90,7 @@ def get_feed(feed_name: str) -> ET.Element | None:
     feed_path = os.path.join(config.RAW_DATA_DIR, feed_name)
 
     if not os.path.exists(feed_path):
-        log.warning(f"Feed {feed_name} not found in {config.RAW_DATA_DIR}")
+        log.warning("Feed %s not found in %s", feed_name, config.RAW_DATA_DIR)
         return None
 
     try:
@@ -93,7 +98,7 @@ def get_feed(feed_name: str) -> ET.Element | None:
             content = f.read()
         return ET.fromstring(content)
     except Exception as e:
-        log.error(f"Could not parse {feed_name}: {e}")
+        log.error("Could not parse %s: %s", feed_name, e)
         return None
 
 
@@ -176,24 +181,30 @@ class JMADatasetBase(ABC):
 
         for data_url, entry in iter_feed_entries(self.FEED_NAME, *self.TYPE_CODES):
             try:
-                # Fetch and parse the detailed XML data file
-                resp = http_get(data_url)
-                data_root = ET.fromstring(resp.content)
+                # Fetch with per-entry retry to recover from transient JMA errors
+                for attempt in Retrying(stop=stop_after_attempt(3), wait=wait_fixed(2), reraise=True):
+                    with attempt:
+                        resp = http_get(data_url)
 
+                data_root = ET.fromstring(resp.content)
                 row = self.parse_entry(data_root, data_url)
                 if row:
                     rows.append(row)
                     entry_count += 1
 
                 if entry_count >= self.MAX_ENTRIES:
+                    self.log.warning(
+                        "%s: reached MAX_ENTRIES limit (%d), stopping early",
+                        self.NAME, self.MAX_ENTRIES,
+                    )
                     break
 
             except Exception as e:
-                self.log.debug(f"Failed to parse {data_url}: {e}")
+                self.log.debug("Failed to parse %s: %s", data_url, e)
                 continue
 
         df = pd.DataFrame(rows)
-        self.log.info(f"{self.NAME}: {len(df)} rows fetched")
+        self.log.info("%s: %d rows fetched", self.NAME, len(df))
         return df
 
     def extract_head(self, root: ET.Element) -> dict:
