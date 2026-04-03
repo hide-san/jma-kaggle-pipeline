@@ -272,8 +272,16 @@ GitHub Actions workflow (`.github/workflows/daily-update.yml`):
 - 📋 On failure: Creates GitHub issue with logs and download link
 
 To set up CI/CD, add these secrets to your GitHub repository:
-- `KAGGLE_USERNAME`
-- `KAGGLE_KEY`
+
+1. Go to your repo → **Settings** → **Secrets and variables** → **Actions**
+2. Click **New repository secret** and add:
+
+| Secret Name | Value |
+|---|---|
+| `KAGGLE_USERNAME` | Your Kaggle username (e.g., `hideos`) |
+| `KAGGLE_API_TOKEN` | Your Kaggle API token (from Kaggle settings) |
+
+After adding secrets, manually trigger the workflow or wait for the next hourly run.
 
 ## Logging & Metrics
 
