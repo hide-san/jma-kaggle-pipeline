@@ -4,7 +4,7 @@ Kaggle dataset integration: download, merge, and upload CSVs.
 Uses the official Kaggle CLI (https://github.com/Kaggle/kaggle-cli) via
 direct command invocation for reliable dataset operations.
 
-Authentication: Reads KAGGLE_USERNAME and KAGGLE_API_TOKEN environment variables.
+Authentication: Requires KAGGLE_USERNAME and KAGGLE_API_TOKEN environment variables.
 
 See: https://github.com/Kaggle/kaggle-cli for official Kaggle CLI
 See: https://www.kaggle.com/docs/api for official documentation
@@ -37,11 +37,10 @@ class KaggleUploader:
         """Authenticate with Kaggle. Checks that credentials are available. Returns True on success."""
         try:
             username = os.environ.get("KAGGLE_USERNAME")
-            # Support both KAGGLE_API_TOKEN (standard) and KAGGLE_KEY (legacy)
-            api_token = os.environ.get("KAGGLE_API_TOKEN") or os.environ.get("KAGGLE_KEY")
+            api_token = os.environ.get("KAGGLE_API_TOKEN")
 
             if not username or not api_token:
-                log.error("Kaggle authentication failed: KAGGLE_USERNAME and KAGGLE_API_TOKEN (or KAGGLE_KEY) required")
+                log.error("Kaggle authentication failed: KAGGLE_USERNAME and KAGGLE_API_TOKEN required")
                 return False
 
             # Ensure environment variables are set for Kaggle CLI
