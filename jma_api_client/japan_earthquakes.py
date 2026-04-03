@@ -33,6 +33,8 @@ __all__ = [
     "TsunamiWarning",
     "EarthquakeEarlyWarning",
     "TsunamiInfo",
+    "EarthquakeActivityInfo",
+    "SeismicObservationInfo",
     "fetch_earthquake_data",
 ]
 
@@ -465,6 +467,90 @@ class TsunamiInfo(JMADatasetBase):
             info_data['observations_json'] = json.dumps(observations, ensure_ascii=False)
 
         return info_data if len(info_data) > 2 else None
+
+
+@register_dataset
+class EarthquakeActivityInfo(JMADatasetBase):
+    """Earthquake activity status information from JMA VXSE56."""
+
+    NAME = "japan-earthquake-activity-information"
+    CSV_FILENAME = "japan_earthquake_activity_information.csv"
+    FEED_NAME = "eqvol_l.xml"
+    TYPE_CODES = ("VXSE56",)
+    MERGE_KEYS = ["event_id"]
+    DESCRIPTION = "Earthquake activity status information from JMA"
+    SUBTITLE = "Reports on ongoing or recent seismic activity trends"
+    KEYWORDS = ["jma", "japan", "earthquake", "activity", "status"]
+    MAX_ENTRIES = 100
+
+    def parse_entry(self, root: ET.Element, data_url: str) -> dict | None:
+        """Parse JMA VXSE56 earthquake activity information XML."""
+        head_data = self.extract_head(root)
+        if not head_data.get('event_id'):
+            return None
+
+        body = root.find('.//{http://xml.kishou.go.jp/jmaxml1/body/seismology1/}Body')
+        if body is None:
+            body = root.find('.//{http://xml.kishou.go.jp/jmaxml1/}Body')
+
+        if body is None:
+            return None
+
+        activity_data = head_data.copy()
+
+        for elem in body.iter():
+            tag = self.sn(elem.tag)
+
+            if tag == 'DateTime' and elem.text:
+                activity_data['report_time'] = elem.text
+
+            elif tag == 'Text' and elem.text:
+                activity_data['activity_description'] = elem.text.strip()
+                activity_data['activity_description_en'] = self.translate(elem.text.strip())
+
+        return activity_data if len(activity_data) > 2 else None
+
+
+@register_dataset
+class SeismicObservationInfo(JMADatasetBase):
+    """Seismic observation status information from JMA VXSE60-62."""
+
+    NAME = "japan-seismic-observation-information"
+    CSV_FILENAME = "japan_seismic_observation_information.csv"
+    FEED_NAME = "eqvol_l.xml"
+    TYPE_CODES = ("VXSE60", "VXSE61", "VXSE62")
+    MERGE_KEYS = ["event_id"]
+    DESCRIPTION = "Seismic observation status information from JMA"
+    SUBTITLE = "Earthquake counts, long-period oscillations, and observation updates"
+    KEYWORDS = ["jma", "japan", "seismic", "observation", "status"]
+    MAX_ENTRIES = 100
+
+    def parse_entry(self, root: ET.Element, data_url: str) -> dict | None:
+        """Parse JMA VXSE60-62 seismic observation information XML."""
+        head_data = self.extract_head(root)
+        if not head_data.get('event_id'):
+            return None
+
+        body = root.find('.//{http://xml.kishou.go.jp/jmaxml1/body/seismology1/}Body')
+        if body is None:
+            body = root.find('.//{http://xml.kishou.go.jp/jmaxml1/}Body')
+
+        if body is None:
+            return None
+
+        obs_data = head_data.copy()
+
+        for elem in body.iter():
+            tag = self.sn(elem.tag)
+
+            if tag == 'DateTime' and elem.text:
+                obs_data['observation_time'] = elem.text
+
+            elif tag == 'Text' and elem.text:
+                obs_data['observation_detail'] = elem.text.strip()
+                obs_data['observation_detail_en'] = self.translate(elem.text.strip())
+
+        return obs_data if len(obs_data) > 2 else None
 
 
 # For backwards compatibility

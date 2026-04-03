@@ -23,6 +23,8 @@ from .japan_earthquakes import (
     TsunamiWarning,
     EarthquakeEarlyWarning,
     TsunamiInfo,
+    EarthquakeActivityInfo,
+    SeismicObservationInfo,
 )
 from .japan_volcanoes import (
     VolcanoStatusExplanation,
@@ -48,6 +50,23 @@ from .japan_marine import (
     RegionalTidalInfo,
     GeneralTidalInfo,
 )
+from .japan_typhoon import (
+    TyphoonInfoGeneral,
+    TyphoonInfoStandardized,
+    TyphoonInfoDetailed,
+)
+from .japan_hazards import (
+    RiverFloodForecast,
+    LandslideHazardAlert,
+)
+from .japan_forecasts import (
+    GeneralSeasonalForecast,
+    RegionalSeasonalForecast,
+)
+from .japan_notices import (
+    EarthquakeTsunamiNotice,
+    VolcanoNotice,
+)
 
 # Legacy functions (backwards compatibility)
 from .japan_earthquakes import fetch_earthquake_data, fetch_earthquakes_enhanced
@@ -67,6 +86,8 @@ __all__ = [
     "TsunamiWarning",
     "EarthquakeEarlyWarning",
     "TsunamiInfo",
+    "EarthquakeActivityInfo",
+    "SeismicObservationInfo",
     # Dataset classes (volcanoes)
     "VolcanoStatusExplanation",
     "VolcanicAshForecast",
@@ -88,6 +109,19 @@ __all__ = [
     "GeneralMarineWarning",
     "RegionalTidalInfo",
     "GeneralTidalInfo",
+    # Dataset classes (typhoon)
+    "TyphoonInfoGeneral",
+    "TyphoonInfoStandardized",
+    "TyphoonInfoDetailed",
+    # Dataset classes (hazards)
+    "RiverFloodForecast",
+    "LandslideHazardAlert",
+    # Dataset classes (forecasts)
+    "GeneralSeasonalForecast",
+    "RegionalSeasonalForecast",
+    # Dataset classes (notices)
+    "EarthquakeTsunamiNotice",
+    "VolcanoNotice",
     # Legacy functions
     "fetch_earthquake_data",
     "fetch_earthquakes_enhanced",
