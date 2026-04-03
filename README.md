@@ -27,6 +27,8 @@ This pipeline manages JMA meteorological and seismic data. Each dataset correspo
 
 **Note**: Data type codes reference the official [JMA XML Format Specification](https://xml.kishou.go.jp/jmaxml_20260129_format_v1_3_hyo1_1.pdf).
 
+詳細な全JMAデータセット一覧（91データセット）は [JMA_DATASETS.md](docs/JMA_DATASETS.md) を参照してください。
+
 ## Prerequisites
 
 - Python 3.11+
