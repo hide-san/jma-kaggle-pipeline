@@ -13,7 +13,6 @@ See: https://www.kaggle.com/docs/api for official documentation
 import json
 import os
 import subprocess
-import sys
 import tempfile
 import time
 from pathlib import Path
@@ -55,12 +54,12 @@ class KaggleUploader:
 
     def _run_kaggle_command(self, cmd_args: list[str]) -> tuple[int, str, str]:
         """
-        Run a kaggle CLI command via sys.executable -m kaggle.cli for cross-platform compatibility.
+        Run a kaggle CLI command.
         Returns (returncode, stdout, stderr).
         """
         try:
             result = subprocess.run(
-                [sys.executable, "-m", "kaggle.cli"] + cmd_args,
+                ["kaggle"] + cmd_args,
                 capture_output=True,
                 text=True,
                 env=os.environ.copy(),
