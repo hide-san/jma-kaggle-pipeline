@@ -4,7 +4,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Project Overview
 
-**JMA-Kaggle Pipeline** is an automated data pipeline that fetches meteorological and seismic data from the Japan Meteorological Agency (JMA), merges it with existing datasets on Kaggle, and publishes updates. It runs daily via GitHub Actions at 09:00 JST (00:00 UTC).
+**JMA-Kaggle Pipeline** is an automated data pipeline that fetches meteorological and seismic data from the Japan Meteorological Agency (JMA), merges it with existing datasets on Kaggle, and publishes updates. It runs every hour via GitHub Actions.
 
 The pipeline ingests three datasets:
 1. **Cherry Blossom Observations**: Annual cherry blossom blooming data by observation station
@@ -96,7 +96,7 @@ Each entry in `DATASETS` list requires:
 ## CI/CD
 
 **Workflow**: `.github/workflows/daily-update.yml`
-- Runs on schedule daily at 09:00 JST
+- Runs on schedule every hour (0 * * * * UTC)
 - Can be triggered manually via workflow_dispatch
 - On failure: uploads logs as artifact and creates GitHub issue with label `pipeline-failure`
 
