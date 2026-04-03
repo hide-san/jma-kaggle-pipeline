@@ -13,6 +13,7 @@ See: https://www.kaggle.com/docs/api for official documentation
 import json
 import os
 import subprocess
+import sys
 import tempfile
 import time
 from pathlib import Path
@@ -59,7 +60,7 @@ class KaggleUploader:
         """
         try:
             result = subprocess.run(
-                ["kaggle"] + cmd_args,
+                [sys.executable, "-m", "kaggle.cli"] + cmd_args,
                 capture_output=True,
                 text=True,
                 env=os.environ.copy(),
@@ -210,19 +211,20 @@ class KaggleUploader:
                 "version",
                 "--path",
                 tmpdir,
-                "--message",
+                "-m",
                 version_notes,
                 "--dir-mode",
                 "zip",
             ])
-            output = (stdout + stderr).lower()
-            version_ok = returncode == 0 and "error" not in output
 
-            if version_ok:
+            if returncode == 0:
                 log.info("Upload successful (new version): %s", kaggle_dataset)
                 return True
 
-            log.error("Upload failed for %s: %s", kaggle_dataset, stderr)
+            log.error(
+                "Upload failed for %s (rc=%d)\n  stdout: %s\n  stderr: %s",
+                kaggle_dataset, returncode, stdout.strip(), stderr.strip(),
+            )
             return False
 
     # ------------------------------------------------------------------ #

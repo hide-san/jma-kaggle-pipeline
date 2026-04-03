@@ -37,7 +37,7 @@ class VolcanoStatusExplanation(JMADatasetBase):
     TYPE_CODES = ("VFVO51",)
     MERGE_KEYS = ["event_id"]
     DESCRIPTION = "Detailed volcano status explanations (VFVO51) with JMA alert levels (1-5) for all active Japanese volcanoes. Explains current volcanic activity, alert level justifications, and relevant monitoring observations."
-    SUBTITLE = "Volcano alert level explanations (level 1-5) with activity and prevention summaries"
+    SUBTITLE = "Volcano alert level (1-5) explanations with activity and prevention summaries"
     KEYWORDS = ["jma", "japan", "volcano", "alert-level", "monitoring", "hazard", "volcanology"]
     MAX_ENTRIES = 100
 

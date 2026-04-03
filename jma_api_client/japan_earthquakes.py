@@ -119,7 +119,7 @@ class EarthquakeIntensityInfo(JMADatasetBase):
     TYPE_CODES = ("VXSE53",)
     MERGE_KEYS = ["event_id"]
     DESCRIPTION = "Comprehensive earthquake and seismic intensity data from Japan Meteorological Agency (VXSE53). Contains hypocenter coordinates (latitude/longitude/depth), magnitude values, maximum seismic intensity, and detailed per-prefecture intensity observations. Updated with each significant earthquake event."
-    SUBTITLE = "Detailed earthquake hypocenter, magnitude (Mjma), and per-prefecture seismic intensity observations"
+    SUBTITLE = "Earthquake hypocenter, magnitude (Mjma), and per-prefecture seismic intensity"
     KEYWORDS = ["jma", "japan", "earthquake", "seismic", "intensity", "hypocenter", "magnitude", "hazard"]
     MAX_ENTRIES = 50
 
@@ -220,7 +220,7 @@ class SeismicIntensityReport(JMADatasetBase):
     TYPE_CODES = ("VXSE51",)
     MERGE_KEYS = ["event_id"]
     DESCRIPTION = "Rapid seismic intensity reports (VXSE51) issued within minutes of earthquake detection. Provides preliminary maximum seismic intensity across Japan with per-prefecture observations. Essential for rapid hazard assessment and early warning."
-    SUBTITLE = "Fast preliminary seismic intensity reports with per-prefecture maximum intensity values"
+    SUBTITLE = "Fast seismic intensity reports with per-prefecture maximum intensity values"
     KEYWORDS = ["jma", "japan", "earthquake", "seismic", "intensity", "report", "rapid", "early-warning"]
     MAX_ENTRIES = 100
 
@@ -279,7 +279,7 @@ class TsunamiWarning(JMADatasetBase):
     TYPE_CODES = ("VTSE41",)
     MERGE_KEYS = ["event_id"]
     DESCRIPTION = "Tsunami warnings, advisories, and forecasts (VTSE41) for Japanese coasts. Provides estimated wave heights by coastal region, arrival times, and threat levels. Critical for coastal hazard management and public safety."
-    SUBTITLE = "Coastal tsunami threat alerts with estimated wave heights and arrival times by region"
+    SUBTITLE = "Coastal tsunami alerts with estimated wave heights and arrival times by region"
     KEYWORDS = ["jma", "japan", "tsunami", "warning", "advisory", "coastal", "wave-height", "hazard"]
     MAX_ENTRIES = 100
 
@@ -364,7 +364,7 @@ class EarthquakeEarlyWarning(JMADatasetBase):
     TYPE_CODES = ("VXSE43", "VXSE44")
     MERGE_KEYS = ["event_id"]
     DESCRIPTION = "Real-time Earthquake Early Warning (EEW) alerts (VXSE43/44) issued seconds after earthquake detection. Predicts strong motion intensities by region to enable automated protective actions. Updated continuously as more data arrives."
-    SUBTITLE = "Real-time EEW ground motion predictions with automated broadcast alerts for hazard mitigation"
+    SUBTITLE = "Real-time EEW predictions with automated broadcast alerts for hazard mitigation"
     KEYWORDS = ["jma", "japan", "earthquake", "early-warning", "eew", "strong-motion", "real-time"]
     MAX_ENTRIES = 100
 
@@ -479,7 +479,7 @@ class EarthquakeActivityInfo(JMADatasetBase):
     TYPE_CODES = ("VXSE56",)
     MERGE_KEYS = ["event_id"]
     DESCRIPTION = "Earthquake activity status updates (VXSE56) summarizing recent seismic trends, aftershock sequences, and foreshock patterns. Includes frequency distribution and intensity statistics for ongoing seismic swarms."
-    SUBTITLE = "Seismic activity summaries with aftershock sequence stats and ongoing trend reports"
+    SUBTITLE = "Seismic activity summaries with aftershock stats and ongoing trend reports"
     KEYWORDS = ["jma", "japan", "earthquake", "activity", "aftershock", "foreshock", "seismic-swarm", "trend"]
     MAX_ENTRIES = 100
 
@@ -521,7 +521,7 @@ class SeismicObservationInfo(JMADatasetBase):
     TYPE_CODES = ("VXSE60", "VXSE61", "VXSE62")
     MERGE_KEYS = ["event_id"]
     DESCRIPTION = "Seismic observation status (VXSE60-62) from nationwide network monitoring earthquake counts, long-period oscillation data, and instrument health. Provides operational summaries of network performance and anomalies."
-    SUBTITLE = "Seismic network status with earthquake counts, long-period oscillations, and sensor health"
+    SUBTITLE = "Seismic network status with earthquake counts and long-period oscillations"
     KEYWORDS = ["jma", "japan", "seismic", "observation", "network", "long-period", "monitoring", "status"]
     MAX_ENTRIES = 100
 

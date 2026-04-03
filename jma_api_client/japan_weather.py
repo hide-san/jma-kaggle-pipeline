@@ -32,7 +32,7 @@ class WeatherWarning(JMADatasetBase):
     TYPE_CODES = ("VPWW53", "VPWW54", "VPWW55", "VPWW56", "VPWW57", "VPWW58", "VPWW59", "VPWW60", "VPWW61")
     MERGE_KEYS = ["event_id"]
     DESCRIPTION = "Weather warnings and advisories (VPWW53-61) covering severe weather hazards including heavy rain, snow, strong winds, high waves, flooding, and lightning. Issued nationwide with affected regions and warning levels."
-    SUBTITLE = "Severe weather alerts (rain, snow, wind, waves, floods) by region and warning type"
+    SUBTITLE = "Severe weather alerts (rain, snow, wind, waves, floods) by region and type"
     KEYWORDS = ["jma", "japan", "weather", "warning", "advisory", "hazard", "rain", "snow", "wind"]
     MAX_ENTRIES = 500
 
