@@ -14,7 +14,7 @@ import sys
 import time
 
 import config
-from jma_api_client.base import DATASET_REGISTRY
+from jma_api_client.base import DATASET_REGISTRY, fetch_all_feeds
 from kaggle_uploader import KaggleUploader
 from logger import get_logger
 
@@ -41,6 +41,12 @@ def run_pipeline(dry_run: bool = False, preview: bool = False) -> bool:
 
     if dry_run:
         log.info("DRY-RUN mode enabled: Fetching and merging data, but NOT uploading to Kaggle")
+
+    # Download all JMA Atom feeds once before processing any dataset.
+    # Every dataset class reads from the local feed cache; without this step
+    # the cache is empty in CI and all fetches silently return empty DataFrames.
+    log.info("Downloading JMA Atom feeds...")
+    fetch_all_feeds()
 
     results: dict[str, bool] = {}
     metrics: dict[str, dict] = {}

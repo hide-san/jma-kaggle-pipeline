@@ -54,6 +54,31 @@ def find_all_text(elem: ET.Element, tag_name: str) -> list[str]:
             if strip_ns(child.tag) == tag_name and child.text]
 
 
+JMA_FEED_URLS: dict[str, str] = {
+    "regular_l.xml": "https://www.data.jma.go.jp/developer/xml/feed/regular_l.xml",
+    "extra_l.xml":   "https://www.data.jma.go.jp/developer/xml/feed/extra_l.xml",
+    "eqvol_l.xml":   "https://www.data.jma.go.jp/developer/xml/feed/eqvol_l.xml",
+    "other_l.xml":   "https://www.data.jma.go.jp/developer/xml/feed/other_l.xml",
+}
+
+
+def fetch_all_feeds() -> None:
+    """Download all JMA Atom feeds and cache them in RAW_DATA_DIR.
+
+    Must be called once at the start of the pipeline before any dataset
+    fetch() call, since get_feed() reads from the local cache.
+    """
+    from .utils import get as http_get, save_raw
+    os.makedirs(config.RAW_DATA_DIR, exist_ok=True)
+    for feed_name, feed_url in JMA_FEED_URLS.items():
+        try:
+            log.info("Fetching feed %s", feed_name)
+            resp = http_get(feed_url)
+            save_raw(feed_name, resp.content)
+        except Exception as exc:
+            log.warning("Could not fetch feed %s: %s", feed_name, exc)
+
+
 def get_feed(feed_name: str) -> ET.Element | None:
     """Load cached feed from RAW_DATA_DIR."""
     import config
