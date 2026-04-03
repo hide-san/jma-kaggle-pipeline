@@ -31,6 +31,8 @@ __all__ = [
     "EarthquakeIntensityInfo",
     "SeismicIntensityReport",
     "TsunamiWarning",
+    "EarthquakeEarlyWarning",
+    "TsunamiInfo",
     "fetch_earthquake_data",
 ]
 
@@ -348,6 +350,121 @@ class TsunamiWarning(JMADatasetBase):
                                     tsunami_data['affected_areas_en_json'] = json.dumps(areas_en, ensure_ascii=False)
 
         return tsunami_data if len(tsunami_data) > 2 else None
+
+
+@register_dataset
+class EarthquakeEarlyWarning(JMADatasetBase):
+    """Earthquake early warning alerts from JMA VXSE43/VXSE44."""
+
+    NAME = "japan-earthquake-early-warning"
+    CSV_FILENAME = "japan_earthquake_early_warning.csv"
+    FEED_NAME = "eqvol_l.xml"
+    TYPE_CODES = ("VXSE43", "VXSE44")
+    MERGE_KEYS = ["event_id"]
+    DESCRIPTION = "Earthquake early warning alerts from JMA"
+    SUBTITLE = "Real-time earthquake motion predictions for hazard mitigation"
+    KEYWORDS = ["jma", "japan", "earthquake", "early", "warning"]
+    MAX_ENTRIES = 100
+
+    def parse_entry(self, root: ET.Element, data_url: str) -> dict | None:
+        """Parse JMA VXSE43/VXSE44 earthquake early warning XML."""
+        head_data = self.extract_head(root)
+        if not head_data.get('event_id'):
+            return None
+
+        body = root.find('.//{http://xml.kishou.go.jp/jmaxml1/body/seismology1/}Body')
+        if body is None:
+            body = root.find('.//{http://xml.kishou.go.jp/jmaxml1/}Body')
+
+        if body is None:
+            return None
+
+        warning_data = head_data.copy()
+
+        for elem in body.iter():
+            tag = self.sn(elem.tag)
+
+            if tag == 'OriginTime' and elem.text:
+                warning_data['origin_time'] = elem.text
+
+            elif tag == 'Magnitude' and elem.text:
+                try:
+                    warning_data['magnitude'] = float(elem.text)
+                except ValueError:
+                    pass
+
+            elif tag == 'MaxInt' and elem.text:
+                warning_data['max_intensity'] = elem.text
+
+            elif tag == 'Hypocenter':
+                for area_elem in elem:
+                    if self.sn(area_elem.tag) == 'Area':
+                        for area_child in area_elem:
+                            child_tag = self.sn(area_child.tag)
+                            if child_tag == 'Name' and area_child.text:
+                                warning_data['epicenter'] = area_child.text
+                                warning_data['epicenter_en'] = self.translate(area_child.text)
+
+        return warning_data if len(warning_data) > 2 else None
+
+
+@register_dataset
+class TsunamiInfo(JMADatasetBase):
+    """Tsunami observation information from JMA VTSE51."""
+
+    NAME = "japan-tsunami-information"
+    CSV_FILENAME = "japan_tsunami_information.csv"
+    FEED_NAME = "eqvol_l.xml"
+    TYPE_CODES = ("VTSE51",)
+    MERGE_KEYS = ["event_id"]
+    DESCRIPTION = "Tsunami observation data from coastal stations"
+    SUBTITLE = "Recorded tsunami wave heights and arrival times"
+    KEYWORDS = ["jma", "japan", "tsunami", "observation", "wave"]
+    MAX_ENTRIES = 100
+
+    def parse_entry(self, root: ET.Element, data_url: str) -> dict | None:
+        """Parse JMA VTSE51 tsunami information XML."""
+        head_data = self.extract_head(root)
+        if not head_data.get('event_id'):
+            return None
+
+        body = root.find('.//{http://xml.kishou.go.jp/jmaxml1/body/tsunami1/}Body')
+        if body is None:
+            body = root.find('.//{http://xml.kishou.go.jp/jmaxml1/}Body')
+
+        if body is None:
+            return None
+
+        info_data = head_data.copy()
+        observations = []
+
+        for elem in body.iter():
+            tag = self.sn(elem.tag)
+
+            if tag == 'OriginTime' and elem.text:
+                info_data['origin_time'] = elem.text
+
+            elif tag == 'Observation':
+                obs_dict = {}
+                for child in elem:
+                    child_tag = self.sn(child.tag)
+                    if child_tag == 'DateTime' and child.text:
+                        obs_dict['observation_time'] = child.text
+                    elif child_tag == 'Station':
+                        for st_child in child:
+                            st_tag = self.sn(st_child.tag)
+                            if st_tag == 'Name' and st_child.text:
+                                obs_dict['station_name'] = st_child.text
+                    elif child_tag == 'Height' and child.text:
+                        obs_dict['wave_height'] = child.text
+
+                if obs_dict:
+                    observations.append(obs_dict)
+
+        if observations:
+            info_data['observations_json'] = json.dumps(observations, ensure_ascii=False)
+
+        return info_data if len(info_data) > 2 else None
 
 
 # For backwards compatibility

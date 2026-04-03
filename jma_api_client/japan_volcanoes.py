@@ -22,6 +22,8 @@ __all__ = [
     "VolcanicAshForecast",
     "EruptionWarning",
     "EruptionFlashReport",
+    "EruptionObservation",
+    "EstimatedPlumeDirection",
 ]
 
 
@@ -299,6 +301,120 @@ class EruptionFlashReport(JMADatasetBase):
                                                 report_data['volcano_name_en'] = self.translate(area_child.text)
 
         return report_data if len(report_data) > 2 else None
+
+
+@register_dataset
+class EruptionObservation(JMADatasetBase):
+    """Eruption-related volcanic observation reports from JMA VFVO52."""
+
+    NAME = "japan-eruption-observation"
+    CSV_FILENAME = "japan_eruption_observation.csv"
+    FEED_NAME = "eqvol_l.xml"
+    TYPE_CODES = ("VFVO52",)
+    MERGE_KEYS = ["event_id"]
+    DESCRIPTION = "Volcanic observation reports related to eruptions from JMA"
+    SUBTITLE = "Detailed observations of volcanic activity and eruptions"
+    KEYWORDS = ["jma", "japan", "volcano", "eruption", "observation"]
+    MAX_ENTRIES = 100
+
+    def parse_entry(self, root: ET.Element, data_url: str) -> dict | None:
+        """Parse JMA VFVO52 eruption observation report XML."""
+        head_data = self.extract_head(root)
+        if not head_data.get('event_id'):
+            return None
+
+        body = root.find('.//{http://xml.kishou.go.jp/jmaxml1/body/volcanology1/}Body')
+        if body is None:
+            body = root.find('.//{http://xml.kishou.go.jp/jmaxml1/}Body')
+
+        if body is None:
+            return None
+
+        obs_data = head_data.copy()
+
+        for elem in body.iter():
+            tag = self.sn(elem.tag)
+
+            if tag == 'DateTime' and elem.text:
+                obs_data['observation_time'] = elem.text
+
+            elif tag == 'VolcanoInfo':
+                for child in elem:
+                    if self.sn(child.tag) == 'Item':
+                        for item_child in child:
+                            item_tag = self.sn(item_child.tag)
+                            if item_tag == 'Kind':
+                                for kind_child in item_child:
+                                    if self.sn(kind_child.tag) == 'Name' and kind_child.text:
+                                        obs_data['observation_type'] = kind_child.text
+                                        obs_data['observation_type_en'] = self.translate(kind_child.text)
+                            elif item_tag == 'Areas':
+                                for area in item_child:
+                                    if self.sn(area.tag) == 'Area':
+                                        for area_child in area:
+                                            if self.sn(area_child.tag) == 'Name' and area_child.text:
+                                                obs_data['volcano_name'] = area_child.text
+                                                obs_data['volcano_name_en'] = self.translate(area_child.text)
+
+        return obs_data if len(obs_data) > 2 else None
+
+
+@register_dataset
+class EstimatedPlumeDirection(JMADatasetBase):
+    """Estimated volcanic plume flow direction from JMA VFVO60."""
+
+    NAME = "japan-estimated-plume-direction"
+    CSV_FILENAME = "japan_estimated_plume_direction.csv"
+    FEED_NAME = "eqvol_l.xml"
+    TYPE_CODES = ("VFVO60",)
+    MERGE_KEYS = ["event_id"]
+    DESCRIPTION = "Estimated volcanic plume flow direction from JMA"
+    SUBTITLE = "Predicted ash plume movement based on atmospheric conditions"
+    KEYWORDS = ["jma", "japan", "volcano", "plume", "ash", "direction"]
+    MAX_ENTRIES = 100
+
+    def parse_entry(self, root: ET.Element, data_url: str) -> dict | None:
+        """Parse JMA VFVO60 estimated plume direction XML."""
+        head_data = self.extract_head(root)
+        if not head_data.get('event_id'):
+            return None
+
+        body = root.find('.//{http://xml.kishou.go.jp/jmaxml1/body/volcanology1/}Body')
+        if body is None:
+            body = root.find('.//{http://xml.kishou.go.jp/jmaxml1/}Body')
+
+        if body is None:
+            return None
+
+        plume_data = head_data.copy()
+        directions = []
+
+        for elem in body.iter():
+            tag = self.sn(elem.tag)
+
+            if tag == 'PlumeDirection':
+                dir_dict = {}
+                for child in elem:
+                    child_tag = self.sn(child.tag)
+                    if child_tag == 'DateTime' and child.text:
+                        dir_dict['forecast_time'] = child.text
+                    elif child_tag == 'Direction' and child.text:
+                        dir_dict['direction'] = child.text
+                        dir_dict['direction_en'] = self.translate(child.text)
+
+                if dir_dict:
+                    directions.append(dir_dict)
+
+            elif tag == 'Volcano':
+                for child in elem:
+                    if self.sn(child.tag) == 'Name' and child.text:
+                        plume_data['volcano_name'] = child.text
+                        plume_data['volcano_name_en'] = self.translate(child.text)
+
+        if directions:
+            plume_data['plume_directions_json'] = json.dumps(directions, ensure_ascii=False)
+
+        return plume_data if len(plume_data) > 2 else None
 
 
 # For backwards compatibility

@@ -21,12 +21,16 @@ from .japan_earthquakes import (
     EarthquakeIntensityInfo,
     SeismicIntensityReport,
     TsunamiWarning,
+    EarthquakeEarlyWarning,
+    TsunamiInfo,
 )
 from .japan_volcanoes import (
     VolcanoStatusExplanation,
     VolcanicAshForecast,
     EruptionWarning,
     EruptionFlashReport,
+    EruptionObservation,
+    EstimatedPlumeDirection,
 )
 from .japan_sea import RegionalSeaAlert, RegionalSeaForecast
 from .japan_cherry_blossom import (
@@ -51,11 +55,15 @@ __all__ = [
     "EarthquakeIntensityInfo",
     "SeismicIntensityReport",
     "TsunamiWarning",
+    "EarthquakeEarlyWarning",
+    "TsunamiInfo",
     # Dataset classes (volcanoes)
     "VolcanoStatusExplanation",
     "VolcanicAshForecast",
     "EruptionWarning",
     "EruptionFlashReport",
+    "EruptionObservation",
+    "EstimatedPlumeDirection",
     # Dataset classes (sea & seasonal)
     "RegionalSeaAlert",
     "RegionalSeaForecast",
