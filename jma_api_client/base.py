@@ -231,8 +231,10 @@ class JMADatasetBase(ABC):
                 data['report_datetime'] = elem.text
             elif tag == 'InfoType' and elem.text:
                 data['info_type'] = elem.text
+                data['info_type_en'] = translate_ja_to_en(elem.text)
             elif tag == 'Title' and elem.text:
                 data['title'] = elem.text
+                data['title_en'] = translate_ja_to_en(elem.text)
 
         return data
 
