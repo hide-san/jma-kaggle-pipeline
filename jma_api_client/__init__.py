@@ -69,7 +69,7 @@ from .japan_notices import (
 )
 
 # Legacy functions (backwards compatibility)
-from .japan_earthquakes import fetch_earthquake_data, fetch_earthquakes_enhanced
+from .japan_earthquakes import fetch_earthquakes_enhanced
 from .japan_volcanoes import fetch_volcanic_ash_forecasts, fetch_volcano_status
 from .japan_sea import fetch_sea_warnings, fetch_sea_forecasts
 from .japan_phenology import fetch_cherry_blossom_observations
@@ -123,7 +123,6 @@ __all__ = [
     "EarthquakeTsunamiNotice",
     "VolcanoNotice",
     # Legacy functions
-    "fetch_earthquake_data",
     "fetch_earthquakes_enhanced",
     "fetch_volcanic_ash_forecasts",
     "fetch_volcano_status",
