@@ -55,30 +55,20 @@ class KaggleUploader:
 
     def _run_kaggle_command(self, cmd_args: list[str]) -> tuple[int, str, str]:
         """
-        Run a kaggle CLI command and return (returncode, stdout, stderr).
+        Run a kaggle CLI command via sys.executable -m kaggle for cross-platform compatibility.
+        Returns (returncode, stdout, stderr).
         """
         try:
             result = subprocess.run(
-                ["kaggle"] + cmd_args,
+                [sys.executable, "-m", "kaggle"] + cmd_args,
                 capture_output=True,
                 text=True,
                 env=os.environ.copy(),
             )
             return result.returncode, result.stdout, result.stderr
-        except FileNotFoundError:
-            # If 'kaggle' is not in PATH, try via python -m kaggle.cli
-            log.debug("'kaggle' command not found, trying python module")
-            try:
-                result = subprocess.run(
-                    [sys.executable, "-m", "kaggle.cli"] + cmd_args,
-                    capture_output=True,
-                    text=True,
-                    env=os.environ.copy(),
-                )
-                return result.returncode, result.stdout, result.stderr
-            except Exception as e:
-                log.error("Failed to run kaggle command: %s", e)
-                return 1, "", str(e)
+        except Exception as e:
+            log.error("Failed to run kaggle command: %s", e)
+            return 1, "", str(e)
 
     # ------------------------------------------------------------------ #
     # Download                                                             #
