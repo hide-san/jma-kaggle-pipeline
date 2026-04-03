@@ -15,6 +15,7 @@ import os
 import subprocess
 import sys
 import tempfile
+import time
 from pathlib import Path
 
 import pandas as pd
@@ -179,43 +180,78 @@ class KaggleUploader:
                 json.dumps(metadata, ensure_ascii=False), encoding="utf-8"
             )
 
-            # Try to create a new version (for existing datasets)
+            # Try to create a new dataset first
+            returncode, stdout, stderr = self._run_kaggle_command([
+                "datasets",
+                "create",
+                "--path",
+                tmpdir,
+                "--dir-mode",
+                "zip",
+            ])
+            output = (stdout + stderr).lower()
+            create_ok = returncode == 0 and "error" not in output
+
+            if create_ok:
+                log.info("Created new dataset successfully: %s", kaggle_dataset)
+                return True
+
+            # Dataset exists, try to create a new version
+            log.info("Dataset exists — adding new version: %s", kaggle_dataset)
             version_notes = description or "Automated daily update"
             returncode, stdout, stderr = self._run_kaggle_command([
                 "datasets",
                 "version",
-                "-p",
+                "--path",
                 tmpdir,
-                "-m",
+                "--message",
                 version_notes,
-                "--keep-tabular",
-                "-q",
+                "--dir-mode",
+                "zip",
             ])
+            output = (stdout + stderr).lower()
+            version_ok = returncode == 0 and "error" not in output
 
-            if returncode == 0:
+            if version_ok:
                 log.info("Upload successful (new version): %s", kaggle_dataset)
                 return True
 
-            # Check if dataset doesn't exist; if so, create it
-            stderr_lower = stderr.lower()
-            if "404" in stderr or "not found" in stderr_lower or "does not exist" in stderr_lower:
-                log.info("Dataset not found, creating new dataset: %s", kaggle_dataset)
-                returncode, stdout, stderr = self._run_kaggle_command([
-                    "datasets",
-                    "create",
-                    "-p",
-                    tmpdir,
-                    "-r",
-                    "zip",
-                    "-q",
-                ])
-                if returncode == 0:
-                    log.info("Created and uploaded dataset successfully: %s", kaggle_dataset)
-                    return True
-                else:
-                    log.error("Failed to create dataset %s: %s", kaggle_dataset, stderr)
-                    return False
-            else:
-                # Some other error occurred
-                log.error("Upload failed for %s: %s", kaggle_dataset, stderr)
+            log.error("Upload failed for %s: %s", kaggle_dataset, stderr)
+            return False
+
+    # ------------------------------------------------------------------ #
+    # Status Polling                                                       #
+    # ------------------------------------------------------------------ #
+
+    def wait_until_ready(
+        self,
+        kaggle_dataset: str,
+        poll_interval_sec: int = 30,
+        timeout_sec: int = 600,
+    ) -> bool:
+        """
+        Poll the Kaggle API to check if dataset has completed processing.
+        Returns True when dataset reaches "ready" state, False on error or timeout.
+        """
+        start = time.monotonic()
+
+        while True:
+            returncode, stdout, stderr = self._run_kaggle_command([
+                "datasets",
+                "status",
+                kaggle_dataset,
+            ])
+            output = (stdout + stderr).lower()
+
+            if "ready" in output:
+                log.info("Dataset is ready: %s", kaggle_dataset)
+                return True
+            if "error" in output:
+                log.error("Dataset processing failed for %s: %s", kaggle_dataset, output)
                 return False
+            if time.monotonic() - start > timeout_sec:
+                log.error("Timed out waiting for %s to become ready", kaggle_dataset)
+                return False
+
+            log.info("Dataset %s not ready yet — waiting %ds", kaggle_dataset, poll_interval_sec)
+            time.sleep(poll_interval_sec)
