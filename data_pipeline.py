@@ -77,14 +77,20 @@ def run_pipeline(dry_run: bool = False) -> bool:
                 dataset_cfg["csv_filename"],
             )
 
-            # 3. Merge
+            # 3. Check if there's new data before merging
+            if new_df.empty:
+                log.info("No new data fetched for %s — skipping upload to Kaggle", name)
+                results[name] = True
+                continue
+
+            # 4. Merge
             merged_df = kaggle.merge_data(
                 existing_df,
                 new_df,
                 dataset_cfg["merge_keys"],
             )
 
-            # 4. Upload
+            # 5. Upload
             if dry_run:
                 log.info("DRY-RUN: Would upload %d rows to %s", len(merged_df), dataset_cfg["kaggle_dataset"])
                 ok = True
@@ -98,7 +104,7 @@ def run_pipeline(dry_run: bool = False) -> bool:
                     subtitle=dataset_cfg.get("subtitle", ""),
                 )
 
-                # 5. Wait for Kaggle to process the dataset
+                # 6. Wait for Kaggle to process the dataset
                 if ok:
                     ok = kaggle.wait_until_ready(
                         dataset_cfg["kaggle_dataset"],
