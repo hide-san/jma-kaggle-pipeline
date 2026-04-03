@@ -31,19 +31,19 @@ def test_merge_empty_new(uploader):
     assert len(result) == 1
 
 
-def test_merge_deduplication_new_wins(uploader):
+def test_merge_deduplication_existing_wins(uploader):
     existing = pd.DataFrame([
         {"event_id": "A", "magnitude": 4.0},
         {"event_id": "B", "magnitude": 3.0},
     ])
     new_df = pd.DataFrame([
-        {"event_id": "A", "magnitude": 5.5},  # duplicate — new value should win
+        {"event_id": "A", "magnitude": 5.5},  # duplicate — existing value should win
         {"event_id": "C", "magnitude": 2.0},
     ])
     result = uploader.merge_data(existing, new_df, ["event_id"])
     assert len(result) == 3
     row_a = result[result["event_id"] == "A"].iloc[0]
-    assert row_a["magnitude"] == 5.5
+    assert row_a["magnitude"] == 4.0  # Keep existing data
 
 
 def test_merge_missing_key_columns(uploader):
@@ -65,4 +65,4 @@ def test_merge_multiple_keys(uploader):
     result = uploader.merge_data(existing, new_df, ["year", "station_no"])
     assert len(result) == 2
     row_2023 = result[result["year"] == 2023].iloc[0]
-    assert row_2023["bloom_date"] == "2023-03-26"
+    assert row_2023["bloom_date"] == "2023-03-25"  # Keep existing data

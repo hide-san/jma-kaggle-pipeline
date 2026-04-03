@@ -132,10 +132,10 @@ class KaggleUploader:
             return existing_df
 
         combined = pd.concat([existing_df, new_df], ignore_index=True)
-        # Keep the *last* occurrence so new data wins on duplicate keys
+        # Keep the *first* occurrence so existing (published) data is not modified
         valid_keys = [k for k in merge_keys if k in combined.columns]
         if valid_keys:
-            combined = combined.drop_duplicates(subset=valid_keys, keep="last")
+            combined = combined.drop_duplicates(subset=valid_keys, keep="first")
         else:
             log.warning("Merge keys %s not found in DataFrame columns — skipping dedup", merge_keys)
 
