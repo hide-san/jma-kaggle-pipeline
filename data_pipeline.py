@@ -4,12 +4,14 @@ Main orchestration pipeline.
 Usage:
     python data_pipeline.py
     python data_pipeline.py --dry-run
+    python data_pipeline.py --dry-run --preview
     python data_pipeline.py --datasets japan-earthquakes,japan-sea-warnings
 """
 
 import argparse
 import os
 import sys
+import time
 
 import config
 from jma_api_client.base import DATASET_REGISTRY
@@ -19,7 +21,7 @@ from logger import get_logger
 log = get_logger(__name__)
 
 
-def run_pipeline(dry_run: bool = False) -> bool:
+def run_pipeline(dry_run: bool = False, preview: bool = False) -> bool:
     kaggle = KaggleUploader()
 
     if not dry_run:
@@ -41,11 +43,14 @@ def run_pipeline(dry_run: bool = False) -> bool:
         log.info("DRY-RUN mode enabled: Fetching and merging data, but NOT uploading to Kaggle")
 
     results: dict[str, bool] = {}
+    metrics: dict[str, dict] = {}
+    pipeline_start = time.time()
 
     for dataset_cfg in filtered_datasets:
         name = dataset_cfg["name"]
         log.info("=" * 60)
         log.info("Processing dataset: %s", name)
+        dataset_start = time.time()
 
         try:
             # 1. Fetch new data from JMA using dataset class from registry
@@ -55,7 +60,23 @@ def run_pipeline(dry_run: bool = False) -> bool:
                 continue
 
             dataset_cls = DATASET_REGISTRY[name]
-            new_df = dataset_cls().fetch()
+            dataset_instance = dataset_cls()
+            new_df = dataset_instance.fetch()
+
+            fetch_time = time.time() - dataset_start
+            metrics[name] = {
+                "rows_fetched": len(new_df),
+                "fetch_time_sec": fetch_time,
+                "throughput_rows_per_sec": len(new_df) / fetch_time if fetch_time > 0 else 0,
+            }
+
+            # Show preview if requested
+            if preview and not new_df.empty:
+                log.info("Preview of %s (first 3 rows):", name)
+                log.info("Columns: %s", list(new_df.columns))
+                log.info("Shape: %d rows x %d columns", len(new_df), len(new_df.columns))
+                for idx, row in new_df.head(3).iterrows():
+                    log.info("  Row %d: %s", idx, row.to_dict())
 
             # 1.5. Save parsed data locally
             os.makedirs(config.DATA_DIR, exist_ok=True)
@@ -114,11 +135,45 @@ def run_pipeline(dry_run: bool = False) -> bool:
     log.info("=" * 60)
     log.info("Pipeline summary:")
     all_ok = True
+    total_rows = 0
+    total_time = time.time() - pipeline_start
+
     for name, ok in results.items():
         status = "OK" if ok else "FAILED"
-        log.info("  %s: %s", name, status)
+        if name in metrics:
+            rows = metrics[name].get("rows_fetched", 0)
+            fetch_time = metrics[name].get("fetch_time_sec", 0)
+            total_rows += rows
+            log.info(
+                "  %s: %s (%d rows, %.2fs)",
+                name, status, rows, fetch_time
+            )
+        else:
+            log.info("  %s: %s", name, status)
         if not ok:
             all_ok = False
+
+    # Performance metrics
+    if metrics:
+        log.info("=" * 60)
+        log.info("Performance metrics:")
+        log.info("  Total rows fetched: %d", total_rows)
+        log.info("  Total pipeline time: %.2f seconds", total_time)
+        log.info("  Average time per dataset: %.2f seconds", total_time / len(results))
+
+        # Find slowest datasets
+        slowest = sorted(
+            metrics.items(),
+            key=lambda x: x[1].get("fetch_time_sec", 0),
+            reverse=True
+        )[:3]
+        if slowest:
+            log.info("  Slowest datasets:")
+            for name, data in slowest:
+                log.info(
+                    "    %s: %.2f seconds",
+                    name, data.get("fetch_time_sec", 0)
+                )
 
     return all_ok
 
@@ -126,6 +181,7 @@ def run_pipeline(dry_run: bool = False) -> bool:
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description="JMA data pipeline")
     parser.add_argument("--dry-run", action="store_true", help="Simulate pipeline without uploading to Kaggle")
+    parser.add_argument("--preview", action="store_true", help="Show sample data from each dataset (requires --dry-run)")
     parser.add_argument("--datasets", help="Comma-separated list of dataset names to process (e.g., japan-earthquake-and-seismic-information,japan-regional-sea-alert)")
     parser.add_argument("--list-datasets", action="store_true", help="List all available datasets and exit")
     args = parser.parse_args()
@@ -145,5 +201,5 @@ if __name__ == "__main__":
     if args.datasets:
         os.environ["DATASETS_FILTER"] = args.datasets
 
-    success = run_pipeline(dry_run=args.dry_run)
+    success = run_pipeline(dry_run=args.dry_run, preview=args.preview and args.dry_run)
     sys.exit(0 if success else 1)

@@ -230,3 +230,14 @@ class JMADatasetBase(ABC):
             "subtitle": cls.SUBTITLE,
             "keywords": cls.KEYWORDS,
         }
+
+    def get_metadata(self) -> dict:
+        """Return metadata about this dataset for observability."""
+        return {
+            "name": self.NAME,
+            "feed": self.FEED_NAME,
+            "type_codes": self.TYPE_CODES,
+            "max_entries": self.MAX_ENTRIES,
+            "merge_keys": self.MERGE_KEYS,
+            "description": self.DESCRIPTION,
+        }
