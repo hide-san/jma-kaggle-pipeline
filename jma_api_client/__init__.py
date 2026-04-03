@@ -38,6 +38,11 @@ from .japan_cherry_blossom import (
     SeasonalObservation,
     SpecialWeatherReport,
 )
+from .japan_weather import (
+    WeatherWarning,
+    HeavyRainWarning,
+    TornadoWatchInfo,
+)
 
 # Legacy functions (backwards compatibility)
 from .japan_earthquakes import fetch_earthquake_data, fetch_earthquakes_enhanced
@@ -70,6 +75,10 @@ __all__ = [
     "PhenologicalObservation",
     "SeasonalObservation",
     "SpecialWeatherReport",
+    # Dataset classes (weather)
+    "WeatherWarning",
+    "HeavyRainWarning",
+    "TornadoWatchInfo",
     # Legacy functions
     "fetch_earthquake_data",
     "fetch_earthquakes_enhanced",
