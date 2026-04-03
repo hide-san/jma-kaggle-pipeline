@@ -7,7 +7,28 @@ on:
   workflow_dispatch:  # allow manual runs
 
 jobs:
+  fetch-feeds:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python environment
+        uses: ./.github/actions/python-setup
+
+      - name: Fetch JMA Atom feeds
+        run: python -c "from jma_api_client.base import fetch_all_feeds; fetch_all_feeds()"
+
+      - name: Upload feed cache
+        uses: actions/upload-artifact@v4
+        with:
+          name: jma-feeds
+          path: data/raw/
+          retention-days: 1
+
   update-datasets:
+    needs: fetch-feeds
     runs-on: ubuntu-latest
     timeout-minutes: 15
     strategy:
@@ -32,12 +53,18 @@ jobs:
       - name: Set up Python environment
         uses: ./.github/actions/python-setup
 
+      - name: Download feed cache
+        uses: actions/download-artifact@v4
+        with:
+          name: jma-feeds
+          path: data/raw/
+
       - name: Run pipeline - ${{ matrix.name }}
         env:
           KAGGLE_USERNAME: ${{ secrets.KAGGLE_USERNAME }}
           KAGGLE_API_TOKEN: ${{ secrets.KAGGLE_API_TOKEN }}
           DATASETS_FILTER: ${{ matrix.datasets }}
-        run: python data_pipeline.py
+        run: python data_pipeline.py --skip-feed-fetch
 
       - name: Upload logs on failure
         if: failure()

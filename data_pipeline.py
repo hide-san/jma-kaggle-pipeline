@@ -21,7 +21,7 @@ from logger import get_logger
 log = get_logger(__name__)
 
 
-def run_pipeline(dry_run: bool = False, preview: bool = False) -> bool:
+def run_pipeline(dry_run: bool = False, preview: bool = False, skip_feed_fetch: bool = False) -> bool:
     kaggle = KaggleUploader()
 
     if not dry_run:
@@ -42,11 +42,14 @@ def run_pipeline(dry_run: bool = False, preview: bool = False) -> bool:
     if dry_run:
         log.info("DRY-RUN mode enabled: Fetching and merging data, but NOT uploading to Kaggle")
 
-    # Download all JMA Atom feeds once before processing any dataset.
-    # Every dataset class reads from the local feed cache; without this step
-    # the cache is empty in CI and all fetches silently return empty DataFrames.
-    log.info("Downloading JMA Atom feeds...")
-    fetch_all_feeds()
+    if skip_feed_fetch:
+        log.info("Skipping JMA feed fetch (using pre-cached feeds in %s)", config.RAW_DATA_DIR)
+    else:
+        # Download all JMA Atom feeds once before processing any dataset.
+        # Every dataset class reads from the local feed cache; without this step
+        # the cache is empty in CI and all fetches silently return empty DataFrames.
+        log.info("Downloading JMA Atom feeds...")
+        fetch_all_feeds()
 
     results: dict[str, bool] = {}
     metrics: dict[str, dict] = {}
@@ -190,6 +193,7 @@ if __name__ == "__main__":
     parser.add_argument("--preview", action="store_true", help="Show sample data from each dataset (requires --dry-run)")
     parser.add_argument("--datasets", help="Comma-separated list of dataset names to process (e.g., japan-earthquake-and-seismic-information,japan-regional-sea-alert)")
     parser.add_argument("--list-datasets", action="store_true", help="List all available datasets and exit")
+    parser.add_argument("--skip-feed-fetch", action="store_true", help="Skip downloading JMA feeds (use pre-cached files in data/raw/)")
     args = parser.parse_args()
 
     # Handle --list-datasets
@@ -219,5 +223,5 @@ if __name__ == "__main__":
     if args.datasets:
         os.environ["DATASETS_FILTER"] = args.datasets
 
-    success = run_pipeline(dry_run=args.dry_run, preview=args.preview and args.dry_run)
+    success = run_pipeline(dry_run=args.dry_run, preview=args.preview and args.dry_run, skip_feed_fetch=args.skip_feed_fetch)
     sys.exit(0 if success else 1)
