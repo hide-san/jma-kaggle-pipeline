@@ -35,7 +35,24 @@ class KaggleUploader:
 
     def authenticate(self) -> bool:
         """Authenticate with Kaggle. Checks that credentials are available. Returns True on success."""
-        return True
+        try:
+            username = os.environ.get("KAGGLE_USERNAME")
+            # Support both KAGGLE_API_TOKEN (standard) and KAGGLE_KEY (legacy)
+            api_token = os.environ.get("KAGGLE_API_TOKEN") or os.environ.get("KAGGLE_KEY")
+
+            if not username or not api_token:
+                log.error("Kaggle authentication failed: KAGGLE_USERNAME and KAGGLE_API_TOKEN (or KAGGLE_KEY) required")
+                return False
+
+            # Ensure environment variables are set for Kaggle CLI
+            os.environ["KAGGLE_USERNAME"] = username
+            os.environ["KAGGLE_API_TOKEN"] = api_token
+
+            log.info("Kaggle authentication successful")
+            return True
+        except Exception as exc:
+            log.error("Kaggle authentication failed: %s", exc)
+            return False
 
     def _run_kaggle_command(self, cmd_args: list[str]) -> tuple[int, str, str]:
         """
