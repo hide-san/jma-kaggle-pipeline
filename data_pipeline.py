@@ -3,8 +3,11 @@ Main orchestration pipeline.
 
 Usage:
     python data_pipeline.py
+    python data_pipeline.py --dry-run
+    python data_pipeline.py --datasets japan-earthquakes,japan-sea-warnings
 """
 
+import argparse
 import os
 import sys
 
@@ -16,12 +19,26 @@ from logger import get_logger
 log = get_logger(__name__)
 
 
-def run_pipeline() -> bool:
+def run_pipeline(dry_run: bool = False) -> bool:
     kaggle = KaggleUploader()
 
-    if not kaggle.authenticate():
-        log.error("Aborting pipeline: Kaggle authentication failed.")
-        return False
+    if not dry_run:
+        if not kaggle.authenticate():
+            log.error("Aborting pipeline: Kaggle authentication failed.")
+            return False
+    else:
+        log.info("DRY-RUN mode: Skipping Kaggle authentication")
+
+    # Filter datasets if DATASETS_FILTER env var is set (for parallel CI/CD runs)
+    datasets_filter = os.environ.get("DATASETS_FILTER")
+    filtered_datasets = config.DATASETS
+    if datasets_filter:
+        filter_names = set(datasets_filter.split(","))
+        filtered_datasets = [d for d in config.DATASETS if d["name"] in filter_names]
+        log.info("Filtering datasets: %s", ", ".join(filter_names))
+
+    if dry_run:
+        log.info("DRY-RUN mode enabled: Fetching and merging data, but NOT uploading to Kaggle")
 
     # Map dataset name → fetch function
     fetchers = {
@@ -37,7 +54,7 @@ def run_pipeline() -> bool:
 
     results: dict[str, bool] = {}
 
-    for dataset_cfg in config.DATASETS:
+    for dataset_cfg in filtered_datasets:
         name = dataset_cfg["name"]
         log.info("=" * 60)
         log.info("Processing dataset: %s", name)
@@ -68,12 +85,26 @@ def run_pipeline() -> bool:
             )
 
             # 4. Upload
-            ok = kaggle.upload_dataset(
-                dataset_cfg["kaggle_dataset"],
-                dataset_cfg["csv_filename"],
-                merged_df,
-                description=dataset_cfg.get("description", ""),
-            )
+            if dry_run:
+                log.info("DRY-RUN: Would upload %d rows to %s", len(merged_df), dataset_cfg["kaggle_dataset"])
+                ok = True
+            else:
+                ok = kaggle.upload_dataset(
+                    dataset_cfg["kaggle_dataset"],
+                    dataset_cfg["csv_filename"],
+                    merged_df,
+                    description=dataset_cfg.get("description", ""),
+                    keywords=dataset_cfg.get("keywords", []),
+                    subtitle=dataset_cfg.get("subtitle", ""),
+                )
+
+                # 5. Wait for Kaggle to process the dataset
+                if ok:
+                    ok = kaggle.wait_until_ready(
+                        dataset_cfg["kaggle_dataset"],
+                        poll_interval_sec=30,
+                        timeout_sec=600,
+                    )
             results[name] = ok
 
         except Exception as exc:
@@ -94,5 +125,14 @@ def run_pipeline() -> bool:
 
 
 if __name__ == "__main__":
-    success = run_pipeline()
+    parser = argparse.ArgumentParser(description="JMA data pipeline")
+    parser.add_argument("--dry-run", action="store_true", help="Simulate pipeline without uploading to Kaggle")
+    parser.add_argument("--datasets", help="Comma-separated list of dataset names to process (e.g., japan-earthquakes,japan-sea-warnings)")
+    args = parser.parse_args()
+
+    # Handle --datasets argument (CLI override)
+    if args.datasets:
+        os.environ["DATASETS_FILTER"] = args.datasets
+
+    success = run_pipeline(dry_run=args.dry_run)
     sys.exit(0 if success else 1)

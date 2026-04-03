@@ -155,6 +155,8 @@ class KaggleUploader:
         csv_filename: str,
         df: pd.DataFrame,
         description: str = "",
+        keywords: list[str] | None = None,
+        subtitle: str = "",
     ) -> bool:
         """
         Write *df* to a temporary CSV and push it to *kaggle_dataset*.
@@ -176,6 +178,12 @@ class KaggleUploader:
                 "licenses": [{"name": "CC0-1.0"}],
                 "isPrivate": True,  # JSON encoder converts this to 'true'
             }
+            if description:
+                metadata["description"] = description
+            if subtitle:
+                metadata["subtitle"] = subtitle
+            if keywords:
+                metadata["keywords"] = keywords
             (Path(tmpdir) / "dataset-metadata.json").write_text(
                 json.dumps(metadata, ensure_ascii=False), encoding="utf-8"
             )

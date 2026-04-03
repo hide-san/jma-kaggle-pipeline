@@ -9,7 +9,19 @@ on:
 jobs:
   update-datasets:
     runs-on: ubuntu-latest
-    timeout-minutes: 30
+    timeout-minutes: 15
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - name: Earthquakes
+            datasets: "japan-earthquakes,japan-earthquakes-enhanced"
+          - name: Volcanoes
+            datasets: "japan-volcanic-ash-forecasts,japan-volcano-status"
+          - name: Cherry Blossom
+            datasets: "japan-cherry-blossom-observations"
+          - name: Sea
+            datasets: "japan-sea-warnings,japan-sea-forecasts"
 
     steps:
       - name: Checkout repository
@@ -18,17 +30,18 @@ jobs:
       - name: Set up Python environment
         uses: ./.github/actions/python-setup
 
-      - name: Run pipeline
+      - name: Run pipeline - ${{ matrix.name }}
         env:
           KAGGLE_USERNAME: ${{ secrets.KAGGLE_USERNAME }}
           KAGGLE_KEY: ${{ secrets.KAGGLE_KEY }}
+          DATASETS_FILTER: ${{ matrix.datasets }}
         run: python data_pipeline.py
 
       - name: Upload logs on failure
         if: failure()
         uses: actions/upload-artifact@v4
         with:
-          name: pipeline-logs
+          name: pipeline-logs-${{ matrix.name }}
           path: logs/pipeline.log
           retention-days: 7
 
@@ -40,7 +53,7 @@ jobs:
             await github.rest.issues.create({
               owner: context.repo.owner,
               repo: context.repo.repo,
-              title: `Pipeline failed: ${new Date().toISOString()}`,
-              body: `The JMA data pipeline failed.\n\nRun: ${context.serverUrl}/${context.repo.owner}/${context.repo.repo}/actions/runs/${context.runId}`,
+              title: `Pipeline failed - ${{ matrix.name }}: ${new Date().toISOString().slice(0, 10)}`,
+              body: `The JMA data pipeline failed for ${{ matrix.name }}.\n\nRun: ${context.serverUrl}/${context.repo.owner}/${context.repo.repo}/actions/runs/${context.runId}`,
               labels: ['pipeline-failure'],
             });
