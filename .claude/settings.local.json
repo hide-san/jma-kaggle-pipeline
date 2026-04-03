@@ -18,7 +18,8 @@
       "Bash(mv jma_api_client/cherry_blossom.py jma_api_client/japan_cherry_blossom.py)",
       "Bash(mv jma_api_client/sea.py jma_api_client/japan_sea.py)",
       "Bash(mv:*)",
-      "WebFetch(domain:xml.kishou.go.jp)"
+      "WebFetch(domain:xml.kishou.go.jp)",
+      "Bash(wc -l jma_api_client/japan_*.py)"
     ]
   }
 }

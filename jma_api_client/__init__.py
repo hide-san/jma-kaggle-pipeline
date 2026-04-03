@@ -17,10 +17,23 @@ Endpoints:
 from .base import DATASET_REGISTRY, JMADatasetBase, register_dataset
 
 # Dataset classes (new plugin architecture)
-from .japan_earthquakes import EarthquakeIntensityInfo
-from .japan_volcanoes import VolcanoStatusExplanation, VolcanicAshForecast
+from .japan_earthquakes import (
+    EarthquakeIntensityInfo,
+    SeismicIntensityReport,
+    TsunamiWarning,
+)
+from .japan_volcanoes import (
+    VolcanoStatusExplanation,
+    VolcanicAshForecast,
+    EruptionWarning,
+    EruptionFlashReport,
+)
 from .japan_sea import RegionalSeaAlert, RegionalSeaForecast
-from .japan_cherry_blossom import PhenologicalObservation
+from .japan_cherry_blossom import (
+    PhenologicalObservation,
+    SeasonalObservation,
+    SpecialWeatherReport,
+)
 
 # Legacy functions (backwards compatibility)
 from .japan_earthquakes import fetch_earthquake_data, fetch_earthquakes_enhanced
@@ -34,13 +47,21 @@ __all__ = [
     "DATASET_REGISTRY",
     "JMADatasetBase",
     "register_dataset",
-    # Dataset classes
+    # Dataset classes (earthquakes & seismic)
     "EarthquakeIntensityInfo",
+    "SeismicIntensityReport",
+    "TsunamiWarning",
+    # Dataset classes (volcanoes)
     "VolcanoStatusExplanation",
     "VolcanicAshForecast",
+    "EruptionWarning",
+    "EruptionFlashReport",
+    # Dataset classes (sea & seasonal)
     "RegionalSeaAlert",
     "RegionalSeaForecast",
     "PhenologicalObservation",
+    "SeasonalObservation",
+    "SpecialWeatherReport",
     # Legacy functions
     "fetch_earthquake_data",
     "fetch_earthquakes_enhanced",

@@ -1,8 +1,12 @@
 """
-Earthquake data from JMA.
+Earthquake and seismic data from JMA.
 
-Official Resource: 震源・震度に関する情報 (Earthquake & Seismic Intensity Information)
-Data Type Code: VXSE53
+Official Resources:
+1. 震源・震度に関する情報 (Earthquake & Seismic Intensity Information) - VXSE53
+2. 震度速報 (Seismic Intensity Report) - VXSE51
+3. 津波警報・注意報・予報 (Tsunami Warning/Advisory/Forecast) - VTSE41
+4. 津波情報 (Tsunami Information) - VTSE51
+
 Source Feed: eqvol_l.xml
 
 Also fetches and caches all 4 JMA Data Feeds for use by other modules.
@@ -23,7 +27,12 @@ from .translate import translate_ja_to_en
 
 log = get_logger(__name__)
 
-__all__ = ["EarthquakeIntensityInfo", "fetch_earthquake_data"]
+__all__ = [
+    "EarthquakeIntensityInfo",
+    "SeismicIntensityReport",
+    "TsunamiWarning",
+    "fetch_earthquake_data",
+]
 
 
 def fetch_earthquake_data() -> pd.DataFrame:
@@ -195,6 +204,150 @@ class EarthquakeIntensityInfo(JMADatasetBase):
             eq_data['prefectures_intensity_en_json'] = json.dumps(prefectures_en, ensure_ascii=False)
 
         return eq_data if len(eq_data) > 1 else None
+
+
+@register_dataset
+class SeismicIntensityReport(JMADatasetBase):
+    """Seismic intensity rapid reports from JMA VXSE51."""
+
+    NAME = "japan-seismic-intensity-report"
+    CSV_FILENAME = "japan_seismic_intensity_report.csv"
+    FEED_NAME = "eqvol_l.xml"
+    TYPE_CODES = ("VXSE51",)
+    MERGE_KEYS = ["event_id"]
+    DESCRIPTION = "Rapid seismic intensity reports from JMA"
+    SUBTITLE = "Quick seismic intensity observations following earthquakes"
+    KEYWORDS = ["jma", "japan", "earthquake", "seismic", "intensity", "report"]
+    MAX_ENTRIES = 100
+
+    def parse_entry(self, root: ET.Element, data_url: str) -> dict | None:
+        """Parse JMA VXSE51 seismic intensity report XML."""
+        head_data = self.extract_head(root)
+        if not head_data.get('event_id'):
+            return None
+
+        body = root.find('.//{http://xml.kishou.go.jp/jmaxml1/body/seismology1/}Body')
+        if body is None:
+            body = root.find('.//{http://xml.kishou.go.jp/jmaxml1/}Body')
+
+        if body is None:
+            return None
+
+        report_data = head_data.copy()
+
+        for elem in body.iter():
+            tag = self.sn(elem.tag)
+
+            if tag == 'OriginTime' and elem.text:
+                report_data['origin_time'] = elem.text
+
+            elif tag == 'Magnitude':
+                if elem.text:
+                    try:
+                        report_data['magnitude'] = float(elem.text)
+                    except ValueError:
+                        pass
+
+            elif tag == 'MaxInt' and elem.text:
+                report_data['max_intensity'] = elem.text
+
+            elif tag == 'Pref':
+                # Parse prefecture intensities
+                pref_name = None
+                pref_intensity = None
+                for child in elem:
+                    child_tag = self.sn(child.tag)
+                    if child_tag == 'Name' and child.text:
+                        pref_name = child.text
+                    elif child_tag == 'MaxInt' and child.text:
+                        pref_intensity = child.text
+
+        return report_data if len(report_data) > 2 else None
+
+
+@register_dataset
+class TsunamiWarning(JMADatasetBase):
+    """Tsunami warning and advisory information from JMA VTSE41."""
+
+    NAME = "japan-tsunami-warning"
+    CSV_FILENAME = "japan_tsunami_warning.csv"
+    FEED_NAME = "eqvol_l.xml"
+    TYPE_CODES = ("VTSE41",)
+    MERGE_KEYS = ["event_id"]
+    DESCRIPTION = "Tsunami warnings and advisories from JMA"
+    SUBTITLE = "Coastal tsunami threat assessments and estimates"
+    KEYWORDS = ["jma", "japan", "tsunami", "warning", "advisory"]
+    MAX_ENTRIES = 100
+
+    def parse_entry(self, root: ET.Element, data_url: str) -> dict | None:
+        """Parse JMA VTSE41 tsunami warning XML."""
+        head_data = self.extract_head(root)
+        if not head_data.get('event_id'):
+            return None
+
+        body = root.find('.//{http://xml.kishou.go.jp/jmaxml1/body/tsunami1/}Body')
+        if body is None:
+            body = root.find('.//{http://xml.kishou.go.jp/jmaxml1/}Body')
+
+        if body is None:
+            return None
+
+        tsunami_data = head_data.copy()
+
+        # Extract tsunami warnings by area
+        for elem in body.iter():
+            tag = self.sn(elem.tag)
+
+            if tag == 'OriginTime' and elem.text:
+                tsunami_data['origin_time'] = elem.text
+
+            elif tag == 'Hypocenter':
+                for area_elem in elem:
+                    if self.sn(area_elem.tag) == 'Area':
+                        for area_child in area_elem:
+                            child_tag = self.sn(area_child.tag)
+                            if child_tag == 'Name' and area_child.text:
+                                tsunami_data['hypocenter_area'] = area_child.text
+                                tsunami_data['hypocenter_area_en'] = self.translate(area_child.text)
+                            elif child_tag == 'Coordinate' and area_child.text:
+                                coord_str = area_child.text.strip().replace('/', '')
+                                try:
+                                    coords = re.findall(r'[+-]?\d+\.?\d*', coord_str)
+                                    if len(coords) >= 2:
+                                        tsunami_data['hypocenter_latitude'] = float(coords[0])
+                                        tsunami_data['hypocenter_longitude'] = float(coords[1])
+                                except (ValueError, IndexError):
+                                    pass
+
+            elif tag == 'Magnitude' and elem.text:
+                try:
+                    tsunami_data['magnitude'] = float(elem.text)
+                except ValueError:
+                    pass
+
+            elif tag == 'Tsunami':
+                for item in elem:
+                    if self.sn(item.tag) == 'Item':
+                        for item_child in item:
+                            item_tag = self.sn(item_child.tag)
+                            if item_tag == 'Kind':
+                                for kind_child in item_child:
+                                    if self.sn(kind_child.tag) == 'Name' and kind_child.text:
+                                        tsunami_data['warning_type'] = kind_child.text
+                                        tsunami_data['warning_type_en'] = self.translate(kind_child.text)
+                            elif item_tag == 'Areas':
+                                areas = []
+                                for area in item_child:
+                                    if self.sn(area.tag) == 'Area':
+                                        for area_child in area:
+                                            if self.sn(area_child.tag) == 'Name' and area_child.text:
+                                                areas.append(area_child.text)
+                                if areas:
+                                    tsunami_data['affected_areas_json'] = json.dumps(areas, ensure_ascii=False)
+                                    areas_en = [self.translate(a) for a in areas]
+                                    tsunami_data['affected_areas_en_json'] = json.dumps(areas_en, ensure_ascii=False)
+
+        return tsunami_data if len(tsunami_data) > 2 else None
 
 
 # For backwards compatibility

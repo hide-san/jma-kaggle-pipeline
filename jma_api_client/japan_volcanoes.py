@@ -2,19 +2,27 @@
 Volcano data from JMA.
 
 Official Resources:
-1. 火山の状況に関する解説情報 (Volcano Status Explanation) - Data Type Code: VFVO51
-2. 降灰予報 (Volcanic Ash Forecast) - Data Type Code: VFVO53
+1. 火山の状況に関する解説情報 (Volcano Status Explanation) - VFVO51
+2. 降灰予報 (Volcanic Ash Forecast) - VFVO53
+3. 噴火警報・予報 (Eruption Warning/Forecast) - VFVO50
+4. 噴火速報 (Eruption Flash Report) - VFVO56
 
 Source Feed: eqvol_l.xml
 """
 
+import json
 import xml.etree.ElementTree as ET
 
 import pandas as pd
 
 from .base import JMADatasetBase, register_dataset
 
-__all__ = ["VolcanoStatusExplanation", "VolcanicAshForecast"]
+__all__ = [
+    "VolcanoStatusExplanation",
+    "VolcanicAshForecast",
+    "EruptionWarning",
+    "EruptionFlashReport",
+]
 
 
 @register_dataset
@@ -177,6 +185,120 @@ class VolcanicAshForecast(JMADatasetBase):
             ash_data[f'window_{window_idx}_areas_en'] = ', '.join(translated_areas) if translated_areas else ''
 
         return ash_data if len(ash_data) > 2 else None
+
+
+@register_dataset
+class EruptionWarning(JMADatasetBase):
+    """Eruption warning and forecast data from JMA VFVO50."""
+
+    NAME = "japan-eruption-warning"
+    CSV_FILENAME = "japan_eruption_warning.csv"
+    FEED_NAME = "eqvol_l.xml"
+    TYPE_CODES = ("VFVO50",)
+    MERGE_KEYS = ["event_id"]
+    DESCRIPTION = "Eruption warnings and forecasts from JMA"
+    SUBTITLE = "Alert levels and warnings for volcanic activity"
+    KEYWORDS = ["jma", "japan", "volcano", "eruption", "warning"]
+    MAX_ENTRIES = 100
+
+    def parse_entry(self, root: ET.Element, data_url: str) -> dict | None:
+        """Parse JMA VFVO50 eruption warning XML."""
+        head_data = self.extract_head(root)
+        if not head_data.get('event_id'):
+            return None
+
+        body = root.find('.//{http://xml.kishou.go.jp/jmaxml1/body/volcanology1/}Body')
+        if body is None:
+            body = root.find('.//{http://xml.kishou.go.jp/jmaxml1/}Body')
+
+        if body is None:
+            return None
+
+        warning_data = head_data.copy()
+
+        for elem in body.iter():
+            tag = self.sn(elem.tag)
+
+            if tag == 'VolcanoInfo':
+                for child in elem:
+                    if self.sn(child.tag) == 'Item':
+                        for item_child in child:
+                            item_tag = self.sn(item_child.tag)
+                            if item_tag == 'Kind':
+                                for kind_child in item_child:
+                                    kind_tag = self.sn(kind_child.tag)
+                                    if kind_tag == 'Name' and kind_child.text:
+                                        warning_data['warning_type'] = kind_child.text
+                                        warning_data['warning_type_en'] = self.translate(kind_child.text)
+                                    elif kind_tag == 'Code' and kind_child.text:
+                                        warning_data['warning_code'] = kind_child.text
+
+                        for item_child in child:
+                            if self.sn(item_child.tag) == 'Areas':
+                                for area in item_child:
+                                    if self.sn(area.tag) == 'Area':
+                                        for area_child in area:
+                                            if self.sn(area_child.tag) == 'Name' and area_child.text:
+                                                warning_data['volcano_name'] = area_child.text
+                                                warning_data['volcano_name_en'] = self.translate(area_child.text)
+
+        return warning_data if len(warning_data) > 2 else None
+
+
+@register_dataset
+class EruptionFlashReport(JMADatasetBase):
+    """Eruption flash reports from JMA VFVO56."""
+
+    NAME = "japan-eruption-flash-report"
+    CSV_FILENAME = "japan_eruption_flash_report.csv"
+    FEED_NAME = "eqvol_l.xml"
+    TYPE_CODES = ("VFVO56",)
+    MERGE_KEYS = ["event_id"]
+    DESCRIPTION = "Flash reports of volcanic eruptions from JMA"
+    SUBTITLE = "Rapid notifications of ongoing or imminent eruptions"
+    KEYWORDS = ["jma", "japan", "volcano", "eruption", "flash", "report"]
+    MAX_ENTRIES = 100
+
+    def parse_entry(self, root: ET.Element, data_url: str) -> dict | None:
+        """Parse JMA VFVO56 eruption flash report XML."""
+        head_data = self.extract_head(root)
+        if not head_data.get('event_id'):
+            return None
+
+        body = root.find('.//{http://xml.kishou.go.jp/jmaxml1/body/volcanology1/}Body')
+        if body is None:
+            body = root.find('.//{http://xml.kishou.go.jp/jmaxml1/}Body')
+
+        if body is None:
+            return None
+
+        report_data = head_data.copy()
+
+        for elem in body.iter():
+            tag = self.sn(elem.tag)
+
+            if tag == 'Eruption':
+                for child in elem:
+                    child_tag = self.sn(child.tag)
+                    if child_tag == 'DateTime' and child.text:
+                        report_data['eruption_time'] = child.text
+                    elif child_tag == 'Item':
+                        for item_child in child:
+                            item_tag = self.sn(item_child.tag)
+                            if item_tag == 'Kind':
+                                for kind_child in item_child:
+                                    if self.sn(kind_child.tag) == 'Name' and kind_child.text:
+                                        report_data['eruption_type'] = kind_child.text
+                                        report_data['eruption_type_en'] = self.translate(kind_child.text)
+                            elif item_tag == 'Areas':
+                                for area in item_child:
+                                    if self.sn(area.tag) == 'Area':
+                                        for area_child in area:
+                                            if self.sn(area_child.tag) == 'Name' and area_child.text:
+                                                report_data['volcano_name'] = area_child.text
+                                                report_data['volcano_name_en'] = self.translate(area_child.text)
+
+        return report_data if len(report_data) > 2 else None
 
 
 # For backwards compatibility

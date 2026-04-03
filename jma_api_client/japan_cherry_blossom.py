@@ -1,8 +1,11 @@
 """
-Cherry blossom phenological observation data from JMA.
+Phenological and seasonal observation data from JMA.
 
-Official Resource: 生物季節観測 (Phenological Observation)
-Data Type Code: VGSK55
+Official Resources:
+1. 生物季節観測 (Phenological Observation) - VGSK55
+2. 季節観測 (Seasonal Observation) - VGSK50
+3. 特殊気象報 (Special Weather Report) - VGSK60
+
 Source Feed: other_l.xml
 """
 
@@ -12,7 +15,11 @@ import pandas as pd
 
 from .base import JMADatasetBase, register_dataset
 
-__all__ = ["PhenologicalObservation"]
+__all__ = [
+    "PhenologicalObservation",
+    "SeasonalObservation",
+    "SpecialWeatherReport",
+]
 
 
 @register_dataset
@@ -79,6 +86,115 @@ class PhenologicalObservation(JMADatasetBase):
                         row['station_location_en'] = self.translate(child.text)
 
         # Return only if we extracted meaningful data
+        return row if len(row) > 2 else None
+
+
+@register_dataset
+class SeasonalObservation(JMADatasetBase):
+    """General seasonal observations from JMA VGSK50."""
+
+    NAME = "japan-seasonal-observation"
+    CSV_FILENAME = "japan_seasonal_observation.csv"
+    FEED_NAME = "other_l.xml"
+    TYPE_CODES = ("VGSK50",)
+    MERGE_KEYS = ["event_id"]
+    DESCRIPTION = "General seasonal observations from JMA stations"
+    SUBTITLE = "Seasonal phenophase observations for various species"
+    KEYWORDS = ["jma", "japan", "seasonal", "observation", "phenology"]
+    MAX_ENTRIES = 100
+
+    def parse_entry(self, root: ET.Element, data_url: str) -> dict | None:
+        """Parse JMA VGSK50 seasonal observation XML."""
+        head_data = self.extract_head(root)
+        if not head_data.get('event_id'):
+            return None
+
+        body = root.find('.//{http://xml.kishou.go.jp/jmaxml1/body/meteorology1/}Body')
+        if body is None:
+            body = root.find('.//{http://xml.kishou.go.jp/jmaxml1/}Body')
+
+        if body is None:
+            return None
+
+        row = head_data.copy()
+
+        for elem in body.iter():
+            tag = self.sn(elem.tag)
+
+            if tag == 'DateTime' and elem.text:
+                row['observation_date'] = elem.text
+
+            elif tag == 'Kind':
+                for child in elem:
+                    child_tag = self.sn(child.tag)
+                    if child_tag == 'Name' and child.text:
+                        row['observation_type'] = child.text
+                        row['observation_type_en'] = self.translate(child.text)
+                    elif child_tag == 'Code' and child.text:
+                        row['observation_code'] = child.text
+
+            elif tag == 'Station':
+                for child in elem:
+                    child_tag = self.sn(child.tag)
+                    if child_tag == 'Name' and child.text:
+                        row['station_name'] = child.text
+                        row['station_name_en'] = self.translate(child.text)
+                    elif child_tag == 'Location' and child.text:
+                        row['station_location'] = child.text
+                        row['station_location_en'] = self.translate(child.text)
+
+        return row if len(row) > 2 else None
+
+
+@register_dataset
+class SpecialWeatherReport(JMADatasetBase):
+    """Special weather reports from JMA VGSK60."""
+
+    NAME = "japan-special-weather-report"
+    CSV_FILENAME = "japan_special_weather_report.csv"
+    FEED_NAME = "other_l.xml"
+    TYPE_CODES = ("VGSK60",)
+    MERGE_KEYS = ["event_id"]
+    DESCRIPTION = "Special weather reports from JMA"
+    SUBTITLE = "Reports of unusual or notable weather phenomena"
+    KEYWORDS = ["jma", "japan", "weather", "special", "report"]
+    MAX_ENTRIES = 100
+
+    def parse_entry(self, root: ET.Element, data_url: str) -> dict | None:
+        """Parse JMA VGSK60 special weather report XML."""
+        head_data = self.extract_head(root)
+        if not head_data.get('event_id'):
+            return None
+
+        body = root.find('.//{http://xml.kishou.go.jp/jmaxml1/body/meteorology1/}Body')
+        if body is None:
+            body = root.find('.//{http://xml.kishou.go.jp/jmaxml1/}Body')
+
+        if body is None:
+            return None
+
+        row = head_data.copy()
+
+        for elem in body.iter():
+            tag = self.sn(elem.tag)
+
+            if tag == 'DateTime' and elem.text:
+                row['report_date'] = elem.text
+
+            elif tag == 'Item':
+                for child in elem:
+                    child_tag = self.sn(child.tag)
+                    if child_tag == 'Kind':
+                        for kind_child in child:
+                            if self.sn(kind_child.tag) == 'Name' and kind_child.text:
+                                row['weather_phenomenon'] = kind_child.text
+                                row['weather_phenomenon_en'] = self.translate(kind_child.text)
+                    elif child_tag == 'Area':
+                        for area_child in child:
+                            if self.sn(area_child.tag) == 'Name' and area_child.text:
+                                row['area_name'] = area_child.text
+                                row['area_name_en'] = self.translate(area_child.text)
+
         return row if len(row) > 2 else None
 
 
