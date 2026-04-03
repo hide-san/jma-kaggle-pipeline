@@ -138,6 +138,9 @@ class KaggleUploader:
         else:
             log.warning("Merge keys %s not found in DataFrame columns — skipping dedup", merge_keys)
 
+        if valid_keys:
+            combined = combined.sort_values(by=valid_keys, ascending=False).reset_index(drop=True)
+
         log.info(
             "Merged: existing=%d + new=%d → combined=%d rows",
             len(existing_df), len(new_df), len(combined),
