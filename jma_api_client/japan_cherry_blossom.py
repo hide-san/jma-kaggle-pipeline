@@ -1,4 +1,10 @@
-"""Cherry blossom data fetching from JMA APIs."""
+"""
+Cherry blossom data fetching from JMA APIs.
+
+Official Resource: 生物季節観測 (Phenological Observation)
+Data Type Code: VGSK55
+Source Feed: other_l.xml
+"""
 
 import os
 import xml.etree.ElementTree as ET

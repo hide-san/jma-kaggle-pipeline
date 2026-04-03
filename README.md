@@ -12,17 +12,20 @@ Automated data pipeline that fetches meteorological and seismic data from the **
 - **Logging**: Full pipeline execution logs for debugging and monitoring
 - **Data Persistence**: Saves both raw API responses and parsed data locally to `data/` directory
 
-## Data Sources
+## Datasets
 
-| Dataset | Code | Source | Records | Update Frequency |
-|---------|------|--------|---------|------------------|
-| **Earthquakes** | VXSE53 | JMA eqvol_l.xml | 108 | Real-time |
-| **Enhanced Earthquakes** | VXSE53 | JMA eqvol_l.xml | 108 | Real-time |
-| **Volcanic Ash Forecasts** | VFVO53 | JMA eqvol_l.xml | 896 | Real-time |
-| **Volcano Status** | VFVO51 | JMA eqvol_l.xml | 24 | Real-time |
-| **Cherry Blossom Observations** | VGSK55 | JMA other_l.xml | 68 | Seasonal (Mar-May) |
-| **Sea Warnings** | VPCU51 | JMA other_l.xml | 612 | Real-time |
-| **Sea Forecasts** | VPCY51 | JMA other_l.xml | 336 | Real-time |
+This pipeline manages JMA meteorological and seismic data. Each dataset corresponds to an official JMA information resource:
+
+| Script | Official Resource Name | Data Type Code | Source | Kaggle Dataset |
+|--------|----------------------|----------------|--------|----------------|
+| `japan_earthquake_information.py` | 震源・震度に関する情報 (Earthquake & Seismic Intensity Information) | VXSE53 | eqvol_l.xml | `japan-earthquake-and-seismic-information` |
+| `japan_volcano_status.py` | 火山の状況に関する解説情報 (Volcano Status Explanation) | VFVO51 | eqvol_l.xml | `japan-volcano-status-explanation` |
+| `japan_volcanic_ash_forecast.py` | 降灰予報 (Volcanic Ash Forecast) | VFVO53 | eqvol_l.xml | `japan-volcanic-ash-forecast` |
+| `japan_phenological_observation.py` | 生物季節観測 (Phenological Observation - Cherry Blossom) | VGSK55 | other_l.xml | `japan-phenological-observation` |
+| `japan_regional_sea_alert.py` | 地方海上警報 (Regional Sea Alert) | VPCU51 | other_l.xml | `japan-regional-sea-alert` |
+| `japan_regional_sea_forecast.py` | 地方海上予報 (Regional Sea Forecast) | VPCY51 | other_l.xml | `japan-regional-sea-forecast` |
+
+**Note**: Data type codes reference the official [JMA XML Format Specification](https://xml.kishou.go.jp/jmaxml_20260129_format_v1_3_hyo1_1.pdf).
 
 ## Prerequisites
 
@@ -210,11 +213,11 @@ jma-kaggle-pipeline/
 ├── .env.example                    # Environment template
 ├── jma_api_client/                 # JMA API client (modular)
 │   ├── __init__.py                 # Package exports
-│   ├── earthquakes.py              # VXSE53 earthquake data extraction
-│   ├── volcanoes.py                # VFVO53/VFVO51 volcanic data
-│   ├── cherry_blossom.py           # VGSK55 cherry blossom observations
-│   ├── sea.py                      # VPCU51/VPCY51 sea warnings & forecasts
-│   ├── temperature.py              # Temperature data (discontinued)
+│   ├── japan_earthquakes.py        # VXSE53: 震源・震度に関する情報
+│   ├── japan_volcanoes.py          # VFVO51/VFVO53: 火山の状況・降灰予報
+│   ├── japan_cherry_blossom.py     # VGSK55: 生物季節観測
+│   ├── japan_sea.py                # VPCU51/VPCY51: 地方海上警報・予報
+│   ├── temperature.py              # (Discontinued - AMeDAS)
 │   ├── translate.py                # Japanese-to-English translation utilities
 │   └── utils.py                    # Shared utilities (HTTP, parsing, logging)
 ├── tests/
@@ -225,13 +228,12 @@ jma-kaggle-pipeline/
 │   └── workflows/
 │       └── daily-update.yml        # GitHub Actions daily pipeline trigger
 └── data/                           # Generated CSV files & raw XML caches
-    ├── earthquakes.csv
-    ├── earthquakes_enhanced.csv
-    ├── volcanic_ash_forecasts.csv
-    ├── cherry_blossom_observations.csv
-    ├── volcano_status.csv
-    ├── sea_warnings.csv
-    ├── sea_forecasts.csv
+    ├── japan_earthquake_information.csv
+    ├── japan_volcano_status.csv
+    ├── japan_volcanic_ash_forecast.csv
+    ├── japan_phenological_observation.csv
+    ├── japan_regional_sea_alert.csv
+    ├── japan_regional_sea_forecast.csv
     └── raw/                        # Cached JMA XML feeds
 ```
 

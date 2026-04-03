@@ -1,4 +1,10 @@
-"""Earthquake data fetching from JMA APIs."""
+"""
+Earthquake data fetching from JMA APIs.
+
+Official Resource: 震源・震度に関する情報 (Earthquake & Seismic Intensity Information)
+Data Type Code: VXSE53
+Source Feed: eqvol_l.xml
+"""
 
 import json
 import os

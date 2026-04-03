@@ -1,4 +1,12 @@
-"""Volcano data fetching from JMA APIs (status and ash forecasts)."""
+"""
+Volcano data fetching from JMA APIs.
+
+Includes two official resources:
+1. 火山の状況に関する解説情報 (Volcano Status Explanation) - Data Type Code: VFVO51
+2. 降灰予報 (Volcanic Ash Forecast) - Data Type Code: VFVO53
+
+Source Feed: eqvol_l.xml
+"""
 
 import os
 import xml.etree.ElementTree as ET

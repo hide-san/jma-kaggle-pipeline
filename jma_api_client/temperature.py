@@ -1,4 +1,12 @@
-"""Temperature data fetching from JMA APIs."""
+"""
+Temperature data fetching from JMA APIs.
+
+NOTE: This data source has been discontinued by JMA.
+The AMeDAS API endpoint no longer provides data.
+
+Official Resource: (Discontinued - AMeDAS Temperature)
+Source: jma.go.jp/bosai/amedas (deprecated)
+"""
 
 import pandas as pd
 from logger import get_logger

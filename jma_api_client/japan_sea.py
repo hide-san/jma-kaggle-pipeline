@@ -1,4 +1,12 @@
-"""Sea warning and forecast data fetching from JMA APIs."""
+"""
+Sea warning and forecast data fetching from JMA APIs.
+
+Includes two official resources:
+1. 地方海上警報 (Regional Sea Alert) - Data Type Code: VPCU51
+2. 地方海上予報 (Regional Sea Forecast) - Data Type Code: VPCY51
+
+Source Feed: other_l.xml
+"""
 
 import os
 import xml.etree.ElementTree as ET
