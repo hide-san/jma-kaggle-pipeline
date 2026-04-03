@@ -27,8 +27,8 @@ DATASETS = []
 for dataset_name in sorted(DATASET_REGISTRY.keys()):
     dataset_cls = DATASET_REGISTRY[dataset_name]
     config_dict = dataset_cls.to_config()
-    # Add Kaggle username to kaggle_dataset
+    # Add Kaggle username to kaggle_dataset (may be None when credentials are not needed)
     config_dict["kaggle_dataset"] = config_dict["kaggle_dataset"].replace(
-        "{KAGGLE_USERNAME}", KAGGLE_USERNAME
+        "{KAGGLE_USERNAME}", KAGGLE_USERNAME or ""
     )
     DATASETS.append(config_dict)
