@@ -194,7 +194,15 @@ if __name__ == "__main__":
     parser.add_argument("--datasets", help="Comma-separated list of dataset names to process (e.g., japan-earthquake-and-seismic-information,japan-regional-sea-alert)")
     parser.add_argument("--list-datasets", action="store_true", help="List all available datasets and exit")
     parser.add_argument("--skip-feed-fetch", action="store_true", help="Skip downloading JMA feeds (use pre-cached files in data/raw/)")
+    parser.add_argument("--fetch-feeds-only", action="store_true", help="Only download JMA feeds to data/raw/ and exit (used by CI fetch-feeds job)")
     args = parser.parse_args()
+
+    # Handle --fetch-feeds-only (CI pre-fetch step)
+    if args.fetch_feeds_only:
+        log.info("Fetching JMA Atom feeds...")
+        fetch_all_feeds()
+        log.info("Feed fetch complete.")
+        sys.exit(0)
 
     # Handle --list-datasets
     if args.list_datasets:

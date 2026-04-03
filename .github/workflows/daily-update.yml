@@ -18,7 +18,7 @@ jobs:
         uses: ./.github/actions/python-setup
 
       - name: Fetch JMA Atom feeds
-        run: python -c "from jma_api_client.base import fetch_all_feeds; fetch_all_feeds()"
+        run: python data_pipeline.py --fetch-feeds-only
 
       - name: Upload feed cache
         uses: actions/upload-artifact@v4
