@@ -13,10 +13,10 @@ Endpoints:
   Each feed contains Atom entries with links to detailed meteorological and seismic data files.
 """
 
-from .earthquakes import fetch_earthquake_data, fetch_earthquakes_enhanced
-from .volcanoes import fetch_volcanic_ash_forecasts, fetch_volcano_status
-from .sea import fetch_sea_warnings, fetch_sea_forecasts
-from .cherry_blossom import fetch_cherry_blossom_observations
+from .japan_earthquakes import fetch_earthquake_data, fetch_earthquakes_enhanced
+from .japan_volcanoes import fetch_volcanic_ash_forecasts, fetch_volcano_status
+from .japan_sea import fetch_sea_warnings, fetch_sea_forecasts
+from .japan_cherry_blossom import fetch_cherry_blossom_observations
 from .temperature import fetch_temperature_data
 
 __all__ = [

@@ -16,7 +16,7 @@ DATASETS = [
         "kaggle_dataset": f"{KAGGLE_USERNAME}/japan-earthquakes",
         "csv_filename": "earthquakes.csv",
         "merge_keys": ["event_id"],
-        "description": "Earthquake data reported by JMA",
+        "description": "Latest earthquake data from Japan Meteorological Agency",
     },
     {
         "name": "japan-earthquakes-enhanced",

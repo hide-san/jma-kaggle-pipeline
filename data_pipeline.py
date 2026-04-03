@@ -25,14 +25,14 @@ def run_pipeline() -> bool:
 
     # Map dataset name → fetch function
     fetchers = {
-        "cherry-blossom-observations": jma_api_client.fetch_cherry_blossom_observations,
+        "japan-cherry-blossom-observations": jma_api_client.fetch_cherry_blossom_observations,
         "japan-city-temperatures": jma_api_client.fetch_temperature_data,
         "japan-earthquakes": jma_api_client.fetch_earthquake_data,
         "japan-earthquakes-enhanced": jma_api_client.fetch_earthquakes_enhanced,
-        "volcanic-ash-forecasts": jma_api_client.fetch_volcanic_ash_forecasts,
-        "volcano-status": jma_api_client.fetch_volcano_status,
-        "sea-warnings": jma_api_client.fetch_sea_warnings,
-        "sea-forecasts": jma_api_client.fetch_sea_forecasts,
+        "japan-volcanic-ash-forecasts": jma_api_client.fetch_volcanic_ash_forecasts,
+        "japan-volcano-status": jma_api_client.fetch_volcano_status,
+        "japan-sea-warnings": jma_api_client.fetch_sea_warnings,
+        "japan-sea-forecasts": jma_api_client.fetch_sea_forecasts,
     }
 
     results: dict[str, bool] = {}
