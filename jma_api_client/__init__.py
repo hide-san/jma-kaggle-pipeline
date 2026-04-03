@@ -43,6 +43,11 @@ from .japan_weather import (
     HeavyRainWarning,
     TornadoWatchInfo,
 )
+from .japan_marine import (
+    GeneralMarineWarning,
+    RegionalTidalInfo,
+    GeneralTidalInfo,
+)
 
 # Legacy functions (backwards compatibility)
 from .japan_earthquakes import fetch_earthquake_data, fetch_earthquakes_enhanced
@@ -79,6 +84,10 @@ __all__ = [
     "WeatherWarning",
     "HeavyRainWarning",
     "TornadoWatchInfo",
+    # Dataset classes (marine)
+    "GeneralMarineWarning",
+    "RegionalTidalInfo",
+    "GeneralTidalInfo",
     # Legacy functions
     "fetch_earthquake_data",
     "fetch_earthquakes_enhanced",
