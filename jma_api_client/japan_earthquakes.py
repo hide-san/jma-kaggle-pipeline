@@ -22,8 +22,8 @@ import pandas as pd
 import config
 from logger import get_logger
 from .base import JMADatasetBase, register_dataset
-from .utils import get, is_numeric, parse_latlon, save_raw
-from .translate import translate_ja_to_en
+from .utils import get
+
 
 log = get_logger(__name__)
 
@@ -35,74 +35,7 @@ __all__ = [
     "TsunamiInfo",
     "EarthquakeActivityInfo",
     "SeismicObservationInfo",
-    "fetch_earthquake_data",
 ]
-
-
-def fetch_earthquake_data() -> pd.DataFrame:
-    """
-    Fetch and cache all 4 JMA Data Feeds + JSON endpoint.
-
-    This is a shared resource for all other modules that depend on cached feeds.
-    It also provides simple earthquake data from the JSON endpoint as fallback.
-
-    Returns:
-        DataFrame with basic earthquake info from JSON endpoint (origin_time, magnitude, etc.)
-    """
-    # JMA Data Feed URLs
-    feeds = [
-        ("regular_l.xml", "https://www.data.jma.go.jp/developer/xml/feed/regular_l.xml"),
-        ("extra_l.xml", "https://www.data.jma.go.jp/developer/xml/feed/extra_l.xml"),
-        ("eqvol_l.xml", "https://www.data.jma.go.jp/developer/xml/feed/eqvol_l.xml"),
-        ("other_l.xml", "https://www.data.jma.go.jp/developer/xml/feed/other_l.xml"),
-    ]
-
-    # Fetch and save all JMA Data Feeds
-    for feed_name, feed_url in feeds:
-        try:
-            log.info("Fetching %s", feed_name)
-            feed_resp = get(feed_url)
-            save_raw(feed_name, feed_resp.content)
-            log.info("Saved %s (%d bytes)", feed_name, len(feed_resp.content))
-        except Exception as exc:
-            log.warning("Could not fetch %s: %s", feed_name, exc)
-
-    # Fetch earthquake list from simple JSON endpoint
-    url = "https://www.jma.go.jp/bosai/quake/data/list.json"
-    log.info("Fetching earthquake list: %s", url)
-    resp = get(url)
-    items = resp.json()  # list of dicts
-    # Save raw response
-    save_raw("earthquakes.json", resp.content)
-
-    rows = []
-    for item in items:
-        # Derive a stable event_id from the hypocenter report key
-        event_id = item.get("json", "").replace("/", "_").removesuffix(".json")
-        at = item.get("at", "")          # origin time
-        maxi = item.get("maxi", "")      # max seismic intensity
-        mag_str = item.get("mag", "")
-        mag = float(mag_str) if is_numeric(mag_str) else None
-        anm = item.get("anm", "")        # epicentre name
-        # lat/lon embedded in item for recent quakes
-        cod = item.get("cod", "")        # "lat lon" string
-        lat, lon = parse_latlon(cod)
-
-        row = {
-            "event_id": event_id,
-            "origin_time": at,
-            "epicentre": anm,
-            "epicentre_en": translate_ja_to_en(anm) if anm else "",
-            "latitude": lat,
-            "longitude": lon,
-            "magnitude": mag,
-            "max_intensity": maxi,
-        }
-        rows.append(row)
-
-    df = pd.DataFrame(rows)
-    log.info("Earthquake rows fetched: %d", len(df))
-    return df
 
 
 @register_dataset
@@ -255,8 +188,11 @@ class SeismicIntensityReport(JMADatasetBase):
             elif tag == 'MaxInt' and elem.text:
                 report_data['max_intensity'] = elem.text
 
-            elif tag == 'Pref':
-                # Parse prefecture intensities
+        prefectures = {}
+        prefectures_en = {}
+        for elem in body.iter():
+            tag = self.sn(elem.tag)
+            if tag == 'Pref':
                 pref_name = None
                 pref_intensity = None
                 for child in elem:
@@ -265,6 +201,13 @@ class SeismicIntensityReport(JMADatasetBase):
                         pref_name = child.text
                     elif child_tag == 'MaxInt' and child.text:
                         pref_intensity = child.text
+                if pref_name and pref_intensity:
+                    prefectures[pref_name] = pref_intensity
+                    prefectures_en[self.translate(pref_name)] = pref_intensity
+
+        if prefectures:
+            report_data['prefectures_intensity_json'] = json.dumps(prefectures, ensure_ascii=False)
+            report_data['prefectures_intensity_en_json'] = json.dumps(prefectures_en, ensure_ascii=False)
 
         return report_data if len(report_data) > 2 else None
 

@@ -4,7 +4,6 @@ from functools import lru_cache
 from deep_translator import GoogleTranslator
 
 _translator = GoogleTranslator(source='ja', target='en')
-_translation_cache = {}
 
 
 @lru_cache(maxsize=2048)
@@ -23,14 +22,8 @@ def translate_ja_to_en(text: str) -> str:
     if not text:
         return text
 
-    # Check cache first
-    if text in _translation_cache:
-        return _translation_cache[text]
-
     try:
-        translated = _translator.translate(text)
-        _translation_cache[text] = translated
-        return translated
+        return _translator.translate(text)
     except Exception:
         # On error, return original text
         return text

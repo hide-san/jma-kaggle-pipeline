@@ -90,7 +90,7 @@ def run_pipeline(dry_run: bool = False, preview: bool = False, skip_feed_fetch: 
             # 1.5. Save parsed data locally
             os.makedirs(config.DATA_DIR, exist_ok=True)
             parsed_path = os.path.join(config.DATA_DIR, dataset_cfg["csv_filename"])
-            new_df.to_csv(parsed_path, index=False)
+            new_df.to_csv(parsed_path, index=False, encoding="utf-8")
             log_path = parsed_path.replace(os.sep, '/')
             log.info("Saved parsed data to %s", log_path)
 
