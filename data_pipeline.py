@@ -190,10 +190,22 @@ if __name__ == "__main__":
     if args.list_datasets:
         print("Available datasets:")
         print()
-        for dataset_cfg in config.DATASETS:
+        print(f"{'#':3} {'Dataset Name':50} {'Feed':15} {'Type Codes':30}")
+        print("-" * 100)
+        for i, dataset_cfg in enumerate(config.DATASETS, 1):
             name = dataset_cfg["name"]
-            desc = dataset_cfg.get("description", "")
-            print(f"  {name:45} {desc}")
+            # Try to get metadata from registry
+            if name in DATASET_REGISTRY:
+                dataset_cls = DATASET_REGISTRY[name]
+                meta = dataset_cls().get_metadata()
+                feed = meta.get("feed", "?")
+                codes = ", ".join(meta.get("type_codes", []))
+            else:
+                feed = "?"
+                codes = "?"
+            print(f"{i:3} {name:50} {feed:15} {codes:30}")
+        print()
+        print(f"Total: {len(config.DATASETS)} datasets")
         print()
         sys.exit(0)
 
