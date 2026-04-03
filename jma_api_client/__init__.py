@@ -13,6 +13,16 @@ Endpoints:
   Each feed contains Atom entries with links to detailed meteorological and seismic data files.
 """
 
+# Plugin registry infrastructure
+from .base import DATASET_REGISTRY, JMADatasetBase, register_dataset
+
+# Dataset classes (new plugin architecture)
+from .japan_earthquakes import EarthquakeIntensityInfo
+from .japan_volcanoes import VolcanoStatusExplanation, VolcanicAshForecast
+from .japan_sea import RegionalSeaAlert, RegionalSeaForecast
+from .japan_cherry_blossom import PhenologicalObservation
+
+# Legacy functions (backwards compatibility)
 from .japan_earthquakes import fetch_earthquake_data, fetch_earthquakes_enhanced
 from .japan_volcanoes import fetch_volcanic_ash_forecasts, fetch_volcano_status
 from .japan_sea import fetch_sea_warnings, fetch_sea_forecasts
@@ -20,6 +30,18 @@ from .japan_cherry_blossom import fetch_cherry_blossom_observations
 from .temperature import fetch_temperature_data
 
 __all__ = [
+    # Registry & base infrastructure
+    "DATASET_REGISTRY",
+    "JMADatasetBase",
+    "register_dataset",
+    # Dataset classes
+    "EarthquakeIntensityInfo",
+    "VolcanoStatusExplanation",
+    "VolcanicAshForecast",
+    "RegionalSeaAlert",
+    "RegionalSeaForecast",
+    "PhenologicalObservation",
+    # Legacy functions
     "fetch_earthquake_data",
     "fetch_earthquakes_enhanced",
     "fetch_volcanic_ash_forecasts",

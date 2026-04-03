@@ -1,7 +1,8 @@
 import logging
 import os
-from config import LOG_FILE
 
+# Define LOG_FILE locally to avoid circular imports
+LOG_FILE = "logs/pipeline.log"
 os.makedirs(os.path.dirname(LOG_FILE), exist_ok=True)
 
 logging.basicConfig(

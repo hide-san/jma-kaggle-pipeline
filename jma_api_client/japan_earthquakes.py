@@ -1,9 +1,11 @@
 """
-Earthquake data fetching from JMA APIs.
+Earthquake data from JMA.
 
 Official Resource: 震源・震度に関する情報 (Earthquake & Seismic Intensity Information)
 Data Type Code: VXSE53
 Source Feed: eqvol_l.xml
+
+Also fetches and caches all 4 JMA Data Feeds for use by other modules.
 """
 
 import json
@@ -12,23 +14,27 @@ import re
 import xml.etree.ElementTree as ET
 
 import pandas as pd
-from tenacity import retry, stop_after_attempt, wait_fixed
 
 import config
 from logger import get_logger
+from .base import JMADatasetBase, register_dataset
 from .utils import get, is_numeric, parse_latlon, save_raw
 from .translate import translate_ja_to_en
 
 log = get_logger(__name__)
 
+__all__ = ["EarthquakeIntensityInfo", "fetch_earthquake_data"]
 
-@retry(stop=stop_after_attempt(config.RETRY_ATTEMPTS),
-       wait=wait_fixed(config.RETRY_WAIT_SECONDS))
+
 def fetch_earthquake_data() -> pd.DataFrame:
-    """Fetch earthquake data from JMA APIs.
+    """
+    Fetch and cache all 4 JMA Data Feeds + JSON endpoint.
 
-    Fetches all 4 JMA Data Feeds and prioritizes eqvol_l.xml for earthquake data.
-    Also uses the simple JSON endpoint as fallback.
+    This is a shared resource for all other modules that depend on cached feeds.
+    It also provides simple earthquake data from the JSON endpoint as fallback.
+
+    Returns:
+        DataFrame with basic earthquake info from JSON endpoint (origin_time, magnitude, etc.)
     """
     # JMA Data Feed URLs
     feeds = [
@@ -86,187 +92,112 @@ def fetch_earthquake_data() -> pd.DataFrame:
     return df
 
 
-@retry(stop=stop_after_attempt(config.RETRY_ATTEMPTS),
-       wait=wait_fixed(config.RETRY_WAIT_SECONDS))
-def fetch_earthquakes_enhanced() -> pd.DataFrame:
-    """Fetch enhanced earthquake data from JMA XML feed (eqvol_l.xml).
-
-    Parses VXSE53 entries (earthquake/seismic) with detailed hypocenter,
-    magnitude type, and per-prefecture seismic intensity information.
-
-    Enhanced fields vs. simple JSON:
-    - hypocenter_latitude, hypocenter_longitude, hypocenter_depth_km
-    - magnitude_type (usually 'Mj')
-    - per_prefecture_intensity (JSON dict with prefecture names/codes and intensities)
+@register_dataset
+class EarthquakeIntensityInfo(JMADatasetBase):
     """
-    # Read locally saved eqvol_l.xml feed
-    feed_path = os.path.join(config.RAW_DATA_DIR, "eqvol_l.xml")
+    Detailed earthquake and seismic intensity information from JMA VXSE53.
 
-    if not os.path.exists(feed_path):
-        log.warning("eqvol_l.xml not found in %s, skipping enhanced earthquakes", config.RAW_DATA_DIR)
-        return pd.DataFrame()
+    Includes hypocenter coordinates, magnitude type, and per-prefecture intensity.
+    """
 
-    try:
-        with open(feed_path, 'rb') as f:
-            feed_content = f.read()
-    except Exception as exc:
-        log.error("Could not read eqvol_l.xml: %s", exc)
-        return pd.DataFrame()
+    NAME = "japan-earthquake-and-seismic-information"
+    CSV_FILENAME = "japan_earthquake_and_seismic_information.csv"
+    FEED_NAME = "eqvol_l.xml"
+    TYPE_CODES = ("VXSE53",)
+    MERGE_KEYS = ["event_id"]
+    DESCRIPTION = "Earthquake and seismic intensity information from JMA"
+    SUBTITLE = "Detailed earthquake data with magnitude, intensity, and hypocenter"
+    KEYWORDS = ["jma", "japan", "earthquake", "seismic", "intensity"]
+    MAX_ENTRIES = 50
 
-    # Parse Atom feed
-    try:
-        root = ET.fromstring(feed_content)
-    except ET.ParseError as exc:
-        log.error("Could not parse eqvol_l.xml: %s", exc)
-        return pd.DataFrame()
+    def parse_entry(self, root: ET.Element, data_url: str) -> dict | None:
+        """Parse JMA VXSE53 earthquake XML and extract rich earthquake data."""
+        # Extract header info
+        head_data = self.extract_head(root)
+        if not head_data.get('event_id'):
+            return None
 
-    ns = {'atom': 'http://www.w3.org/2005/Atom'}
-    entries = root.findall('.//atom:entry', ns)
-    log.info("Found %d entries in eqvol_l.xml", len(entries))
+        # Find body (try seismology1 namespace first)
+        body = root.find('.//{http://xml.kishou.go.jp/jmaxml1/body/seismology1/}Body')
+        if body is None:
+            body = root.find('.//{http://xml.kishou.go.jp/jmaxml1/}Body')
 
-    rows = []
-    entry_count = 0
+        if body is None:
+            return None
 
-    # Process each feed entry
-    for entry in entries:
-        try:
-            link = entry.find('atom:link', ns)
-            if link is None:
-                continue
+        eq_data = head_data.copy()
 
-            data_url = link.get('href')
-            if not data_url or 'VXSE5' not in data_url:  # Only process earthquake entries
-                continue
+        # Extract Earthquake data from Body
+        for elem in body.iter():
+            tag = self.sn(elem.tag)
 
-            entry_count += 1
-            if entry_count > 50:  # Limit to recent 50 earthquakes
-                break
+            if tag == 'OriginTime' and elem.text:
+                eq_data['origin_time'] = elem.text
 
-            # Fetch and parse the detailed XML data file
-            try:
-                data_resp = get(data_url)
-                data_root = ET.fromstring(data_resp.content)
-                earthquake_data = _parse_earthquake_xml(data_root, data_url)
-                if earthquake_data:
-                    rows.append(earthquake_data)
-            except Exception as exc:
-                log.debug("Failed to parse earthquake XML from %s: %s", data_url, exc)
-                continue
+            elif tag == 'Hypocenter':
+                # Parse hypocenter (Area/Coordinate structure)
+                for area_elem in elem:
+                    if self.sn(area_elem.tag) == 'Area':
+                        for area_child in area_elem:
+                            child_tag = self.sn(area_child.tag)
+                            if child_tag == 'Name' and area_child.text:
+                                eq_data['hypocenter_area'] = area_child.text
+                                eq_data['hypocenter_area_en'] = self.translate(area_child.text)
+                            elif child_tag == 'Coordinate' and area_child.text:
+                                # Parse "+lat+lon-depth/" format
+                                coord_str = area_child.text.strip().replace('/', '')
+                                try:
+                                    coords = re.findall(r'[+-]?\d+\.?\d*', coord_str)
+                                    if len(coords) >= 2:
+                                        eq_data['hypocenter_latitude'] = float(coords[0])
+                                        eq_data['hypocenter_longitude'] = float(coords[1])
+                                        if len(coords) >= 3:
+                                            # Depth is in meters, convert to km
+                                            depth_m = abs(float(coords[2]))
+                                            eq_data['hypocenter_depth_km'] = depth_m / 1000
+                                except (ValueError, IndexError):
+                                    pass
 
-        except Exception as exc:
-            log.warning("Failed to process entry: %s", exc)
-            continue
+            elif tag == 'Magnitude':
+                if elem.text:
+                    try:
+                        eq_data['magnitude'] = float(elem.text)
+                    except ValueError:
+                        pass
+                mag_type = elem.get('type')
+                if mag_type:
+                    eq_data['magnitude_type'] = mag_type
 
-    df = pd.DataFrame(rows)
-    log.info("Enhanced earthquake rows fetched: %d", len(df))
-    return df
+            elif tag == 'MaxInt' and elem.text:
+                eq_data['max_intensity'] = elem.text
+
+        # Extract per-prefecture intensity data
+        prefectures = {}
+        prefectures_en = {}
+        for elem in body.iter():
+            tag = self.sn(elem.tag)
+            if tag == 'Pref':
+                pref_name = None
+                pref_intensity = None
+                for child in elem:
+                    child_tag = self.sn(child.tag)
+                    if child_tag == 'Name' and child.text:
+                        pref_name = child.text
+                    elif child_tag == 'MaxInt' and child.text:
+                        pref_intensity = child.text
+                if pref_name and pref_intensity:
+                    prefectures[pref_name] = pref_intensity
+                    pref_name_en = self.translate(pref_name)
+                    prefectures_en[pref_name_en] = pref_intensity
+
+        if prefectures:
+            eq_data['prefectures_intensity_json'] = json.dumps(prefectures, ensure_ascii=False)
+            eq_data['prefectures_intensity_en_json'] = json.dumps(prefectures_en, ensure_ascii=False)
+
+        return eq_data if len(eq_data) > 1 else None
 
 
-def _parse_earthquake_xml(root: ET.Element, data_url: str) -> dict | None:
-    """Parse JMA VXSE53 earthquake XML and extract rich earthquake data."""
-    def sn(tag):
-        """Strip namespace from tag."""
-        return tag.split('}')[-1] if '}' in tag else tag
-
-    # Find report metadata in Head (try multiple namespace variants)
-    head = root.find('.//{http://xml.kishou.go.jp/jmaxml1/informationBasis1/}Head')
-    if head is None:
-        head = root.find('.//{http://xml.kishou.go.jp/jmaxml1/}Head')
-
-    # Find body (try seismology1 namespace first)
-    body = root.find('.//{http://xml.kishou.go.jp/jmaxml1/body/seismology1/}Body')
-    if body is None:
-        body = root.find('.//{http://xml.kishou.go.jp/jmaxml1/}Body')
-
-    if head is None or body is None:
-        return None
-
-    # Extract header info
-    event_id = None
-    report_datetime = None
-
-    for elem in head.iter():
-        tag = sn(elem.tag)
-        if tag == 'EventID' and elem.text:
-            event_id = elem.text
-        elif tag == 'ReportDateTime' and elem.text:
-            report_datetime = elem.text
-
-    if not event_id:
-        return None  # Not an earthquake event
-
-    # Extract Earthquake data from Body
-    eq_data = {'event_id': event_id, 'report_datetime': report_datetime}
-
-    # Find Earthquake element
-    for elem in body.iter():
-        tag = sn(elem.tag)
-
-        if tag == 'OriginTime' and elem.text:
-            eq_data['origin_time'] = elem.text
-
-        elif tag == 'Hypocenter':
-            # Parse hypocenter (Area/Coordinate structure)
-            for area_elem in elem:
-                if sn(area_elem.tag) == 'Area':
-                    for area_child in area_elem:
-                        child_tag = sn(area_child.tag)
-                        if child_tag == 'Name' and area_child.text:
-                            eq_data['hypocenter_area'] = area_child.text
-                            eq_data['hypocenter_area_en'] = translate_ja_to_en(area_child.text)
-                        elif child_tag == 'Coordinate' and area_child.text:
-                            # Parse "+lat+lon-depth/" format (coordinates without spaces)
-                            coord_str = area_child.text.strip().replace('/', '')
-                            try:
-                                # Use regex to extract signed floats
-                                coords = re.findall(r'[+-]?\d+\.?\d*', coord_str)
-                                if len(coords) >= 2:
-                                    eq_data['hypocenter_latitude'] = float(coords[0])
-                                    eq_data['hypocenter_longitude'] = float(coords[1])
-                                    if len(coords) >= 3:
-                                        # Depth is in meters, convert to km
-                                        # Take absolute value in case negative depth is used
-                                        depth_m = abs(float(coords[2]))
-                                        eq_data['hypocenter_depth_km'] = depth_m / 1000
-                            except (ValueError, IndexError):
-                                pass
-
-        elif tag == 'Magnitude':
-            # Magnitude value is in text content, type is in attribute
-            if elem.text:
-                try:
-                    eq_data['magnitude'] = float(elem.text)
-                except ValueError:
-                    pass
-            # Get magnitude type from attributes
-            mag_type = elem.get('type')
-            if mag_type:
-                eq_data['magnitude_type'] = mag_type
-
-        elif tag == 'MaxInt' and elem.text:
-            eq_data['max_intensity'] = elem.text
-
-    # Extract per-prefecture intensity data
-    prefectures = {}
-    prefectures_en = {}
-    for elem in body.iter():
-        tag = sn(elem.tag)
-        if tag == 'Pref':
-            pref_name = None
-            pref_intensity = None
-            for child in elem:
-                child_tag = sn(child.tag)
-                if child_tag == 'Name' and child.text:
-                    pref_name = child.text
-                elif child_tag == 'MaxInt' and child.text:
-                    pref_intensity = child.text
-            if pref_name and pref_intensity:
-                prefectures[pref_name] = pref_intensity
-                pref_name_en = translate_ja_to_en(pref_name)
-                prefectures_en[pref_name_en] = pref_intensity
-
-    if prefectures:
-        eq_data['prefectures_intensity_json'] = json.dumps(prefectures, ensure_ascii=False)
-        eq_data['prefectures_intensity_en_json'] = json.dumps(prefectures_en, ensure_ascii=False)
-
-    return eq_data if len(eq_data) > 1 else None  # Return only if has data beyond event_id
+# For backwards compatibility
+def fetch_earthquakes_enhanced() -> pd.DataFrame:
+    """Legacy function wrapper."""
+    return EarthquakeIntensityInfo().fetch()

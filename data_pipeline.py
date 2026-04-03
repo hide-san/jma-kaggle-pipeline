@@ -12,7 +12,7 @@ import os
 import sys
 
 import config
-import jma_api_client
+from jma_api_client.base import DATASET_REGISTRY
 from kaggle_uploader import KaggleUploader
 from logger import get_logger
 
@@ -40,18 +40,6 @@ def run_pipeline(dry_run: bool = False) -> bool:
     if dry_run:
         log.info("DRY-RUN mode enabled: Fetching and merging data, but NOT uploading to Kaggle")
 
-    # Map dataset name → fetch function
-    fetchers = {
-        "japan-cherry-blossom-observations": jma_api_client.fetch_cherry_blossom_observations,
-        "japan-city-temperatures": jma_api_client.fetch_temperature_data,
-        "japan-earthquakes": jma_api_client.fetch_earthquake_data,
-        "japan-earthquakes-enhanced": jma_api_client.fetch_earthquakes_enhanced,
-        "japan-volcanic-ash-forecasts": jma_api_client.fetch_volcanic_ash_forecasts,
-        "japan-volcano-status": jma_api_client.fetch_volcano_status,
-        "japan-sea-warnings": jma_api_client.fetch_sea_warnings,
-        "japan-sea-forecasts": jma_api_client.fetch_sea_forecasts,
-    }
-
     results: dict[str, bool] = {}
 
     for dataset_cfg in filtered_datasets:
@@ -60,9 +48,14 @@ def run_pipeline(dry_run: bool = False) -> bool:
         log.info("Processing dataset: %s", name)
 
         try:
-            # 1. Fetch new data from JMA
-            fetch_fn = fetchers[name]
-            new_df = fetch_fn()
+            # 1. Fetch new data from JMA using dataset class from registry
+            if name not in DATASET_REGISTRY:
+                log.error("Dataset '%s' not found in registry", name)
+                results[name] = False
+                continue
+
+            dataset_cls = DATASET_REGISTRY[name]
+            new_df = dataset_cls().fetch()
 
             # 1.5. Save parsed data locally
             os.makedirs(config.DATA_DIR, exist_ok=True)
@@ -133,8 +126,20 @@ def run_pipeline(dry_run: bool = False) -> bool:
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description="JMA data pipeline")
     parser.add_argument("--dry-run", action="store_true", help="Simulate pipeline without uploading to Kaggle")
-    parser.add_argument("--datasets", help="Comma-separated list of dataset names to process (e.g., japan-earthquakes,japan-sea-warnings)")
+    parser.add_argument("--datasets", help="Comma-separated list of dataset names to process (e.g., japan-earthquake-and-seismic-information,japan-regional-sea-alert)")
+    parser.add_argument("--list-datasets", action="store_true", help="List all available datasets and exit")
     args = parser.parse_args()
+
+    # Handle --list-datasets
+    if args.list_datasets:
+        print("Available datasets:")
+        print()
+        for dataset_cfg in config.DATASETS:
+            name = dataset_cfg["name"]
+            desc = dataset_cfg.get("description", "")
+            print(f"  {name:45} {desc}")
+        print()
+        sys.exit(0)
 
     # Handle --datasets argument (CLI override)
     if args.datasets:
