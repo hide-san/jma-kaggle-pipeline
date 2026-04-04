@@ -26,8 +26,8 @@ __all__ = [
 class GeneralMarineWarning(JMADatasetBase):
     """General marine warnings from JMA VPZU50."""
 
-    NAME = "japan-general-marine-warning"
-    CSV_FILENAME = "japan_general_marine_warning.csv"
+    NAME = "jma-marine-warnings"
+    CSV_FILENAME = "jma_marine_warnings.csv"
     FEED_NAME = "regular_l.xml"
     TYPE_CODES = ("VPZU50", "VPZU54", "VPZU51")
     MERGE_KEYS = ["event_id"]
@@ -89,8 +89,8 @@ class GeneralMarineWarning(JMADatasetBase):
 class RegionalTidalInfo(JMADatasetBase):
     """Regional tidal information from JMA VMCJ51."""
 
-    NAME = "japan-regional-tidal-information"
-    CSV_FILENAME = "japan_regional_tidal_information.csv"
+    NAME = "jma-regional-tidal-forecasts"
+    CSV_FILENAME = "jma_regional_tidal_forecasts.csv"
     FEED_NAME = "other_l.xml"
     TYPE_CODES = ("VMCJ51",)
     MERGE_KEYS = ["event_id"]
@@ -152,8 +152,8 @@ class RegionalTidalInfo(JMADatasetBase):
 class GeneralTidalInfo(JMADatasetBase):
     """General tidal information from JMA VMCJ50."""
 
-    NAME = "japan-general-tidal-information"
-    CSV_FILENAME = "japan_general_tidal_information.csv"
+    NAME = "jma-tidal-information"
+    CSV_FILENAME = "jma_tidal_information.csv"
     FEED_NAME = "other_l.xml"
     TYPE_CODES = ("VMCJ50",)
     MERGE_KEYS = ["event_id"]

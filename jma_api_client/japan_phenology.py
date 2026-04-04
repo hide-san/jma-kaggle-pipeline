@@ -30,8 +30,8 @@ class PhenologicalObservation(JMADatasetBase):
     Extracts observation date, phenophase (e.g., "full bloom"), and station info.
     """
 
-    NAME = "japan-phenological-observation"
-    CSV_FILENAME = "japan_phenological_observation.csv"
+    NAME = "jma-cherry-blossom-observations"
+    CSV_FILENAME = "jma_cherry_blossom_observations.csv"
     FEED_NAME = "other_l.xml"
     TYPE_CODES = ("VGSK55",)
     MERGE_KEYS = ["event_id"]
@@ -105,8 +105,8 @@ class PhenologicalObservation(JMADatasetBase):
 class SeasonalObservation(JMADatasetBase):
     """General seasonal observations from JMA VGSK50."""
 
-    NAME = "japan-seasonal-observation"
-    CSV_FILENAME = "japan_seasonal_observation.csv"
+    NAME = "jma-seasonal-nature-observations"
+    CSV_FILENAME = "jma_seasonal_nature_observations.csv"
     FEED_NAME = "other_l.xml"
     TYPE_CODES = ("VGSK50",)
     MERGE_KEYS = ["event_id"]
@@ -174,12 +174,12 @@ class SeasonalObservation(JMADatasetBase):
 class SpecialWeatherReport(JMADatasetBase):
     """Special weather reports from JMA VGSK60."""
 
-    NAME = "japan-special-weather-report"
-    CSV_FILENAME = "japan_special_weather_report.csv"
+    NAME = "jma-special-weather-reports"
+    CSV_FILENAME = "jma_special_weather_reports.csv"
     FEED_NAME = "other_l.xml"
     TYPE_CODES = ("VGSK60",)
     MERGE_KEYS = ["event_id"]
-    TITLE = "JMA Special Weather Reports (VGSK60)"
+    TITLE = "JMA Special Weather Reports"
     DESCRIPTION = (
         "特殊気象報 — Special Weather Report. "
         "JMA documentation of unusual or historically significant weather phenomena "

@@ -21,8 +21,8 @@ __all__ = ["RegionalSeaAlert", "RegionalSeaForecast"]
 class RegionalSeaAlert(JMADatasetBase):
     """Regional sea alert warnings from JMA."""
 
-    NAME = "japan-regional-sea-alert"
-    CSV_FILENAME = "japan_regional_sea_alert.csv"
+    NAME = "jma-regional-sea-alerts"
+    CSV_FILENAME = "jma_regional_sea_alerts.csv"
     FEED_NAME = "other_l.xml"
     TYPE_CODES = ("VPCU51",)
     MERGE_KEYS = ["event_id"]
@@ -100,8 +100,8 @@ class RegionalSeaAlert(JMADatasetBase):
 class RegionalSeaForecast(JMADatasetBase):
     """Regional sea forecast data from JMA."""
 
-    NAME = "japan-regional-sea-forecast"
-    CSV_FILENAME = "japan_regional_sea_forecast.csv"
+    NAME = "jma-regional-sea-forecasts"
+    CSV_FILENAME = "jma_regional_sea_forecasts.csv"
     FEED_NAME = "other_l.xml"
     TYPE_CODES = ("VPCY51",)
     MERGE_KEYS = ["event_id"]

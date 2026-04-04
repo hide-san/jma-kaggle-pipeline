@@ -24,8 +24,8 @@ __all__ = [
 class RiverFloodForecast(JMADatasetBase):
     """Designated river flood forecasts from JMA VXKO50-89."""
 
-    NAME = "japan-river-flood-forecast"
-    CSV_FILENAME = "japan_river_flood_forecast.csv"
+    NAME = "jma-river-flood-forecasts"
+    CSV_FILENAME = "jma_river_flood_forecasts.csv"
     FEED_NAME = "regular_l.xml"
     TYPE_CODES = tuple(f"VXKO{i:02d}" for i in range(50, 90))
     MERGE_KEYS = ["event_id"]
@@ -87,8 +87,8 @@ class RiverFloodForecast(JMADatasetBase):
 class LandslideHazardAlert(JMADatasetBase):
     """Landslide hazard alerts from JMA VXWW50."""
 
-    NAME = "japan-landslide-hazard-alert"
-    CSV_FILENAME = "japan_landslide_hazard_alert.csv"
+    NAME = "jma-landslide-hazard-alerts"
+    CSV_FILENAME = "jma_landslide_hazard_alerts.csv"
     FEED_NAME = "regular_l.xml"
     TYPE_CODES = ("VXWW50",)
     MERGE_KEYS = ["event_id"]

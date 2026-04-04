@@ -26,8 +26,8 @@ __all__ = [
 class WeatherWarning(JMADatasetBase):
     """General weather warnings and advisories from JMA VPWW53."""
 
-    NAME = "japan-weather-warning"
-    CSV_FILENAME = "japan_weather_warning.csv"
+    NAME = "jma-weather-warnings-and-advisories"
+    CSV_FILENAME = "jma_weather_warnings_and_advisories.csv"
     FEED_NAME = "regular_l.xml"
     TYPE_CODES = ("VPWW53", "VPWW54", "VPWW55", "VPWW56", "VPWW57", "VPWW58", "VPWW59", "VPWW60", "VPWW61")
     MERGE_KEYS = ["event_id"]
@@ -89,8 +89,8 @@ class WeatherWarning(JMADatasetBase):
 class HeavyRainWarning(JMADatasetBase):
     """Record short-term heavy rain alerts from JMA VPOA50."""
 
-    NAME = "japan-heavy-rain-warning"
-    CSV_FILENAME = "japan_heavy_rain_warning.csv"
+    NAME = "jma-heavy-rain-alerts"
+    CSV_FILENAME = "jma_heavy_rain_alerts.csv"
     FEED_NAME = "regular_l.xml"
     TYPE_CODES = ("VPOA50",)
     MERGE_KEYS = ["event_id"]
@@ -149,8 +149,8 @@ class HeavyRainWarning(JMADatasetBase):
 class TornadoWatchInfo(JMADatasetBase):
     """Tornado watch information from JMA VPHW50/51."""
 
-    NAME = "japan-tornado-watch"
-    CSV_FILENAME = "japan_tornado_watch.csv"
+    NAME = "jma-tornado-watch-alerts"
+    CSV_FILENAME = "jma_tornado_watch_alerts.csv"
     FEED_NAME = "regular_l.xml"
     TYPE_CODES = ("VPHW50", "VPHW51")
     MERGE_KEYS = ["event_id"]

@@ -31,8 +31,8 @@ __all__ = [
 class VolcanoStatusExplanation(JMADatasetBase):
     """Volcano status and alert level information from JMA VFVO51."""
 
-    NAME = "japan-volcano-status-explanation"
-    CSV_FILENAME = "japan_volcano_status_explanation.csv"
+    NAME = "jma-volcano-status-reports"
+    CSV_FILENAME = "jma_volcano_status_reports.csv"
     FEED_NAME = "eqvol_l.xml"
     TYPE_CODES = ("VFVO51",)
     MERGE_KEYS = ["event_id"]
@@ -123,8 +123,8 @@ class VolcanoStatusExplanation(JMADatasetBase):
 class VolcanicAshForecast(JMADatasetBase):
     """Volcanic ash forecast data from JMA VFVO53."""
 
-    NAME = "japan-volcanic-ash-forecast"
-    CSV_FILENAME = "japan_volcanic_ash_forecast.csv"
+    NAME = "jma-volcanic-ash-forecasts"
+    CSV_FILENAME = "jma_volcanic_ash_forecasts.csv"
     FEED_NAME = "eqvol_l.xml"
     TYPE_CODES = ("VFVO53",)
     MERGE_KEYS = ["event_id"]
@@ -216,8 +216,8 @@ class VolcanicAshForecast(JMADatasetBase):
 class EruptionWarning(JMADatasetBase):
     """Eruption warning and forecast data from JMA VFVO50."""
 
-    NAME = "japan-eruption-warning"
-    CSV_FILENAME = "japan_eruption_warning.csv"
+    NAME = "jma-eruption-warnings"
+    CSV_FILENAME = "jma_eruption_warnings.csv"
     FEED_NAME = "eqvol_l.xml"
     TYPE_CODES = ("VFVO50",)
     MERGE_KEYS = ["event_id"]
@@ -285,8 +285,8 @@ class EruptionWarning(JMADatasetBase):
 class EruptionFlashReport(JMADatasetBase):
     """Eruption flash reports from JMA VFVO56."""
 
-    NAME = "japan-eruption-flash-report"
-    CSV_FILENAME = "japan_eruption_flash_report.csv"
+    NAME = "jma-eruption-flash-reports"
+    CSV_FILENAME = "jma_eruption_flash_reports.csv"
     FEED_NAME = "eqvol_l.xml"
     TYPE_CODES = ("VFVO56",)
     MERGE_KEYS = ["event_id"]
@@ -352,8 +352,8 @@ class EruptionFlashReport(JMADatasetBase):
 class EruptionObservation(JMADatasetBase):
     """Eruption-related volcanic observation reports from JMA VFVO52."""
 
-    NAME = "japan-eruption-observation"
-    CSV_FILENAME = "japan_eruption_observation.csv"
+    NAME = "jma-eruption-observations"
+    CSV_FILENAME = "jma_eruption_observations.csv"
     FEED_NAME = "eqvol_l.xml"
     TYPE_CODES = ("VFVO52",)
     MERGE_KEYS = ["event_id"]
@@ -419,8 +419,8 @@ class EruptionObservation(JMADatasetBase):
 class EstimatedPlumeDirection(JMADatasetBase):
     """Estimated volcanic plume flow direction from JMA VFVO60."""
 
-    NAME = "japan-estimated-plume-direction"
-    CSV_FILENAME = "japan_estimated_plume_direction.csv"
+    NAME = "jma-volcanic-plume-direction"
+    CSV_FILENAME = "jma_volcanic_plume_direction.csv"
     FEED_NAME = "eqvol_l.xml"
     TYPE_CODES = ("VFVO60",)
     MERGE_KEYS = ["event_id"]

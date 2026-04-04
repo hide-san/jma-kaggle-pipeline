@@ -24,8 +24,8 @@ __all__ = [
 class GeneralSeasonalForecast(JMADatasetBase):
     """General monthly and seasonal forecasts from JMA VPZK50."""
 
-    NAME = "japan-general-seasonal-forecast"
-    CSV_FILENAME = "japan_general_seasonal_forecast.csv"
+    NAME = "jma-seasonal-weather-forecasts"
+    CSV_FILENAME = "jma_seasonal_weather_forecasts.csv"
     FEED_NAME = "regular_l.xml"
     TYPE_CODES = ("VPZK50",)
     MERGE_KEYS = ["event_id"]
@@ -84,8 +84,8 @@ class GeneralSeasonalForecast(JMADatasetBase):
 class RegionalSeasonalForecast(JMADatasetBase):
     """Regional monthly and seasonal forecasts from JMA VPCK50."""
 
-    NAME = "japan-regional-seasonal-forecast"
-    CSV_FILENAME = "japan_regional_seasonal_forecast.csv"
+    NAME = "jma-regional-seasonal-forecasts"
+    CSV_FILENAME = "jma_regional_seasonal_forecasts.csv"
     FEED_NAME = "regular_l.xml"
     TYPE_CODES = ("VPCK50",)
     MERGE_KEYS = ["event_id"]

@@ -26,8 +26,8 @@ __all__ = [
 class TyphoonInfoGeneral(JMADatasetBase):
     """General typhoon information from JMA VPTI50."""
 
-    NAME = "japan-typhoon-information"
-    CSV_FILENAME = "japan_typhoon_information.csv"
+    NAME = "jma-typhoon-information"
+    CSV_FILENAME = "jma_typhoon_information.csv"
     FEED_NAME = "regular_l.xml"
     TYPE_CODES = ("VPTI50",)
     MERGE_KEYS = ["event_id"]
@@ -92,8 +92,8 @@ class TyphoonInfoGeneral(JMADatasetBase):
 class TyphoonInfoStandardized(JMADatasetBase):
     """Standardized typhoon information from JMA VPTI51."""
 
-    NAME = "japan-typhoon-information-standardized"
-    CSV_FILENAME = "japan_typhoon_information_standardized.csv"
+    NAME = "jma-typhoon-standardized-data"
+    CSV_FILENAME = "jma_typhoon_standardized_data.csv"
     FEED_NAME = "regular_l.xml"
     TYPE_CODES = ("VPTI51",)
     MERGE_KEYS = ["event_id"]
@@ -149,8 +149,8 @@ class TyphoonInfoStandardized(JMADatasetBase):
 class TyphoonInfoDetailed(JMADatasetBase):
     """Detailed typhoon information from JMA VPTI52."""
 
-    NAME = "japan-typhoon-information-detailed"
-    CSV_FILENAME = "japan_typhoon_information_detailed.csv"
+    NAME = "jma-typhoon-detailed-forecasts"
+    CSV_FILENAME = "jma_typhoon_detailed_forecasts.csv"
     FEED_NAME = "regular_l.xml"
     TYPE_CODES = ("VPTI52",)
     MERGE_KEYS = ["event_id"]

@@ -46,8 +46,8 @@ class EarthquakeIntensityInfo(JMADatasetBase):
     Includes hypocenter coordinates, magnitude type, and per-prefecture intensity.
     """
 
-    NAME = "japan-earthquake-and-seismic-information"
-    CSV_FILENAME = "japan_earthquake_and_seismic_information.csv"
+    NAME = "jma-earthquake-intensity-reports"
+    CSV_FILENAME = "jma_earthquake_intensity_reports.csv"
     FEED_NAME = "eqvol_l.xml"
     TYPE_CODES = ("VXSE53",)
     MERGE_KEYS = ["event_id"]
@@ -160,8 +160,8 @@ class EarthquakeIntensityInfo(JMADatasetBase):
 class SeismicIntensityReport(JMADatasetBase):
     """Seismic intensity rapid reports from JMA VXSE51."""
 
-    NAME = "japan-seismic-intensity-report"
-    CSV_FILENAME = "japan_seismic_intensity_report.csv"
+    NAME = "jma-seismic-intensity-rapid-reports"
+    CSV_FILENAME = "jma_seismic_intensity_rapid_reports.csv"
     FEED_NAME = "eqvol_l.xml"
     TYPE_CODES = ("VXSE51",)
     MERGE_KEYS = ["event_id"]
@@ -241,8 +241,8 @@ class SeismicIntensityReport(JMADatasetBase):
 class TsunamiWarning(JMADatasetBase):
     """Tsunami warning and advisory information from JMA VTSE41."""
 
-    NAME = "japan-tsunami-warning"
-    CSV_FILENAME = "japan_tsunami_warning.csv"
+    NAME = "jma-tsunami-warnings-and-advisories"
+    CSV_FILENAME = "jma_tsunami_warnings_and_advisories.csv"
     FEED_NAME = "eqvol_l.xml"
     TYPE_CODES = ("VTSE41",)
     MERGE_KEYS = ["event_id"]
@@ -338,8 +338,8 @@ class TsunamiWarning(JMADatasetBase):
 class EarthquakeEarlyWarning(JMADatasetBase):
     """Earthquake early warning alerts from JMA VXSE43/VXSE44."""
 
-    NAME = "japan-earthquake-early-warning"
-    CSV_FILENAME = "japan_earthquake_early_warning.csv"
+    NAME = "jma-earthquake-early-warnings"
+    CSV_FILENAME = "jma_earthquake_early_warnings.csv"
     FEED_NAME = "eqvol_l.xml"
     TYPE_CODES = ("VXSE43", "VXSE44")
     MERGE_KEYS = ["event_id"]
@@ -406,8 +406,8 @@ class EarthquakeEarlyWarning(JMADatasetBase):
 class TsunamiInfo(JMADatasetBase):
     """Tsunami observation information from JMA VTSE51."""
 
-    NAME = "japan-tsunami-information"
-    CSV_FILENAME = "japan_tsunami_information.csv"
+    NAME = "jma-tsunami-observations"
+    CSV_FILENAME = "jma_tsunami_observations.csv"
     FEED_NAME = "eqvol_l.xml"
     TYPE_CODES = ("VTSE51",)
     MERGE_KEYS = ["event_id"]
@@ -476,8 +476,8 @@ class TsunamiInfo(JMADatasetBase):
 class EarthquakeActivityInfo(JMADatasetBase):
     """Earthquake activity status information from JMA VXSE56."""
 
-    NAME = "japan-earthquake-activity-information"
-    CSV_FILENAME = "japan_earthquake_activity_information.csv"
+    NAME = "jma-earthquake-activity-reports"
+    CSV_FILENAME = "jma_earthquake_activity_reports.csv"
     FEED_NAME = "eqvol_l.xml"
     TYPE_CODES = ("VXSE56",)
     MERGE_KEYS = ["event_id"]
@@ -529,8 +529,8 @@ class EarthquakeActivityInfo(JMADatasetBase):
 class SeismicObservationInfo(JMADatasetBase):
     """Seismic observation status information from JMA VXSE60-62."""
 
-    NAME = "japan-seismic-observation-information"
-    CSV_FILENAME = "japan_seismic_observation_information.csv"
+    NAME = "jma-seismic-network-status"
+    CSV_FILENAME = "jma_seismic_network_status.csv"
     FEED_NAME = "eqvol_l.xml"
     TYPE_CODES = ("VXSE60", "VXSE61", "VXSE62")
     MERGE_KEYS = ["event_id"]
