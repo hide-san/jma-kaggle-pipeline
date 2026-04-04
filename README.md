@@ -87,7 +87,7 @@ cp .env.example .env
 Edit `.env` with your Kaggle credentials:
 ```env
 KAGGLE_USERNAME=your_kaggle_username
-KAGGLE_KEY=your_kaggle_api_key
+KAGGLE_API_TOKEN=your_kaggle_api_key
 ```
 
 ### 3. Install Dependencies
@@ -137,7 +137,7 @@ No manual config needed—just define the class and it's automatically:
 
 Edit `.env` (or set environment variables):
 - `KAGGLE_USERNAME` - Kaggle account name
-- `KAGGLE_KEY` - API token (from account settings)
+- `KAGGLE_API_TOKEN` - API token (from account settings)
 - `DATASETS_FILTER` - Comma-separated dataset names (for CI/CD parallelization)
 
 Edit `config.py` to customize:
@@ -317,7 +317,7 @@ Performance metrics tracked per dataset:
 # Test Kaggle CLI credentials
 kaggle datasets list
 ```
-- Verify `.env` has correct `KAGGLE_USERNAME` and `KAGGLE_KEY`
+- Verify `.env` has correct `KAGGLE_USERNAME` and `KAGGLE_API_TOKEN`
 - API key from account settings (not username/password)
 - Ensure key has dataset read/write permissions
 

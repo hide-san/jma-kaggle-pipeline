@@ -46,7 +46,7 @@ All methods have retry logic (3 attempts, 5-second wait) via `@retry` decorator 
 - `upload_dataset(kaggle_dataset, csv_filename, df, description)`: Writes CSV to temp directory, creates required `dataset-metadata.json`, uploads via Kaggle API
 
 **`config.py`** — Configuration via environment variables (`.env`):
-- `KAGGLE_USERNAME`, `KAGGLE_KEY` (required)
+- `KAGGLE_USERNAME`, `KAGGLE_API_TOKEN` (required)
 - `JMA_BASE_URL` hardcoded
 - `DATASETS` list defines which datasets to process and their merge keys
 - Retry settings and log file path
@@ -64,7 +64,7 @@ pip install -r requirements.txt
 ```bash
 python scripts/data_pipeline.py
 ```
-Requires `.env` file with `KAGGLE_USERNAME` and `KAGGLE_KEY` set. See `.env.example` for template.
+Requires `.env` file with `KAGGLE_USERNAME` and `KAGGLE_API_TOKEN` set. See `.env.example` for template.
 
 ### Run tests
 ```bash
@@ -82,7 +82,7 @@ pytest tests/test_pipeline.py::test_merge_deduplication_new_wins -v
 **`.env` file** (create from `.env.example`):
 ```
 KAGGLE_USERNAME=your_kaggle_username
-KAGGLE_KEY=your_kaggle_api_key
+KAGGLE_API_TOKEN=your_kaggle_api_key
 ```
 
 **Dataset Configuration** (`config.py`):
