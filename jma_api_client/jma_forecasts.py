@@ -35,7 +35,8 @@ class GeneralSeasonalForecast(JMADatasetBase):
         "JMA extended forecasts covering 1-month, 3-month, and warm/cold season outlooks "
         "for Japan, including temperature and precipitation anomaly predictions.\n\n"
         "**Columns include:** event_id, report_datetime, info_type_en, title_en, "
-        "forecast_issued_time, forecast_type_en, forecast_period\n\n"
+        "target_area_name_en, target_area_code, forecast_start_date, forecast_duration, "
+        "forecast_period_name_en, next_forecast_datetime\n\n"
         "**Feed:** regular_l.xml | **Type code:** VPZK50\n"
         "**Updates:** Hourly automated pipeline | **Max entries per run:** 100\n"
         "**Use cases:** seasonal climate outlooks, agricultural planning, "
@@ -48,8 +49,6 @@ class GeneralSeasonalForecast(JMADatasetBase):
     def parse_entry(self, root: ET.Element, data_url: str) -> dict | None:
         """Parse JMA VPZK50 general seasonal forecast XML."""
         head_data = self.extract_head(root)
-        if not head_data.get('event_id'):
-            return None
 
         body = root.find('.//{http://xml.kishou.go.jp/jmaxml1/body/meteorology1/}Body')
         if body is None:
@@ -58,24 +57,49 @@ class GeneralSeasonalForecast(JMADatasetBase):
         if body is None:
             return None
 
+        # Seasonal forecasts have empty EventID — synthesize from report_datetime + title
+        if not head_data.get('event_id') and head_data.get('report_datetime'):
+            head_data['event_id'] = f"{head_data['report_datetime']}_{head_data.get('title', 'VPZK50')}"
+
+        if not head_data.get('event_id'):
+            return None
+
         forecast_data = head_data.copy()
 
-        for elem in body.iter():
+        # Extract TargetArea (national or regional scope)
+        for elem in body:
             tag = self.sn(elem.tag)
-
-            if tag == 'DateTime' and elem.text:
-                forecast_data['forecast_issued_time'] = elem.text
-
-            elif tag == 'Item':
+            if tag == 'TargetArea':
                 for child in elem:
                     child_tag = self.sn(child.tag)
-                    if child_tag == 'Kind':
-                        for kind_child in child:
-                            if self.sn(kind_child.tag) == 'Name' and kind_child.text:
-                                forecast_data['forecast_type'] = kind_child.text
-                                forecast_data['forecast_type_en'] = self.translate(kind_child.text)
-                    elif child_tag == 'Period' and child.text:
-                        forecast_data['forecast_period'] = child.text
+                    if child_tag == 'Name' and child.text:
+                        forecast_data['target_area_name'] = child.text
+                        forecast_data['target_area_name_en'] = self.translate(child.text)
+                    elif child_tag == 'Code' and child.text:
+                        forecast_data['target_area_code'] = child.text
+                break
+
+        # Extract forecast period metadata from first MeteorologicalInfo
+        for elem in body.iter():
+            if self.sn(elem.tag) == 'MeteorologicalInfo':
+                for child in elem:
+                    child_tag = self.sn(child.tag)
+                    if child_tag == 'DateTime' and child.text:
+                        forecast_data['forecast_start_date'] = child.text
+                    elif child_tag == 'Duration' and child.text:
+                        forecast_data['forecast_duration'] = child.text
+                    elif child_tag == 'Name' and child.text:
+                        forecast_data['forecast_period_name'] = child.text
+                        forecast_data['forecast_period_name_en'] = self.translate(child.text)
+                break  # only the first MeteorologicalInfo block
+
+        # Extract next forecast schedule from AdditionalInfo
+        for elem in body.iter():
+            if self.sn(elem.tag) == 'NextForecastSchedule':
+                for child in elem:
+                    if self.sn(child.tag) == 'DateTime' and child.text:
+                        forecast_data['next_forecast_datetime'] = child.text
+                break
 
         return forecast_data if len(forecast_data) > 2 else None
 
@@ -95,7 +119,8 @@ class RegionalSeasonalForecast(JMADatasetBase):
         "JMA district-level extended forecasts providing 1-month, 3-month, and seasonal "
         "temperature and precipitation anomaly predictions by region across Japan.\n\n"
         "**Columns include:** event_id, report_datetime, info_type_en, title_en, "
-        "forecast_issued_time, forecast_type_en, forecast_period, region_name_en\n\n"
+        "target_area_name_en, target_area_code, forecast_start_date, forecast_duration, "
+        "forecast_period_name_en, next_forecast_datetime\n\n"
         "**Feed:** regular_l.xml | **Type code:** VPCK50\n"
         "**Updates:** Hourly automated pipeline | **Max entries per run:** 100\n"
         "**Use cases:** regional climate outlooks, prefectural planning, "
@@ -108,8 +133,6 @@ class RegionalSeasonalForecast(JMADatasetBase):
     def parse_entry(self, root: ET.Element, data_url: str) -> dict | None:
         """Parse JMA VPCK50 regional seasonal forecast XML."""
         head_data = self.extract_head(root)
-        if not head_data.get('event_id'):
-            return None
 
         body = root.find('.//{http://xml.kishou.go.jp/jmaxml1/body/meteorology1/}Body')
         if body is None:
@@ -118,28 +141,48 @@ class RegionalSeasonalForecast(JMADatasetBase):
         if body is None:
             return None
 
+        # Seasonal forecasts have empty EventID — synthesize from report_datetime + title
+        if not head_data.get('event_id') and head_data.get('report_datetime'):
+            head_data['event_id'] = f"{head_data['report_datetime']}_{head_data.get('title', 'VPCK50')}"
+
+        if not head_data.get('event_id'):
+            return None
+
         forecast_data = head_data.copy()
 
-        for elem in body.iter():
+        # Extract TargetArea (regional scope)
+        for elem in body:
             tag = self.sn(elem.tag)
-
-            if tag == 'DateTime' and elem.text:
-                forecast_data['forecast_issued_time'] = elem.text
-
-            elif tag == 'Item':
+            if tag == 'TargetArea':
                 for child in elem:
                     child_tag = self.sn(child.tag)
-                    if child_tag == 'Kind':
-                        for kind_child in child:
-                            if self.sn(kind_child.tag) == 'Name' and kind_child.text:
-                                forecast_data['forecast_type'] = kind_child.text
-                                forecast_data['forecast_type_en'] = self.translate(kind_child.text)
-                    elif child_tag == 'Area':
-                        for area_child in child:
-                            if self.sn(area_child.tag) == 'Name' and area_child.text:
-                                forecast_data['region_name'] = area_child.text
-                                forecast_data['region_name_en'] = self.translate(area_child.text)
-                    elif child_tag == 'Period' and child.text:
-                        forecast_data['forecast_period'] = child.text
+                    if child_tag == 'Name' and child.text:
+                        forecast_data['target_area_name'] = child.text
+                        forecast_data['target_area_name_en'] = self.translate(child.text)
+                    elif child_tag == 'Code' and child.text:
+                        forecast_data['target_area_code'] = child.text
+                break
+
+        # Extract forecast period metadata from first MeteorologicalInfo
+        for elem in body.iter():
+            if self.sn(elem.tag) == 'MeteorologicalInfo':
+                for child in elem:
+                    child_tag = self.sn(child.tag)
+                    if child_tag == 'DateTime' and child.text:
+                        forecast_data['forecast_start_date'] = child.text
+                    elif child_tag == 'Duration' and child.text:
+                        forecast_data['forecast_duration'] = child.text
+                    elif child_tag == 'Name' and child.text:
+                        forecast_data['forecast_period_name'] = child.text
+                        forecast_data['forecast_period_name_en'] = self.translate(child.text)
+                break  # only the first MeteorologicalInfo block
+
+        # Extract next forecast schedule from AdditionalInfo
+        for elem in body.iter():
+            if self.sn(elem.tag) == 'NextForecastSchedule':
+                for child in elem:
+                    if self.sn(child.tag) == 'DateTime' and child.text:
+                        forecast_data['next_forecast_datetime'] = child.text
+                break
 
         return forecast_data if len(forecast_data) > 2 else None

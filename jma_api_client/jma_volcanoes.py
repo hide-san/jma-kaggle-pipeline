@@ -11,11 +11,37 @@ Source Feed: eqvol_l.xml
 """
 
 import json
+import re
 import xml.etree.ElementTree as ET
 
 import pandas as pd
 
 from .base import JMADatasetBase, register_dataset
+
+
+def _parse_volcano_coordinate(coord_str: str) -> tuple[float | None, float | None, int | None]:
+    """
+    Parse JMA volcano coordinate string "+DDMM.MM+DDDMM.MM+ELEVm/" to
+    (latitude_decimal, longitude_decimal, elevation_m).
+    Format is degrees-minutes: +2938.30 = 29°38.30'N.
+    """
+    try:
+        coord_str = coord_str.strip().rstrip('/')
+        parts = re.findall(r'[+-]\d+\.?\d*', coord_str)
+        if len(parts) < 2:
+            return None, None, None
+        lat_raw = float(parts[0])
+        lon_raw = float(parts[1])
+        lat_deg = int(abs(lat_raw) / 100)
+        lat_min = abs(lat_raw) % 100
+        lat = (lat_deg + lat_min / 60) * (1 if lat_raw >= 0 else -1)
+        lon_deg = int(abs(lon_raw) / 100)
+        lon_min = abs(lon_raw) % 100
+        lon = (lon_deg + lon_min / 60) * (1 if lon_raw >= 0 else -1)
+        elev = int(float(parts[2])) if len(parts) >= 3 else None
+        return round(lat, 5), round(lon, 5), elev
+    except (ValueError, IndexError):
+        return None, None, None
 
 __all__ = [
     "VolcanoStatusExplanation",
@@ -42,8 +68,10 @@ class VolcanoStatusExplanation(JMADatasetBase):
         "Detailed JMA explanations of current volcanic activity with alert levels (1–5) "
         "for all monitored volcanoes in Japan.\n\n"
         "**Columns include:** event_id, report_datetime, info_type_en, volcano_name_en, "
-        "alert_level_en, alert_level_code, alert_condition_en, activity_summary_en, "
-        "prevention_summary_en\n\n"
+        "volcano_code, volcano_latitude, volcano_longitude, volcano_elevation_m, "
+        "alert_level_en, alert_level_code, alert_condition_en, "
+        "last_alert_level_en, last_alert_level_code, "
+        "volcano_headline, activity_summary_en, prevention_summary_en, next_advisory\n\n"
         "**Feed:** eqvol_l.xml | **Type code:** VFVO51\n"
         "**Updates:** Hourly automated pipeline | **Max entries per run:** 100\n"
         "**Use cases:** volcano hazard monitoring, alert level trend analysis, "
@@ -74,13 +102,13 @@ class VolcanoStatusExplanation(JMADatasetBase):
         for elem in body.iter():
             tag = self.sn(elem.tag)
 
-            # Get volcano name and alert level from VolcanoInfo
+            # Get volcano name, alert level, and coordinates from VolcanoInfo
             if tag == 'VolcanoInfo':
                 for child in elem:
                     if self.sn(child.tag) == 'Item':
-                        # Extract alert level info
                         for item_child in child:
-                            if self.sn(item_child.tag) == 'Kind':
+                            item_tag = self.sn(item_child.tag)
+                            if item_tag == 'Kind':
                                 for kind_child in item_child:
                                     kind_tag = self.sn(kind_child.tag)
                                     if kind_tag == 'Name' and kind_child.text:
@@ -91,23 +119,39 @@ class VolcanoStatusExplanation(JMADatasetBase):
                                     elif kind_tag == 'Condition' and kind_child.text:
                                         volcano_data['alert_condition'] = kind_child.text
                                         volcano_data['alert_condition_en'] = self.translate(kind_child.text)
-
-                        # Extract volcano name from Areas
-                        for item_child in child:
-                            if self.sn(item_child.tag) == 'Areas':
+                            elif item_tag == 'LastKind':
+                                for lk_child in item_child:
+                                    lk_tag = self.sn(lk_child.tag)
+                                    if lk_tag == 'Name' and lk_child.text:
+                                        volcano_data['last_alert_level'] = lk_child.text
+                                        volcano_data['last_alert_level_en'] = self.translate(lk_child.text)
+                                    elif lk_tag == 'Code' and lk_child.text:
+                                        volcano_data['last_alert_level_code'] = lk_child.text
+                            elif item_tag == 'Areas':
                                 for area in item_child:
                                     if self.sn(area.tag) == 'Area':
                                         for area_child in area:
-                                            if self.sn(area_child.tag) == 'Name' and area_child.text:
+                                            ac_tag = self.sn(area_child.tag)
+                                            if ac_tag == 'Name' and area_child.text:
                                                 volcano_data['volcano_name'] = area_child.text
                                                 volcano_data['volcano_name_en'] = self.translate(area_child.text)
-                                                break
+                                            elif ac_tag == 'Code' and area_child.text:
+                                                volcano_data['volcano_code'] = area_child.text
+                                            elif ac_tag == 'Coordinate' and area_child.text:
+                                                lat, lon, elev = _parse_volcano_coordinate(area_child.text)
+                                                if lat is not None:
+                                                    volcano_data['volcano_latitude'] = lat
+                                                    volcano_data['volcano_longitude'] = lon
+                                                    if elev is not None:
+                                                        volcano_data['volcano_elevation_m'] = elev
 
-            # Get activity and prevention summaries from VolcanoInfoContent
+            # Get activity, prevention summaries, and next advisory from VolcanoInfoContent
             elif tag == 'VolcanoInfoContent':
                 for content_child in elem:
                     content_tag = self.sn(content_child.tag)
-                    if content_tag == 'VolcanoActivity' and content_child.text:
+                    if content_tag == 'VolcanoHeadline' and content_child.text:
+                        volcano_data['volcano_headline'] = content_child.text.strip()
+                    elif content_tag == 'VolcanoActivity' and content_child.text:
                         activity_text = content_child.text.strip()
                         volcano_data['activity_summary'] = activity_text
                         volcano_data['activity_summary_en'] = self.translate(activity_text)
@@ -115,6 +159,8 @@ class VolcanoStatusExplanation(JMADatasetBase):
                         prevention_text = content_child.text.strip()
                         volcano_data['prevention_summary'] = prevention_text
                         volcano_data['prevention_summary_en'] = self.translate(prevention_text)
+                    elif content_tag == 'NextAdvisory' and content_child.text:
+                        volcano_data['next_advisory'] = content_child.text.strip()
 
         return volcano_data if len(volcano_data) > 2 else None
 
@@ -134,6 +180,7 @@ class VolcanicAshForecast(JMADatasetBase):
         "6-hour window ash dispersion forecasts from JMA predicting fallout areas "
         "and affected regions following eruptions, for aviation and public safety.\n\n"
         "**Columns include:** event_id, report_datetime, info_type_en, volcano_name_en, "
+        "volcano_code, valid_datetime, "
         "window_1_start, window_1_end, window_1_areas_en, window_2_start ... window_6_end\n\n"
         "**Feed:** eqvol_l.xml | **Type code:** VFVO53\n"
         "**Updates:** Hourly automated pipeline | **Max entries per run:** 100\n"
@@ -161,15 +208,25 @@ class VolcanicAshForecast(JMADatasetBase):
 
         ash_data = head_data.copy()
 
-        # Extract volcano name from VolcanoInfo
+        # Extract valid_datetime from Head
+        head = root.find('.//{http://xml.kishou.go.jp/jmaxml1/informationBasis1/}Head')
+        if head is not None:
+            for elem in head.iter():
+                if self.sn(elem.tag) == 'ValidDateTime' and elem.text:
+                    ash_data['valid_datetime'] = elem.text
+
+        # Extract volcano name and code from VolcanoInfo
         for elem in body.iter():
             tag = self.sn(elem.tag)
             if tag == 'Area':
                 for child in elem:
-                    if self.sn(child.tag) == 'Name' and child.text:
+                    child_tag = self.sn(child.tag)
+                    if child_tag == 'Name' and child.text:
                         ash_data['volcano_name'] = child.text
                         ash_data['volcano_name_en'] = self.translate(child.text)
-                        break
+                    elif child_tag == 'Code' and child.text:
+                        ash_data['volcano_code'] = child.text
+                break
 
         # Find all AshInfo entries (should be up to 6 time windows)
         ash_infos = []
@@ -274,9 +331,12 @@ class EruptionWarning(JMADatasetBase):
                                 for area in item_child:
                                     if self.sn(area.tag) == 'Area':
                                         for area_child in area:
-                                            if self.sn(area_child.tag) == 'Name' and area_child.text:
+                                            ac_tag = self.sn(area_child.tag)
+                                            if ac_tag == 'Name' and area_child.text:
                                                 warning_data['volcano_name'] = area_child.text
                                                 warning_data['volcano_name_en'] = self.translate(area_child.text)
+                                            elif ac_tag == 'Code' and area_child.text:
+                                                warning_data['volcano_code'] = area_child.text
 
         return warning_data if len(warning_data) > 2 else None
 
@@ -341,9 +401,12 @@ class EruptionFlashReport(JMADatasetBase):
                                 for area in item_child:
                                     if self.sn(area.tag) == 'Area':
                                         for area_child in area:
-                                            if self.sn(area_child.tag) == 'Name' and area_child.text:
+                                            ac_tag = self.sn(area_child.tag)
+                                            if ac_tag == 'Name' and area_child.text:
                                                 report_data['volcano_name'] = area_child.text
                                                 report_data['volcano_name_en'] = self.translate(area_child.text)
+                                            elif ac_tag == 'Code' and area_child.text:
+                                                report_data['volcano_code'] = area_child.text
 
         return report_data if len(report_data) > 2 else None
 
@@ -363,7 +426,11 @@ class EruptionObservation(JMADatasetBase):
         "Detailed JMA ground and satellite observation records of volcanic activity, "
         "including eruption phenomena, plume height, and eruptive characteristics.\n\n"
         "**Columns include:** event_id, report_datetime, info_type_en, volcano_name_en, "
-        "observation_time, observation_type_en\n\n"
+        "volcano_code, volcano_latitude, volcano_longitude, volcano_elevation_m, "
+        "crater_name, crater_latitude, crater_longitude, crater_elevation_m, "
+        "observation_time, observation_type_en, "
+        "plume_height_above_crater_m, plume_height_above_sea_level_ft, plume_direction_en, "
+        "other_observation\n\n"
         "**Feed:** eqvol_l.xml | **Type code:** VFVO52\n"
         "**Updates:** Hourly automated pipeline | **Max entries per run:** 100\n"
         "**Use cases:** volcanic activity monitoring, eruption characterization, "
@@ -391,7 +458,7 @@ class EruptionObservation(JMADatasetBase):
         for elem in body.iter():
             tag = self.sn(elem.tag)
 
-            if tag == 'DateTime' and elem.text:
+            if tag == 'EventDateTime' and elem.text:
                 obs_data['observation_time'] = elem.text
 
             elif tag == 'VolcanoInfo':
@@ -408,9 +475,48 @@ class EruptionObservation(JMADatasetBase):
                                 for area in item_child:
                                     if self.sn(area.tag) == 'Area':
                                         for area_child in area:
-                                            if self.sn(area_child.tag) == 'Name' and area_child.text:
+                                            ac_tag = self.sn(area_child.tag)
+                                            if ac_tag == 'Name' and area_child.text:
                                                 obs_data['volcano_name'] = area_child.text
                                                 obs_data['volcano_name_en'] = self.translate(area_child.text)
+                                            elif ac_tag == 'Code' and area_child.text:
+                                                obs_data['volcano_code'] = area_child.text
+                                            elif ac_tag == 'Coordinate' and area_child.text:
+                                                lat, lon, elev = _parse_volcano_coordinate(area_child.text)
+                                                if lat is not None:
+                                                    obs_data['volcano_latitude'] = lat
+                                                    obs_data['volcano_longitude'] = lon
+                                                    if elev is not None:
+                                                        obs_data['volcano_elevation_m'] = elev
+                                            elif ac_tag == 'CraterName' and area_child.text:
+                                                obs_data['crater_name'] = area_child.text
+                                            elif ac_tag == 'CraterCoordinate' and area_child.text:
+                                                lat, lon, elev = _parse_volcano_coordinate(area_child.text)
+                                                if lat is not None:
+                                                    obs_data['crater_latitude'] = lat
+                                                    obs_data['crater_longitude'] = lon
+                                                    if elev is not None:
+                                                        obs_data['crater_elevation_m'] = elev
+
+            elif tag == 'ColorPlume':
+                for child in elem:
+                    child_tag = self.sn(child.tag)
+                    if child_tag == 'PlumeHeightAboveCrater' and child.text:
+                        try:
+                            obs_data['plume_height_above_crater_m'] = int(child.text)
+                        except ValueError:
+                            obs_data['plume_height_above_crater_m'] = child.text
+                    elif child_tag == 'PlumeHeightAboveSeaLevel' and child.text:
+                        try:
+                            obs_data['plume_height_above_sea_level_ft'] = int(child.text)
+                        except ValueError:
+                            obs_data['plume_height_above_sea_level_ft'] = child.text
+                    elif child_tag == 'PlumeDirection' and child.text:
+                        obs_data['plume_direction'] = child.text
+                        obs_data['plume_direction_en'] = self.translate(child.text)
+
+            elif tag == 'OtherObservation' and elem.text:
+                obs_data['other_observation'] = elem.text.strip()
 
         return obs_data if len(obs_data) > 2 else None
 
@@ -474,9 +580,12 @@ class EstimatedPlumeDirection(JMADatasetBase):
 
             elif tag == 'Volcano':
                 for child in elem:
-                    if self.sn(child.tag) == 'Name' and child.text:
+                    child_tag = self.sn(child.tag)
+                    if child_tag == 'Name' and child.text:
                         plume_data['volcano_name'] = child.text
                         plume_data['volcano_name_en'] = self.translate(child.text)
+                    elif child_tag == 'Code' and child.text:
+                        plume_data['volcano_code'] = child.text
 
         if directions:
             plume_data['plume_directions_json'] = json.dumps(directions, ensure_ascii=False)

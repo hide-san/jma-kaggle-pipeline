@@ -38,8 +38,10 @@ class PhenologicalObservation(JMADatasetBase):
         "covering plants (cherry blossom, plum, maple), insects (first firefly, cicada), "
         "and birds (first cuckoo, swallow), tracking first and full phenophase dates.\n\n"
         "**Columns include:** event_id, report_datetime, info_type_en, title_en, "
-        "observation_date, phenophase_en, phenophase_code, "
-        "station_name_en, station_location_en\n\n"
+        "observation_date, phenophase_en, phenophase_code, species_en, condition, "
+        "station_name_en, station_code, station_location_en, station_status_en, "
+        "deviation_from_normal, deviation_from_last_year, observation_remark, "
+        "publishing_office_en\n\n"
         "**Feed:** other_l.xml | **Type code:** VGSK55\n"
         "**Updates:** Hourly automated pipeline | **Max entries per run:** 100\n"
         "**Use cases:** phenology research, climate change impact studies, "
@@ -56,6 +58,15 @@ class PhenologicalObservation(JMADatasetBase):
         if not head_data.get('event_id'):
             return None
 
+        # Extract publishing office from Control element
+        control = root.find('.//{http://xml.kishou.go.jp/jmaxml1/}Control')
+        if control is not None:
+            for elem in control.iter():
+                tag = self.sn(elem.tag)
+                if tag == 'EditorialOffice' and elem.text:
+                    head_data['publishing_office'] = elem.text
+                    head_data['publishing_office_en'] = self.translate(elem.text)
+
         # Find body
         body = root.find('.//{http://xml.kishou.go.jp/jmaxml1/body/meteorology1/}Body')
         if body is None:
@@ -66,7 +77,7 @@ class PhenologicalObservation(JMADatasetBase):
 
         row = head_data.copy()
 
-        # Extract observation date, phenophase, and station info from body
+        # Extract observation date, phenophase, station info, and deviation data from body
         for elem in body.iter():
             tag = self.sn(elem.tag)
 
@@ -74,7 +85,6 @@ class PhenologicalObservation(JMADatasetBase):
                 row['observation_date'] = elem.text
 
             elif tag == 'Kind':
-                # Phenophase (e.g., "桜の花が咲いている")
                 for child in elem:
                     child_tag = self.sn(child.tag)
                     if child_tag == 'Name' and child.text:
@@ -82,17 +92,42 @@ class PhenologicalObservation(JMADatasetBase):
                         row['phenophase_en'] = self.translate(child.text)
                     elif child_tag == 'Code' and child.text:
                         row['phenophase_code'] = child.text
+                    elif child_tag == 'ClassName' and child.text:
+                        row['species'] = child.text
+                        row['species_en'] = self.translate(child.text)
+                    elif child_tag == 'Condition' and child.text:
+                        row['condition'] = child.text
 
             elif tag == 'Station':
-                # Station name and location
                 for child in elem:
                     child_tag = self.sn(child.tag)
                     if child_tag == 'Name' and child.text:
                         row['station_name'] = child.text
                         row['station_name_en'] = self.translate(child.text)
+                    elif child_tag == 'Code' and child.text:
+                        row['station_code'] = child.text
                     elif child_tag == 'Location' and child.text:
                         row['station_location'] = child.text
                         row['station_location_en'] = self.translate(child.text)
+                    elif child_tag == 'Status' and child.text:
+                        row['station_status'] = child.text
+                        row['station_status_en'] = self.translate(child.text)
+
+            elif tag == 'ObservationAddition':
+                for child in elem:
+                    child_tag = self.sn(child.tag)
+                    if child_tag == 'DeviationFromNormal' and child.text:
+                        try:
+                            row['deviation_from_normal'] = int(child.text)
+                        except ValueError:
+                            row['deviation_from_normal'] = child.text
+                    elif child_tag == 'DeviationFromLastYear' and child.text:
+                        try:
+                            row['deviation_from_last_year'] = int(child.text)
+                        except ValueError:
+                            row['deviation_from_last_year'] = child.text
+                    elif child_tag == 'Text' and child.text:
+                        row['observation_remark'] = child.text
 
         # Return only if we extracted meaningful data
         return row if len(row) > 2 else None

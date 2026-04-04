@@ -56,9 +56,10 @@ class EarthquakeIntensityInfo(JMADatasetBase):
         "震源・震度に関する情報 — Earthquake hypocenter and seismic intensity reports issued by the "
         "Japan Meteorological Agency (JMA) for every significant seismic event across Japan. "
         "Each record corresponds to one earthquake and captures the full official report at the time of publication.\n\n"
-        "**Columns include:** event_id, origin_time, title (ja/en), info_type (ja/en), "
-        "hypocenter_area (ja/en), hypocenter_latitude, hypocenter_longitude, hypocenter_depth_km, "
-        "magnitude, magnitude_type (Mjma/Mj/Mw), max_intensity (震度 scale), "
+        "**Columns include:** event_id, origin_time, arrival_time, title (ja/en), info_type (ja/en), "
+        "hypocenter_area (ja/en), hypocenter_area_code, hypocenter_latitude, hypocenter_longitude, "
+        "hypocenter_depth_km, magnitude, magnitude_type (Mjma/Mj/Mw), max_intensity (震度 scale), "
+        "forecast_comment, forecast_comment_code, "
         "prefectures_intensity_json (ja/en — per-prefecture max intensity as JSON)\n\n"
         "**Feed:** eqvol_l.xml | **Type code:** VXSE53\n"
         "**Updates:** Hourly automated pipeline | **Max entries per run:** 50\n"
@@ -93,6 +94,9 @@ class EarthquakeIntensityInfo(JMADatasetBase):
             if tag == 'OriginTime' and elem.text:
                 eq_data['origin_time'] = elem.text
 
+            elif tag == 'ArrivalTime' and elem.text:
+                eq_data['arrival_time'] = elem.text
+
             elif tag == 'Hypocenter':
                 # Parse hypocenter (Area/Coordinate structure)
                 for area_elem in elem:
@@ -102,8 +106,10 @@ class EarthquakeIntensityInfo(JMADatasetBase):
                             if child_tag == 'Name' and area_child.text:
                                 eq_data['hypocenter_area'] = area_child.text
                                 eq_data['hypocenter_area_en'] = self.translate(area_child.text)
+                            elif child_tag == 'Code' and area_child.text:
+                                eq_data['hypocenter_area_code'] = area_child.text
                             elif child_tag == 'Coordinate' and area_child.text:
-                                # Parse "+lat+lon-depth/" format
+                                # Parse "+lat+lon-depth/" format (decimal degrees)
                                 coord_str = area_child.text.strip().replace('/', '')
                                 try:
                                     coords = re.findall(r'[+-]?\d+\.?\d*', coord_str)
@@ -129,6 +135,14 @@ class EarthquakeIntensityInfo(JMADatasetBase):
 
             elif tag == 'MaxInt' and elem.text:
                 eq_data['max_intensity'] = elem.text
+
+            elif tag == 'ForecastComment':
+                for child in elem:
+                    child_tag = self.sn(child.tag)
+                    if child_tag == 'Text' and child.text:
+                        eq_data['forecast_comment'] = child.text.strip()
+                    elif child_tag == 'Code' and child.text:
+                        eq_data['forecast_comment_code'] = child.text
 
         # Extract per-prefecture intensity data
         prefectures = {}
@@ -229,6 +243,13 @@ class SeismicIntensityReport(JMADatasetBase):
                 if pref_name and pref_intensity:
                     prefectures[pref_name] = pref_intensity
                     prefectures_en[self.translate(pref_name)] = pref_intensity
+            elif tag == 'ForecastComment':
+                for child in elem:
+                    child_tag = self.sn(child.tag)
+                    if child_tag == 'Text' and child.text:
+                        report_data['forecast_comment'] = child.text.strip()
+                    elif child_tag == 'Code' and child.text:
+                        report_data['forecast_comment_code'] = child.text
 
         if prefectures:
             report_data['prefectures_intensity_json'] = json.dumps(prefectures, ensure_ascii=False)
@@ -252,8 +273,11 @@ class TsunamiWarning(JMADatasetBase):
         "for Japanese coastal regions following significant seismic events. Includes estimated wave heights, "
         "affected coastal areas, and the triggering earthquake's hypocenter data.\n\n"
         "**Columns include:** event_id, report_datetime, title (ja/en), info_type (ja/en), "
-        "origin_time, hypocenter_area (ja/en), hypocenter_latitude, hypocenter_longitude, magnitude, "
-        "warning_type (ja/en), affected_areas_json (ja/en — list of affected coastal regions)\n\n"
+        "valid_datetime, origin_time, hypocenter_area (ja/en), hypocenter_area_code, "
+        "hypocenter_detailed_name (ja/en), hypocenter_latitude, hypocenter_longitude, "
+        "magnitude, magnitude_type, warning_comment, "
+        "areas_json (per-area: area_name/en, area_code, warning_type/en, warning_code, "
+        "last_warning_type, max_height_m)\n\n"
         "**Feed:** eqvol_l.xml | **Type code:** VTSE41\n"
         "**Updates:** Hourly automated pipeline | **Max entries per run:** 100\n"
         "**Use cases:** Coastal hazard research, tsunami warning system analysis, "
@@ -271,6 +295,8 @@ class TsunamiWarning(JMADatasetBase):
 
         body = root.find('.//{http://xml.kishou.go.jp/jmaxml1/body/tsunami1/}Body')
         if body is None:
+            body = root.find('.//{http://xml.kishou.go.jp/jmaxml1/body/seismology1/}Body')
+        if body is None:
             body = root.find('.//{http://xml.kishou.go.jp/jmaxml1/}Body')
 
         if body is None:
@@ -278,7 +304,14 @@ class TsunamiWarning(JMADatasetBase):
 
         tsunami_data = head_data.copy()
 
-        # Extract tsunami warnings by area
+        # Extract valid_datetime from Head
+        head = root.find('.//{http://xml.kishou.go.jp/jmaxml1/informationBasis1/}Head')
+        if head is not None:
+            for elem in head.iter():
+                if self.sn(elem.tag) == 'ValidDateTime' and elem.text:
+                    tsunami_data['valid_datetime'] = elem.text
+
+        # Extract earthquake and tsunami area data from Body
         for elem in body.iter():
             tag = self.sn(elem.tag)
 
@@ -293,6 +326,11 @@ class TsunamiWarning(JMADatasetBase):
                             if child_tag == 'Name' and area_child.text:
                                 tsunami_data['hypocenter_area'] = area_child.text
                                 tsunami_data['hypocenter_area_en'] = self.translate(area_child.text)
+                            elif child_tag == 'Code' and area_child.text:
+                                tsunami_data['hypocenter_area_code'] = area_child.text
+                            elif child_tag == 'DetailedName' and area_child.text:
+                                tsunami_data['hypocenter_detailed_name'] = area_child.text
+                                tsunami_data['hypocenter_detailed_name_en'] = self.translate(area_child.text)
                             elif child_tag == 'Coordinate' and area_child.text:
                                 coord_str = area_child.text.strip().replace('/', '')
                                 try:
@@ -308,28 +346,59 @@ class TsunamiWarning(JMADatasetBase):
                     tsunami_data['magnitude'] = float(elem.text)
                 except ValueError:
                     pass
+                mag_type = elem.get('type')
+                if mag_type:
+                    tsunami_data['magnitude_type'] = mag_type
 
-            elif tag == 'Tsunami':
+            elif tag == 'Forecast':
+                # Each Item is a coastal area with its warning level and max wave height
+                areas = []
                 for item in elem:
-                    if self.sn(item.tag) == 'Item':
-                        for item_child in item:
-                            item_tag = self.sn(item_child.tag)
-                            if item_tag == 'Kind':
-                                for kind_child in item_child:
-                                    if self.sn(kind_child.tag) == 'Name' and kind_child.text:
-                                        tsunami_data['warning_type'] = kind_child.text
-                                        tsunami_data['warning_type_en'] = self.translate(kind_child.text)
-                            elif item_tag == 'Areas':
-                                areas = []
-                                for area in item_child:
-                                    if self.sn(area.tag) == 'Area':
-                                        for area_child in area:
-                                            if self.sn(area_child.tag) == 'Name' and area_child.text:
-                                                areas.append(area_child.text)
-                                if areas:
-                                    tsunami_data['affected_areas_json'] = json.dumps(areas, ensure_ascii=False)
-                                    areas_en = [self.translate(a) for a in areas]
-                                    tsunami_data['affected_areas_en_json'] = json.dumps(areas_en, ensure_ascii=False)
+                    if self.sn(item.tag) != 'Item':
+                        continue
+                    area_dict = {}
+                    for item_child in item:
+                        item_tag = self.sn(item_child.tag)
+                        if item_tag == 'Area':
+                            for ac in item_child:
+                                ac_tag = self.sn(ac.tag)
+                                if ac_tag == 'Name' and ac.text:
+                                    area_dict['area_name'] = ac.text
+                                    area_dict['area_name_en'] = self.translate(ac.text)
+                                elif ac_tag == 'Code' and ac.text:
+                                    area_dict['area_code'] = ac.text
+                        elif item_tag == 'Category':
+                            for cat_child in item_child:
+                                cat_tag = self.sn(cat_child.tag)
+                                if cat_tag == 'Kind':
+                                    for kc in cat_child:
+                                        kc_tag = self.sn(kc.tag)
+                                        if kc_tag == 'Name' and kc.text:
+                                            area_dict['warning_type'] = kc.text
+                                            area_dict['warning_type_en'] = self.translate(kc.text)
+                                        elif kc_tag == 'Code' and kc.text:
+                                            area_dict['warning_code'] = kc.text
+                                elif cat_tag == 'LastKind':
+                                    for lkc in cat_child:
+                                        if self.sn(lkc.tag) == 'Name' and lkc.text:
+                                            area_dict['last_warning_type'] = lkc.text
+                        elif item_tag == 'MaxHeight':
+                            for mh_child in item_child:
+                                if self.sn(mh_child.tag) == 'TsunamiHeight' and mh_child.text:
+                                    try:
+                                        area_dict['max_height_m'] = float(mh_child.text)
+                                    except ValueError:
+                                        area_dict['max_height_m'] = mh_child.text
+                    if area_dict:
+                        areas.append(area_dict)
+
+                if areas:
+                    tsunami_data['areas_json'] = json.dumps(areas, ensure_ascii=False)
+
+            elif tag == 'WarningComment':
+                for child in elem:
+                    if self.sn(child.tag) == 'Text' and child.text:
+                        tsunami_data['warning_comment'] = child.text.strip()
 
         return tsunami_data if len(tsunami_data) > 2 else None
 
@@ -434,6 +503,8 @@ class TsunamiInfo(JMADatasetBase):
             return None
 
         body = root.find('.//{http://xml.kishou.go.jp/jmaxml1/body/tsunami1/}Body')
+        if body is None:
+            body = root.find('.//{http://xml.kishou.go.jp/jmaxml1/body/seismology1/}Body')
         if body is None:
             body = root.find('.//{http://xml.kishou.go.jp/jmaxml1/}Body')
 
