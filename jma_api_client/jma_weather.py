@@ -89,12 +89,12 @@ class WeatherWarning(JMADatasetBase):
 class HeavyRainWarning(JMADatasetBase):
     """Record short-term heavy rain alerts from JMA VPOA50."""
 
-    NAME = "jma-record-heavy-rain-information"
-    CSV_FILENAME = "jma_record_heavy_rain_information.csv"
+    NAME = "jma-record-short-time-heavy-rain"
+    CSV_FILENAME = "jma_record_short_time_heavy_rain.csv"
     FEED_NAME = "regular_l.xml"
     TYPE_CODES = ("VPOA50",)
     MERGE_KEYS = ["event_id"]
-    TITLE = "JMA Record Heavy Rain Information"
+    TITLE = "JMA Record Short-time Heavy Rain Information"
     DESCRIPTION = (
         "記録的短時間大雨情報 — Record Short-term Heavy Rain Information. "
         "JMA alerts for exceptionally intense short-duration rainfall events that may "

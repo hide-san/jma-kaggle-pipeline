@@ -38,13 +38,13 @@ jobs:
           - name: Earthquakes & Seismic
             datasets: "jma-earthquake-activity-status,jma-hypocenter-and-seismic-intensity,jma-earthquake-early-warning,jma-seismic-intensity-flash-report,jma-seismic-observation-information,jma-earthquake-and-tsunami-notice"
           - name: Volcanoes & Eruptions
-            datasets: "jma-eruption-flash-report,jma-volcanic-eruption-observation,jma-eruption-warning-and-forecast,jma-estimated-plume-direction,jma-volcanic-ash-forecast,jma-volcanic-situation-explanation,jma-volcano-notice"
+            datasets: "jma-eruption-flash-report,jma-volcanic-eruption-observation-report,jma-eruption-warning-and-forecast,jma-estimated-plume-direction-report,jma-volcanic-ash-forecast,jma-volcanic-situation-explanation,jma-volcano-notice"
           - name: Tsunamis & Marine
             datasets: "jma-tsunami-information,jma-tsunami-warning-advisory-forecast,jma-general-marine-warning,jma-regional-tidal-information,jma-general-tidal-information"
           - name: Weather & Hazards
-            datasets: "jma-weather-warning-and-advisory,jma-record-heavy-rain-information,jma-tornado-watch-information,jma-special-weather-report,jma-designated-river-flood-forecast,jma-landslide-warning-information"
+            datasets: "jma-weather-warning-and-advisory,jma-record-short-time-heavy-rain,jma-tornado-watch-information,jma-special-weather-report,jma-designated-river-flood-forecast,jma-landslide-warning-information"
           - name: Forecasts & Observations
-            datasets: "jma-general-typhoon-information,jma-general-typhoon-info-standardized,jma-general-typhoon-info-detailed,jma-general-seasonal-forecast,jma-regional-seasonal-forecast,jma-phenological-observations,jma-regional-sea-warning,jma-regional-sea-forecast,jma-seasonal-observation"
+            datasets: "jma-general-typhoon-information,jma-general-typhoon-information-standardized,jma-general-typhoon-information-detailed,jma-general-seasonal-forecast,jma-regional-seasonal-forecast,jma-phenological-observations,jma-regional-sea-warning,jma-regional-sea-forecast,jma-seasonal-observation"
 
     steps:
       - name: Checkout repository

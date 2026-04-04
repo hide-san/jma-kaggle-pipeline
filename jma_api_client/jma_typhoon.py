@@ -92,12 +92,12 @@ class TyphoonInfoGeneral(JMADatasetBase):
 class TyphoonInfoStandardized(JMADatasetBase):
     """Standardized typhoon information from JMA VPTI51."""
 
-    NAME = "jma-general-typhoon-info-standardized"
-    CSV_FILENAME = "jma_general_typhoon_info_standardized.csv"
+    NAME = "jma-general-typhoon-information-standardized"
+    CSV_FILENAME = "jma_general_typhoon_information_standardized.csv"
     FEED_NAME = "regular_l.xml"
     TYPE_CODES = ("VPTI51",)
     MERGE_KEYS = ["event_id"]
-    TITLE = "JMA General Typhoon Info Standardized"
+    TITLE = "JMA General Typhoon Information Standardized"
     DESCRIPTION = (
         "全般台風情報（定型） — Standardized Typhoon Information. "
         "JMA typhoon data in a fixed structured format for automated processing, "
@@ -149,12 +149,12 @@ class TyphoonInfoStandardized(JMADatasetBase):
 class TyphoonInfoDetailed(JMADatasetBase):
     """Detailed typhoon information from JMA VPTI52."""
 
-    NAME = "jma-general-typhoon-info-detailed"
-    CSV_FILENAME = "jma_general_typhoon_info_detailed.csv"
+    NAME = "jma-general-typhoon-information-detailed"
+    CSV_FILENAME = "jma_general_typhoon_information_detailed.csv"
     FEED_NAME = "regular_l.xml"
     TYPE_CODES = ("VPTI52",)
     MERGE_KEYS = ["event_id"]
-    TITLE = "JMA General Typhoon Info Detailed"
+    TITLE = "JMA General Typhoon Information Detailed"
     DESCRIPTION = (
         "全般台風情報（詳細） — Detailed Typhoon Information. "
         "Comprehensive JMA typhoon data with extended forecast track positions, latitude/longitude, "

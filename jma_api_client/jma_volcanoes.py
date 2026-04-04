@@ -352,12 +352,12 @@ class EruptionFlashReport(JMADatasetBase):
 class EruptionObservation(JMADatasetBase):
     """Eruption-related volcanic observation reports from JMA VFVO52."""
 
-    NAME = "jma-volcanic-eruption-observation"
-    CSV_FILENAME = "jma_volcanic_eruption_observation.csv"
+    NAME = "jma-volcanic-eruption-observation-report"
+    CSV_FILENAME = "jma_volcanic_eruption_observation_report.csv"
     FEED_NAME = "eqvol_l.xml"
     TYPE_CODES = ("VFVO52",)
     MERGE_KEYS = ["event_id"]
-    TITLE = "JMA Volcanic Eruption Observation"
+    TITLE = "JMA Volcanic Eruption Observation Report"
     DESCRIPTION = (
         "噴火に関する火山観測報 — Eruption-related Volcanic Observation Report. "
         "Detailed JMA ground and satellite observation records of volcanic activity, "
@@ -419,12 +419,12 @@ class EruptionObservation(JMADatasetBase):
 class EstimatedPlumeDirection(JMADatasetBase):
     """Estimated volcanic plume flow direction from JMA VFVO60."""
 
-    NAME = "jma-estimated-plume-direction"
-    CSV_FILENAME = "jma_estimated_plume_direction.csv"
+    NAME = "jma-estimated-plume-direction-report"
+    CSV_FILENAME = "jma_estimated_plume_direction_report.csv"
     FEED_NAME = "eqvol_l.xml"
     TYPE_CODES = ("VFVO60",)
     MERGE_KEYS = ["event_id"]
-    TITLE = "JMA Estimated Plume Direction"
+    TITLE = "JMA Estimated Plume Direction Report"
     DESCRIPTION = (
         "火山プルームの移流方向 — Estimated Volcanic Plume Direction. "
         "JMA predictions of volcanic ash plume dispersal direction based on wind fields "
