@@ -124,32 +124,32 @@ class KaggleUploader:
         """
         if existing_df.empty:
             log.info("No existing data — using new data as-is (%d rows)", len(new_df))
-            return new_df
-
-        if new_df.empty:
+            combined = new_df.copy()
+        elif new_df.empty:
             log.info("No new data fetched — keeping existing data (%d rows)", len(existing_df))
-            return existing_df
+            combined = existing_df.copy()
+        else:
+            combined = pd.concat([existing_df, new_df], ignore_index=True)
+            log.info(
+                "Merged: existing=%d + new=%d → combined=%d rows",
+                len(existing_df), len(new_df), len(combined),
+            )
 
-        combined = pd.concat([existing_df, new_df], ignore_index=True)
-        # Keep the *first* occurrence so existing (published) data is not modified
+        # Deduplicate on merge keys
         valid_keys = [k for k in merge_keys if k in combined.columns]
         if valid_keys:
             combined = combined.drop_duplicates(subset=valid_keys, keep="first")
         else:
             log.warning("Merge keys %s not found in DataFrame columns — skipping dedup", merge_keys)
 
+        # Sort descending and move key columns to leftmost positions
         if valid_keys:
             combined = combined.sort_values(
                 by=valid_keys, ascending=False, key=lambda col: col.astype(str)
             ).reset_index(drop=True)
-            # Move key columns to the leftmost positions
             other_cols = [c for c in combined.columns if c not in valid_keys]
             combined = combined[valid_keys + other_cols]
 
-        log.info(
-            "Merged: existing=%d + new=%d → combined=%d rows",
-            len(existing_df), len(new_df), len(combined),
-        )
         return combined
 
     # ------------------------------------------------------------------ #
