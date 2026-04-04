@@ -42,7 +42,7 @@ class RiverFloodForecast(JMADatasetBase):
         "emergency evacuation planning, hydrological research"
     )
     SUBTITLE = "River flood forecasts by designated river with stage predictions and timing"
-    KEYWORDS = ["jma", "japan", "river", "flood", "forecast", "hazard", "emergency"]
+    KEYWORDS = ["japan", "natural-disaster", "disaster", "river", "water"]
     MAX_ENTRIES = 500
 
     def parse_entry(self, root: ET.Element, data_url: str) -> dict | None:
@@ -105,7 +105,7 @@ class LandslideHazardAlert(JMADatasetBase):
         "evacuation planning, disaster prevention"
     )
     SUBTITLE = "Landslide risk alerts with trigger conditions and affected areas"
-    KEYWORDS = ["jma", "japan", "landslide", "hazard", "alert", "rainfall", "emergency"]
+    KEYWORDS = ["japan", "natural-disaster", "disaster", "public-safety", "environment"]
     MAX_ENTRIES = 100
 
     def parse_entry(self, root: ET.Element, data_url: str) -> dict | None:

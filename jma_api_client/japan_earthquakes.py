@@ -66,8 +66,7 @@ class EarthquakeIntensityInfo(JMADatasetBase):
         "disaster risk assessment"
     )
     SUBTITLE = "Earthquake hypocenter, magnitude (Mjma), and per-prefecture seismic intensity"
-    KEYWORDS = ["jma", "japan", "earthquake", "seismic", "intensity", "hypocenter", "magnitude",
-                "hazard", "disaster", "natural-disaster", "vxse53", "jma-xml"]
+    KEYWORDS = ["japan", "earthquake", "natural-disaster", "public-safety", "east-asia"]
     MAX_ENTRIES = 50
 
     def parse_entry(self, root: ET.Element, data_url: str) -> dict | None:
@@ -180,8 +179,7 @@ class SeismicIntensityReport(JMADatasetBase):
         "rapid damage estimation, public safety alerts"
     )
     SUBTITLE = "Fast seismic intensity reports with per-prefecture maximum intensity values"
-    KEYWORDS = ["jma", "japan", "earthquake", "seismic", "intensity", "rapid-report", "early-warning",
-                "hazard", "vxse51", "jma-xml", "disaster"]
+    KEYWORDS = ["japan", "earthquake", "natural-disaster", "public-safety", "emergency-response"]
     MAX_ENTRIES = 100
 
     def parse_entry(self, root: ET.Element, data_url: str) -> dict | None:
@@ -262,8 +260,7 @@ class TsunamiWarning(JMADatasetBase):
         "evacuation planning, disaster risk management"
     )
     SUBTITLE = "Coastal tsunami alerts with estimated wave heights and arrival times by region"
-    KEYWORDS = ["jma", "japan", "tsunami", "warning", "advisory", "coastal", "wave-height",
-                "hazard", "disaster", "vtse41", "jma-xml", "natural-disaster"]
+    KEYWORDS = ["japan", "natural-disaster", "disaster", "public-safety", "ocean"]
     MAX_ENTRIES = 100
 
     def parse_entry(self, root: ET.Element, data_url: str) -> dict | None:
@@ -360,8 +357,7 @@ class EarthquakeEarlyWarning(JMADatasetBase):
         "automated protective action studies, seismic risk engineering"
     )
     SUBTITLE = "Real-time EEW predictions with automated broadcast alerts for hazard mitigation"
-    KEYWORDS = ["jma", "japan", "earthquake", "early-warning", "eew", "strong-motion", "real-time",
-                "vxse43", "vxse44", "jma-xml", "hazard", "disaster-preparedness"]
+    KEYWORDS = ["japan", "earthquake", "natural-disaster", "public-safety", "alerts"]
     MAX_ENTRIES = 100
 
     def parse_entry(self, root: ET.Element, data_url: str) -> dict | None:
@@ -428,8 +424,7 @@ class TsunamiInfo(JMADatasetBase):
         "forecast model validation, coastal engineering"
     )
     SUBTITLE = "Observed tsunami wave heights and arrival times from coastal monitoring stations"
-    KEYWORDS = ["jma", "japan", "tsunami", "observation", "wave-height", "tide-gauge",
-                "coastal", "vtse51", "jma-xml", "ocean", "hazard"]
+    KEYWORDS = ["japan", "natural-disaster", "ocean", "sea", "public-safety"]
     MAX_ENTRIES = 100
 
     def parse_entry(self, root: ET.Element, data_url: str) -> dict | None:
@@ -499,8 +494,7 @@ class EarthquakeActivityInfo(JMADatasetBase):
         "public communication research, NLP on Japanese disaster text"
     )
     SUBTITLE = "Seismic activity summaries with aftershock stats and ongoing trend reports"
-    KEYWORDS = ["jma", "japan", "earthquake", "aftershock", "foreshock", "seismic-swarm",
-                "activity", "vxse56", "jma-xml", "nlp", "hazard"]
+    KEYWORDS = ["japan", "earthquake", "natural-disaster", "east-asia", "government"]
     MAX_ENTRIES = 100
 
     def parse_entry(self, root: ET.Element, data_url: str) -> dict | None:
@@ -553,8 +547,7 @@ class SeismicObservationInfo(JMADatasetBase):
         "infrastructure health tracking, earthquake catalog cross-referencing"
     )
     SUBTITLE = "Seismic network status with earthquake counts and long-period oscillations"
-    KEYWORDS = ["jma", "japan", "seismic", "observation", "network", "long-period",
-                "monitoring", "vxse60", "vxse61", "vxse62", "jma-xml"]
+    KEYWORDS = ["japan", "earthquake", "natural-disaster", "east-asia", "remote-sensing"]
     MAX_ENTRIES = 100
 
     def parse_entry(self, root: ET.Element, data_url: str) -> dict | None:

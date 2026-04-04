@@ -42,7 +42,7 @@ class GeneralSeasonalForecast(JMADatasetBase):
         "energy demand forecasting, climate anomaly research"
     )
     SUBTITLE = "1-month, 3-month, and warm/cold season temperature and precipitation forecasts"
-    KEYWORDS = ["jma", "japan", "forecast", "seasonal", "monthly", "temperature", "precipitation"]
+    KEYWORDS = ["japan", "weather", "temperature", "climate-change", "asia"]
     MAX_ENTRIES = 100
 
     def parse_entry(self, root: ET.Element, data_url: str) -> dict | None:
@@ -102,7 +102,7 @@ class RegionalSeasonalForecast(JMADatasetBase):
         "agricultural decisions, climate trend analysis"
     )
     SUBTITLE = "Regional 1-month, 3-month, and seasonal forecasts by district"
-    KEYWORDS = ["jma", "japan", "regional", "forecast", "seasonal", "district", "temperature"]
+    KEYWORDS = ["japan", "weather", "temperature", "climate-change", "east-asia"]
     MAX_ENTRIES = 100
 
     def parse_entry(self, root: ET.Element, data_url: str) -> dict | None:

@@ -44,7 +44,7 @@ class TyphoonInfoGeneral(JMADatasetBase):
         "climate research, storm intensity analysis"
     )
     SUBTITLE = "Typhoon position, intensity (pressure/wind), and forecast track information"
-    KEYWORDS = ["jma", "japan", "typhoon", "tropical", "cyclone", "forecast", "position", "intensity"]
+    KEYWORDS = ["japan", "weather", "disaster", "natural-disaster", "east-asia"]
     MAX_ENTRIES = 100
 
     def parse_entry(self, root: ET.Element, data_url: str) -> dict | None:
@@ -110,7 +110,7 @@ class TyphoonInfoStandardized(JMADatasetBase):
         "machine learning datasets, structured storm data"
     )
     SUBTITLE = "Standardized-format typhoon data with pressure and wind speed"
-    KEYWORDS = ["jma", "japan", "typhoon", "standardized", "cyclone", "data-format"]
+    KEYWORDS = ["japan", "weather", "disaster", "east-asia", "wind"]
     MAX_ENTRIES = 100
 
     def parse_entry(self, root: ET.Element, data_url: str) -> dict | None:
@@ -167,7 +167,7 @@ class TyphoonInfoDetailed(JMADatasetBase):
         "GIS visualization, wind field analysis"
     )
     SUBTITLE = "Detailed typhoon forecasts with extended track and impact predictions"
-    KEYWORDS = ["jma", "japan", "typhoon", "detailed", "forecast", "extended", "impacts"]
+    KEYWORDS = ["japan", "weather", "disaster", "natural-disaster", "gis"]
     MAX_ENTRIES = 100
 
     def parse_entry(self, root: ET.Element, data_url: str) -> dict | None:

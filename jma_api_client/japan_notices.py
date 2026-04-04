@@ -42,7 +42,7 @@ class EarthquakeTsunamiNotice(JMADatasetBase):
         "disaster communication research, JMA advisory tracking"
     )
     SUBTITLE = "Explanatory notices and clarifications about earthquake/tsunami events"
-    KEYWORDS = ["jma", "japan", "earthquake", "tsunami", "notice", "information", "clarification"]
+    KEYWORDS = ["japan", "earthquake", "natural-disaster", "government", "east-asia"]
     MAX_ENTRIES = 100
 
     def parse_entry(self, root: ET.Element, data_url: str) -> dict | None:
@@ -104,7 +104,7 @@ class VolcanoNotice(JMADatasetBase):
         "volcano monitoring, disaster communication research"
     )
     SUBTITLE = "Explanatory notices and announcements about volcanic activity"
-    KEYWORDS = ["jma", "japan", "volcano", "notice", "activity", "information", "alert"]
+    KEYWORDS = ["japan", "natural-disaster", "environment", "government", "east-asia"]
     MAX_ENTRIES = 100
 
     def parse_entry(self, root: ET.Element, data_url: str) -> dict | None:

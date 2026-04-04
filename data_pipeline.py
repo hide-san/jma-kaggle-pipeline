@@ -118,12 +118,27 @@ def run_pipeline(dry_run: bool = False, preview: bool = False, skip_feed_fetch: 
                 log.info("DRY-RUN: Would upload %d rows to %s", len(merged_df), dataset_cfg["kaggle_dataset"])
                 ok = True
             else:
+                # Append last-updated timestamp and JMA attribution to description
+                base_description = dataset_cfg.get("description", "")
+                last_updated = new_df["report_datetime"].max() if "report_datetime" in new_df.columns else None
+                attribution = (
+                    "\n\n---\n"
+                    "**Data source:** 気象庁防災情報XMLフォーマット データ を加工して作成  \n"
+                    "(Created by processing JMA Disaster Prevention Information XML Feed data)  \n"
+                    "https://www.data.jma.go.jp/developer/xml/feed/  \n"
+                    "License: [Public Data License v1.0](https://www.jma.go.jp/jma/kishou/info/coment.html)"
+                )
+                if last_updated:
+                    full_description = base_description + "\n\n**Last data issued:** %s" % last_updated + attribution
+                else:
+                    full_description = base_description + attribution
+
                 ok = kaggle.upload_dataset(
                     dataset_cfg["kaggle_dataset"],
                     dataset_cfg["csv_filename"],
                     merged_df,
                     title=dataset_cfg.get("title", ""),
-                    description=dataset_cfg.get("description", ""),
+                    description=full_description,
                     keywords=dataset_cfg.get("keywords", []),
                     subtitle=dataset_cfg.get("subtitle", ""),
                 )

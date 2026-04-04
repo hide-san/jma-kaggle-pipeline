@@ -39,7 +39,7 @@ class RegionalSeaAlert(JMADatasetBase):
         "storm surge monitoring, port operations"
     )
     SUBTITLE = "Regional maritime hazard alerts with warning types and affected coastal regions"
-    KEYWORDS = ["jma", "japan", "sea", "alert", "maritime", "tsunami", "high-wave", "coastal"]
+    KEYWORDS = ["japan", "sea", "ocean", "natural-disaster", "east-asia"]
     MAX_ENTRIES = 250
 
     def parse_entry(self, root: ET.Element, data_url: str) -> dict | None:
@@ -118,7 +118,7 @@ class RegionalSeaForecast(JMADatasetBase):
         "coastal engineering, ocean weather research"
     )
     SUBTITLE = "Maritime forecasts with predicted wave heights, wind, and conditions by region"
-    KEYWORDS = ["jma", "japan", "sea", "forecast", "maritime", "wave-height", "wind", "coastal"]
+    KEYWORDS = ["japan", "sea", "ocean", "weather", "wind"]
     MAX_ENTRIES = 250
 
     def parse_entry(self, root: ET.Element, data_url: str) -> dict | None:

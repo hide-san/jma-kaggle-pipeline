@@ -50,7 +50,7 @@ class VolcanoStatusExplanation(JMADatasetBase):
         "public safety research, emergency preparedness"
     )
     SUBTITLE = "Volcano alert level (1-5) explanations with activity and prevention summaries"
-    KEYWORDS = ["jma", "japan", "volcano", "alert-level", "monitoring", "hazard", "volcanology"]
+    KEYWORDS = ["japan", "natural-disaster", "disaster", "environment", "public-safety"]
     MAX_ENTRIES = 100
 
     def parse_entry(self, root: ET.Element, data_url: str) -> dict | None:
@@ -141,7 +141,7 @@ class VolcanicAshForecast(JMADatasetBase):
         "emergency preparedness, air quality forecasting"
     )
     SUBTITLE = "6-hour window volcanic ash dispersion forecasts with affected regions and dates"
-    KEYWORDS = ["jma", "japan", "volcano", "ash", "forecast", "dispersion", "hazard", "aviation"]
+    KEYWORDS = ["japan", "natural-disaster", "aviation", "environment", "east-asia"]
     MAX_ENTRIES = 100
 
     def parse_entry(self, root: ET.Element, data_url: str) -> dict | None:
@@ -234,7 +234,7 @@ class EruptionWarning(JMADatasetBase):
         "alert level trend analysis, disaster risk research"
     )
     SUBTITLE = "Eruption warning levels (1-5) with expected volcanic hazards and impact areas"
-    KEYWORDS = ["jma", "japan", "volcano", "eruption", "warning", "alert-level", "hazard"]
+    KEYWORDS = ["japan", "natural-disaster", "disaster", "public-safety", "east-asia"]
     MAX_ENTRIES = 100
 
     def parse_entry(self, root: ET.Element, data_url: str) -> dict | None:
@@ -303,7 +303,7 @@ class EruptionFlashReport(JMADatasetBase):
         "volcanic activity timelines, hazard research"
     )
     SUBTITLE = "Rapid eruption notifications with eruption type and affected volcano"
-    KEYWORDS = ["jma", "japan", "volcano", "eruption", "flash-report", "alert", "emergency"]
+    KEYWORDS = ["japan", "natural-disaster", "disaster", "alerts", "east-asia"]
     MAX_ENTRIES = 100
 
     def parse_entry(self, root: ET.Element, data_url: str) -> dict | None:
@@ -370,7 +370,7 @@ class EruptionObservation(JMADatasetBase):
         "scientific research, geophysical studies"
     )
     SUBTITLE = "Detailed eruption observations with activity characteristics and plume data"
-    KEYWORDS = ["jma", "japan", "volcano", "eruption", "observation", "monitoring", "activity"]
+    KEYWORDS = ["japan", "natural-disaster", "environment", "remote-sensing", "east-asia"]
     MAX_ENTRIES = 100
 
     def parse_entry(self, root: ET.Element, data_url: str) -> dict | None:
@@ -437,7 +437,7 @@ class EstimatedPlumeDirection(JMADatasetBase):
         "atmospheric dispersion research, public safety"
     )
     SUBTITLE = "Volcanic ash plume direction forecasts with time-stamped directional predictions"
-    KEYWORDS = ["jma", "japan", "volcano", "plume", "ash", "direction", "wind", "forecast"]
+    KEYWORDS = ["japan", "natural-disaster", "aviation", "wind", "east-asia"]
     MAX_ENTRIES = 100
 
     def parse_entry(self, root: ET.Element, data_url: str) -> dict | None:

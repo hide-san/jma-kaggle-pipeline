@@ -44,7 +44,7 @@ class GeneralMarineWarning(JMADatasetBase):
         "ocean hazard monitoring, marine meteorology research"
     )
     SUBTITLE = "Open ocean marine warnings with sea state and wind hazard information"
-    KEYWORDS = ["jma", "japan", "marine", "warning", "sea", "ocean", "wave", "wind", "shipping"]
+    KEYWORDS = ["japan", "ocean", "sea", "weather", "wind"]
     MAX_ENTRIES = 250
 
     def parse_entry(self, root: ET.Element, data_url: str) -> dict | None:
@@ -107,7 +107,7 @@ class RegionalTidalInfo(JMADatasetBase):
         "tidal research, port operations planning"
     )
     SUBTITLE = "Tidal predictions with high/low tide times and heights by coastal region"
-    KEYWORDS = ["jma", "japan", "tidal", "tide", "ocean", "marine", "predictions", "coastal"]
+    KEYWORDS = ["japan", "ocean", "sea", "water", "east-asia"]
     MAX_ENTRIES = 100
 
     def parse_entry(self, root: ET.Element, data_url: str) -> dict | None:
@@ -170,7 +170,7 @@ class GeneralTidalInfo(JMADatasetBase):
         "sea level research, marine environmental monitoring"
     )
     SUBTITLE = "National tidal forecasts with tidal anomaly observations and event details"
-    KEYWORDS = ["jma", "japan", "tidal", "tide", "coast", "marine", "anomaly", "forecast"]
+    KEYWORDS = ["japan", "ocean", "sea", "water", "east-asia"]
     MAX_ENTRIES = 100
 
     def parse_entry(self, root: ET.Element, data_url: str) -> dict | None:

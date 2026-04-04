@@ -224,3 +224,55 @@ def test_fetch_all_feeds_saves_files(tmp_path, monkeypatch):
 
     for feed_name in JMA_FEED_URLS:
         assert (tmp_path / feed_name).exists()
+
+
+# ------------------------------------------------------------------ #
+# Dataset metadata validation                                          #
+# ------------------------------------------------------------------ #
+
+def test_all_datasets_keywords_max_five():
+    """Every registered dataset must have at most 5 Kaggle keywords."""
+    from jma_api_client.base import DATASET_REGISTRY
+
+    violations = []
+    for name, cls in DATASET_REGISTRY.items():
+        kw = getattr(cls, "KEYWORDS", [])
+        if len(kw) > 5:
+            violations.append(f"{name}: {len(kw)} keywords ({kw})")
+
+    assert not violations, "Datasets exceed Kaggle 5-keyword limit:\n" + "\n".join(violations)
+
+
+def test_all_datasets_keywords_contain_japan():
+    """Every dataset must include 'japan' as a keyword (always required)."""
+    from jma_api_client.base import DATASET_REGISTRY
+
+    missing = []
+    for name, cls in DATASET_REGISTRY.items():
+        kw = getattr(cls, "KEYWORDS", [])
+        if "japan" not in kw:
+            missing.append(f"{name}: {kw}")
+
+    assert not missing, "Datasets missing 'japan' keyword:\n" + "\n".join(missing)
+
+
+def test_all_datasets_keywords_only_valid_tags():
+    """All keywords must be from the validated Kaggle tag catalog."""
+    from jma_api_client.base import DATASET_REGISTRY
+
+    VALID_TAGS = {
+        "japan", "asia", "east-asia", "earthquake", "natural-disaster", "disaster",
+        "weather", "atmospheric-science", "climate-change", "temperature", "wind",
+        "ocean", "sea", "river", "water", "environment", "plants", "aviation",
+        "public-safety", "emergency-response", "government", "gis", "geography",
+        "remote-sensing", "alerts", "events",
+    }
+
+    violations = []
+    for name, cls in DATASET_REGISTRY.items():
+        kw = getattr(cls, "KEYWORDS", [])
+        invalid = [k for k in kw if k not in VALID_TAGS]
+        if invalid:
+            violations.append(f"{name}: invalid tags {invalid}")
+
+    assert not violations, "Datasets use unrecognized Kaggle tags:\n" + "\n".join(violations)

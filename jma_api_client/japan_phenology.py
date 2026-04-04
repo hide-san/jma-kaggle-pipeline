@@ -49,7 +49,7 @@ class PhenologicalObservation(JMADatasetBase):
         "climate change impact studies, tourism planning"
     )
     SUBTITLE = "Cherry blossom and tree phenophase observations by monitoring station and date"
-    KEYWORDS = ["jma", "japan", "cherry-blossom", "phenology", "observation", "bloom", "seasonal"]
+    KEYWORDS = ["japan", "plants", "environment", "climate-change", "asia"]
     MAX_ENTRIES = 100
 
     def parse_entry(self, root: ET.Element, data_url: str) -> dict | None:
@@ -124,7 +124,7 @@ class SeasonalObservation(JMADatasetBase):
         "ecological research, long-term climate trend analysis"
     )
     SUBTITLE = "Seasonal tree and plant phenophase observations with station data"
-    KEYWORDS = ["jma", "japan", "seasonal", "observation", "phenology", "plants", "trees"]
+    KEYWORDS = ["japan", "plants", "environment", "climate-change", "asia"]
     MAX_ENTRIES = 100
 
     def parse_entry(self, root: ET.Element, data_url: str) -> dict | None:
@@ -192,7 +192,7 @@ class SpecialWeatherReport(JMADatasetBase):
         "meteorological history research, rare event cataloging"
     )
     SUBTITLE = "Notable weather phenomena reports with locations and descriptions"
-    KEYWORDS = ["jma", "japan", "weather", "special-report", "phenomenon", "unusual"]
+    KEYWORDS = ["japan", "weather", "events", "government", "east-asia"]
     MAX_ENTRIES = 100
 
     def parse_entry(self, root: ET.Element, data_url: str) -> dict | None:

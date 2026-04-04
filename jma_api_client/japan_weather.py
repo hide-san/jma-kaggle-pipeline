@@ -44,7 +44,7 @@ class WeatherWarning(JMADatasetBase):
         "regional hazard analysis, climate risk research"
     )
     SUBTITLE = "Severe weather alerts (rain, snow, wind, waves, floods) by region and type"
-    KEYWORDS = ["jma", "japan", "weather", "warning", "advisory", "hazard", "rain", "snow", "wind"]
+    KEYWORDS = ["japan", "weather", "atmospheric-science", "public-safety", "east-asia"]
     MAX_ENTRIES = 500
 
     def parse_entry(self, root: ET.Element, data_url: str) -> dict | None:
@@ -107,7 +107,7 @@ class HeavyRainWarning(JMADatasetBase):
         "climate extremes research"
     )
     SUBTITLE = "Exceptional rainfall event alerts with affected regions and intensity"
-    KEYWORDS = ["jma", "japan", "rain", "heavy", "rainfall", "alert", "flooding"]
+    KEYWORDS = ["japan", "weather", "natural-disaster", "public-safety", "east-asia"]
     MAX_ENTRIES = 100
 
     def parse_entry(self, root: ET.Element, data_url: str) -> dict | None:
@@ -167,7 +167,7 @@ class TornadoWatchInfo(JMADatasetBase):
         "emergency preparedness, atmospheric science"
     )
     SUBTITLE = "Tornado watch alerts with affected areas and atmospheric conditions"
-    KEYWORDS = ["jma", "japan", "tornado", "watch", "severe-weather", "alert"]
+    KEYWORDS = ["japan", "weather", "atmospheric-science", "public-safety", "alerts"]
     MAX_ENTRIES = 100
 
     def parse_entry(self, root: ET.Element, data_url: str) -> dict | None:
