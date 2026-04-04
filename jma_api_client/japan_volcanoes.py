@@ -36,7 +36,7 @@ class VolcanoStatusExplanation(JMADatasetBase):
     FEED_NAME = "eqvol_l.xml"
     TYPE_CODES = ("VFVO51",)
     MERGE_KEYS = ["event_id"]
-    TITLE = "JMA Volcano Status Explanations (VFVO51)"
+    TITLE = "JMA Volcano Status Reports"
     DESCRIPTION = (
         "火山の状況に関する解説情報 — Volcano Status Explanation. "
         "Detailed JMA explanations of current volcanic activity with alert levels (1–5) "
@@ -128,7 +128,7 @@ class VolcanicAshForecast(JMADatasetBase):
     FEED_NAME = "eqvol_l.xml"
     TYPE_CODES = ("VFVO53",)
     MERGE_KEYS = ["event_id"]
-    TITLE = "JMA Volcanic Ash Forecasts (VFVO53)"
+    TITLE = "JMA Volcanic Ash Forecasts"
     DESCRIPTION = (
         "降灰予報 — Volcanic Ash Forecast. "
         "6-hour window ash dispersion forecasts from JMA predicting fallout areas "
@@ -221,7 +221,7 @@ class EruptionWarning(JMADatasetBase):
     FEED_NAME = "eqvol_l.xml"
     TYPE_CODES = ("VFVO50",)
     MERGE_KEYS = ["event_id"]
-    TITLE = "JMA Eruption Warnings & Forecasts (VFVO50)"
+    TITLE = "JMA Eruption Warnings"
     DESCRIPTION = (
         "噴火警報・予報 — Eruption Warning/Forecast. "
         "JMA eruption warnings and forecasts with alert levels (1–5) for Japanese volcanoes, "
@@ -290,7 +290,7 @@ class EruptionFlashReport(JMADatasetBase):
     FEED_NAME = "eqvol_l.xml"
     TYPE_CODES = ("VFVO56",)
     MERGE_KEYS = ["event_id"]
-    TITLE = "JMA Eruption Flash Reports (VFVO56)"
+    TITLE = "JMA Eruption Flash Reports"
     DESCRIPTION = (
         "噴火速報 — Eruption Flash Report. "
         "Rapid JMA notifications issued within minutes of confirmed eruptions, "
@@ -357,7 +357,7 @@ class EruptionObservation(JMADatasetBase):
     FEED_NAME = "eqvol_l.xml"
     TYPE_CODES = ("VFVO52",)
     MERGE_KEYS = ["event_id"]
-    TITLE = "JMA Eruption Observation Reports (VFVO52)"
+    TITLE = "JMA Eruption Observations"
     DESCRIPTION = (
         "噴火に関する火山観測報 — Eruption-related Volcanic Observation Report. "
         "Detailed JMA ground and satellite observation records of volcanic activity, "
@@ -424,7 +424,7 @@ class EstimatedPlumeDirection(JMADatasetBase):
     FEED_NAME = "eqvol_l.xml"
     TYPE_CODES = ("VFVO60",)
     MERGE_KEYS = ["event_id"]
-    TITLE = "JMA Estimated Volcanic Plume Direction (VFVO60)"
+    TITLE = "JMA Volcanic Plume Direction"
     DESCRIPTION = (
         "火山プルームの移流方向 — Estimated Volcanic Plume Direction. "
         "JMA predictions of volcanic ash plume dispersal direction based on wind fields "

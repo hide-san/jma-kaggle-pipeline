@@ -51,7 +51,7 @@ class EarthquakeIntensityInfo(JMADatasetBase):
     FEED_NAME = "eqvol_l.xml"
     TYPE_CODES = ("VXSE53",)
     MERGE_KEYS = ["event_id"]
-    TITLE = "JMA Earthquake & Seismic Intensity (VXSE53)"
+    TITLE = "JMA Earthquake Intensity Reports"
     DESCRIPTION = (
         "震源・震度に関する情報 — Earthquake hypocenter and seismic intensity reports issued by the "
         "Japan Meteorological Agency (JMA) for every significant seismic event across Japan. "
@@ -165,7 +165,7 @@ class SeismicIntensityReport(JMADatasetBase):
     FEED_NAME = "eqvol_l.xml"
     TYPE_CODES = ("VXSE51",)
     MERGE_KEYS = ["event_id"]
-    TITLE = "JMA Seismic Intensity Rapid Reports (VXSE51)"
+    TITLE = "JMA Seismic Intensity Rapid Reports"
     DESCRIPTION = (
         "震度速報 — Rapid seismic intensity reports published by JMA within minutes of earthquake detection, "
         "before full hypocenter analysis is complete. Provides preliminary maximum seismic intensity (震度) "
@@ -246,7 +246,7 @@ class TsunamiWarning(JMADatasetBase):
     FEED_NAME = "eqvol_l.xml"
     TYPE_CODES = ("VTSE41",)
     MERGE_KEYS = ["event_id"]
-    TITLE = "JMA Tsunami Warnings & Advisories (VTSE41)"
+    TITLE = "JMA Tsunami Warnings & Advisories"
     DESCRIPTION = (
         "津波警報・注意報・予報 — Official tsunami warnings, advisories, and forecasts issued by JMA "
         "for Japanese coastal regions following significant seismic events. Includes estimated wave heights, "
@@ -343,7 +343,7 @@ class EarthquakeEarlyWarning(JMADatasetBase):
     FEED_NAME = "eqvol_l.xml"
     TYPE_CODES = ("VXSE43", "VXSE44")
     MERGE_KEYS = ["event_id"]
-    TITLE = "JMA Earthquake Early Warnings (VXSE43/44)"
+    TITLE = "JMA Earthquake Early Warnings"
     DESCRIPTION = (
         "緊急地震速報 — Earthquake Early Warning (EEW) alerts broadcast by JMA seconds after P-wave "
         "detection, before strong shaking arrives. Predicts ground motion intensities by region to "
@@ -411,7 +411,7 @@ class TsunamiInfo(JMADatasetBase):
     FEED_NAME = "eqvol_l.xml"
     TYPE_CODES = ("VTSE51",)
     MERGE_KEYS = ["event_id"]
-    TITLE = "JMA Tsunami Observation Data (VTSE51)"
+    TITLE = "JMA Tsunami Observations"
     DESCRIPTION = (
         "津波情報 — Tsunami observation reports published by JMA from coastal seismic stations and "
         "tide gauges throughout Japan. Records confirmed wave heights, arrival times, and propagation "
@@ -481,7 +481,7 @@ class EarthquakeActivityInfo(JMADatasetBase):
     FEED_NAME = "eqvol_l.xml"
     TYPE_CODES = ("VXSE56",)
     MERGE_KEYS = ["event_id"]
-    TITLE = "JMA Earthquake Activity Status Reports (VXSE56)"
+    TITLE = "JMA Earthquake Activity Reports"
     DESCRIPTION = (
         "震源活動特性解説情報 — Earthquake activity status reports published by JMA summarising "
         "ongoing seismic trends, aftershock sequences, foreshock patterns, and swarm activity. "
@@ -534,7 +534,7 @@ class SeismicObservationInfo(JMADatasetBase):
     FEED_NAME = "eqvol_l.xml"
     TYPE_CODES = ("VXSE60", "VXSE61", "VXSE62")
     MERGE_KEYS = ["event_id"]
-    TITLE = "JMA Seismic Network Observation Status (VXSE60-62)"
+    TITLE = "JMA Seismic Network Status"
     DESCRIPTION = (
         "地震観測情報 — Seismic observation status reports (VXSE60-62) from JMA's nationwide "
         "monitoring network. Covers weekly earthquake count summaries (VXSE60), long-period ground "

@@ -31,7 +31,7 @@ class GeneralMarineWarning(JMADatasetBase):
     FEED_NAME = "regular_l.xml"
     TYPE_CODES = ("VPZU50", "VPZU54", "VPZU51")
     MERGE_KEYS = ["event_id"]
-    TITLE = "JMA General Marine Warnings (VPZU50/51/54)"
+    TITLE = "JMA Marine Warnings"
     DESCRIPTION = (
         "全般海上警報 — General Marine Warning. "
         "JMA warnings for open ocean and adjacent coastal areas covering strong winds, "
@@ -94,7 +94,7 @@ class RegionalTidalInfo(JMADatasetBase):
     FEED_NAME = "other_l.xml"
     TYPE_CODES = ("VMCJ51",)
     MERGE_KEYS = ["event_id"]
-    TITLE = "JMA Regional Tidal Information (VMCJ51)"
+    TITLE = "JMA Regional Tidal Forecasts"
     DESCRIPTION = (
         "地方潮位情報 — Regional Tidal Information. "
         "JMA tidal predictions for specified coastal regions including high/low tide times "
@@ -157,7 +157,7 @@ class GeneralTidalInfo(JMADatasetBase):
     FEED_NAME = "other_l.xml"
     TYPE_CODES = ("VMCJ50",)
     MERGE_KEYS = ["event_id"]
-    TITLE = "JMA General Tidal Information (VMCJ50)"
+    TITLE = "JMA Tidal Information"
     DESCRIPTION = (
         "全般潮位情報 — General Tidal Information. "
         "JMA nationwide tidal forecasts and anomaly observations, including tidal anomaly "

@@ -35,7 +35,7 @@ class PhenologicalObservation(JMADatasetBase):
     FEED_NAME = "other_l.xml"
     TYPE_CODES = ("VGSK55",)
     MERGE_KEYS = ["event_id"]
-    TITLE = "JMA Phenological Obs: Cherry Blossom (VGSK55)"
+    TITLE = "JMA Cherry Blossom Observations"
     DESCRIPTION = (
         "生物季節観測 — Phenological Observation. "
         "JMA observations of cherry blossom blooming and other biological phenophases "
@@ -110,7 +110,7 @@ class SeasonalObservation(JMADatasetBase):
     FEED_NAME = "other_l.xml"
     TYPE_CODES = ("VGSK50",)
     MERGE_KEYS = ["event_id"]
-    TITLE = "JMA Seasonal Observations (VGSK50)"
+    TITLE = "JMA Seasonal Nature Observations"
     DESCRIPTION = (
         "季節観測 — Seasonal Observation. "
         "JMA nationwide observations of seasonal natural phenomena including "

@@ -31,7 +31,7 @@ class WeatherWarning(JMADatasetBase):
     FEED_NAME = "regular_l.xml"
     TYPE_CODES = ("VPWW53", "VPWW54", "VPWW55", "VPWW56", "VPWW57", "VPWW58", "VPWW59", "VPWW60", "VPWW61")
     MERGE_KEYS = ["event_id"]
-    TITLE = "JMA Weather Warnings & Advisories (VPWW53-61)"
+    TITLE = "JMA Weather Warnings & Advisories"
     DESCRIPTION = (
         "気象警報・注意報 — Weather Warnings & Advisories. "
         "JMA severe weather alerts covering heavy rain, snow, strong winds, high waves, "
@@ -94,7 +94,7 @@ class HeavyRainWarning(JMADatasetBase):
     FEED_NAME = "regular_l.xml"
     TYPE_CODES = ("VPOA50",)
     MERGE_KEYS = ["event_id"]
-    TITLE = "JMA Record Short-term Heavy Rain Alerts (VPOA50)"
+    TITLE = "JMA Heavy Rain Alerts"
     DESCRIPTION = (
         "記録的短時間大雨情報 — Record Short-term Heavy Rain Information. "
         "JMA alerts for exceptionally intense short-duration rainfall events that may "
@@ -154,7 +154,7 @@ class TornadoWatchInfo(JMADatasetBase):
     FEED_NAME = "regular_l.xml"
     TYPE_CODES = ("VPHW50", "VPHW51")
     MERGE_KEYS = ["event_id"]
-    TITLE = "JMA Tornado Watch Alerts (VPHW50/51)"
+    TITLE = "JMA Tornado Watch Alerts"
     DESCRIPTION = (
         "竜巻注意情報 — Tornado Watch Information. "
         "JMA alerts issued when atmospheric conditions become favorable for tornado development, "

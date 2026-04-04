@@ -118,9 +118,17 @@ def run_pipeline(dry_run: bool = False, preview: bool = False, skip_feed_fetch: 
                 log.info("DRY-RUN: Would upload %d rows to %s", len(merged_df), dataset_cfg["kaggle_dataset"])
                 ok = True
             else:
-                # Append last-updated timestamp and JMA attribution to description
+                # Build full description: JMA intro + dataset body + last-updated + attribution
                 base_description = dataset_cfg.get("description", "")
                 last_updated = new_df["report_datetime"].max() if "report_datetime" in new_df.columns else None
+
+                jma_intro = (
+                    "**About JMA:** The Japan Meteorological Agency (気象庁, JMA) is Japan's national "
+                    "meteorological service, responsible for weather forecasts, earthquake and tsunami "
+                    "warnings, volcano monitoring, and climate observation. "
+                    "This dataset is sourced from JMA's real-time Disaster Prevention Information XML feeds "
+                    "and updated automatically every hour.\n\n"
+                )
                 attribution = (
                     "\n\n---\n"
                     "**Data source:** 気象庁防災情報XMLフォーマット データ を加工して作成  \n"
@@ -128,10 +136,8 @@ def run_pipeline(dry_run: bool = False, preview: bool = False, skip_feed_fetch: 
                     "https://www.data.jma.go.jp/developer/xml/feed/  \n"
                     "License: [Public Data License v1.0](https://www.jma.go.jp/jma/kishou/info/coment.html)"
                 )
-                if last_updated:
-                    full_description = base_description + "\n\n**Last data issued:** %s" % last_updated + attribution
-                else:
-                    full_description = base_description + attribution
+                last_updated_line = ("\n\n**Last data issued:** %s" % last_updated) if last_updated else ""
+                full_description = jma_intro + base_description + last_updated_line + attribution
 
                 ok = kaggle.upload_dataset(
                     dataset_cfg["kaggle_dataset"],

@@ -29,7 +29,7 @@ class GeneralSeasonalForecast(JMADatasetBase):
     FEED_NAME = "regular_l.xml"
     TYPE_CODES = ("VPZK50",)
     MERGE_KEYS = ["event_id"]
-    TITLE = "JMA General Seasonal Forecasts (VPZK50)"
+    TITLE = "JMA Seasonal Weather Forecasts"
     DESCRIPTION = (
         "全般１か月予報・３か月予報・暖寒候期予報 — General Monthly/Seasonal Forecast. "
         "JMA extended forecasts covering 1-month, 3-month, and warm/cold season outlooks "
@@ -89,7 +89,7 @@ class RegionalSeasonalForecast(JMADatasetBase):
     FEED_NAME = "regular_l.xml"
     TYPE_CODES = ("VPCK50",)
     MERGE_KEYS = ["event_id"]
-    TITLE = "JMA Regional Seasonal Forecasts (VPCK50)"
+    TITLE = "JMA Regional Seasonal Forecasts"
     DESCRIPTION = (
         "地方１か月予報・３か月予報・暖寒候期予報 — Regional Monthly/Seasonal Forecast. "
         "JMA district-level extended forecasts providing 1-month, 3-month, and seasonal "

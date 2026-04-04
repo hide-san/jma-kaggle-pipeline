@@ -29,7 +29,7 @@ class RiverFloodForecast(JMADatasetBase):
     FEED_NAME = "regular_l.xml"
     TYPE_CODES = tuple(f"VXKO{i:02d}" for i in range(50, 90))
     MERGE_KEYS = ["event_id"]
-    TITLE = "JMA Designated River Flood Forecasts (VXKO50-89)"
+    TITLE = "JMA River Flood Forecasts"
     DESCRIPTION = (
         "指定河川洪水予報 — Designated River Flood Forecast. "
         "JMA flood forecasts for 63 major designated rivers in Japan, providing flood stage "
@@ -92,7 +92,7 @@ class LandslideHazardAlert(JMADatasetBase):
     FEED_NAME = "regular_l.xml"
     TYPE_CODES = ("VXWW50",)
     MERGE_KEYS = ["event_id"]
-    TITLE = "JMA Landslide Hazard Alerts (VXWW50)"
+    TITLE = "JMA Landslide Hazard Alerts"
     DESCRIPTION = (
         "土砂災害警戒情報 — Landslide Hazard Alert. "
         "JMA alerts issued when accumulated rainfall exceeds thresholds for dangerous "
