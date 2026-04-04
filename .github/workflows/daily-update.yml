@@ -36,7 +36,7 @@ jobs:
       matrix:
         include:
           - name: Earthquakes & Seismic
-            datasets: "jma-earthquake-activity-status,jma-hypocenter-and-seismic-intensity,jma-earthquake-early-warning,jma-seismic-intensity-flash-report,jma-earthquake-frequency-information,jma-earthquake-and-tsunami-notice"
+            datasets: "jma-earthquake-activity-status,jma-hypocenter-and-seismic-intensity,jma-earthquake-early-warning,jma-seismic-intensity-flash-report,jma-seismic-observation-information,jma-earthquake-and-tsunami-notice"
           - name: Volcanoes & Eruptions
             datasets: "jma-eruption-flash-report,jma-volcanic-eruption-observation,jma-eruption-warning-and-forecast,jma-estimated-plume-direction,jma-volcanic-ash-forecast,jma-volcanic-situation-explanation,jma-volcano-notice"
           - name: Tsunamis & Marine

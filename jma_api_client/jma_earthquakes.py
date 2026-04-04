@@ -529,12 +529,12 @@ class EarthquakeActivityInfo(JMADatasetBase):
 class SeismicObservationInfo(JMADatasetBase):
     """Seismic observation status information from JMA VXSE60-62."""
 
-    NAME = "jma-earthquake-frequency-information"
-    CSV_FILENAME = "jma_earthquake_frequency_information.csv"
+    NAME = "jma-seismic-observation-information"
+    CSV_FILENAME = "jma_seismic_observation_information.csv"
     FEED_NAME = "eqvol_l.xml"
     TYPE_CODES = ("VXSE60", "VXSE61", "VXSE62")
     MERGE_KEYS = ["event_id"]
-    TITLE = "JMA Earthquake Frequency Information"
+    TITLE = "JMA Seismic Observation Information"
     DESCRIPTION = (
         "地震観測情報 — Seismic observation status reports (VXSE60-62) from JMA's nationwide "
         "monitoring network. Covers weekly earthquake count summaries (VXSE60), long-period ground "
