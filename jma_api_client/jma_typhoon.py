@@ -26,12 +26,12 @@ __all__ = [
 class TyphoonInfoGeneral(JMADatasetBase):
     """General typhoon information from JMA VPTI50."""
 
-    NAME = "jma-typhoon-information"
-    CSV_FILENAME = "jma_typhoon_information.csv"
+    NAME = "jma-general-typhoon-information"
+    CSV_FILENAME = "jma_general_typhoon_information.csv"
     FEED_NAME = "regular_l.xml"
     TYPE_CODES = ("VPTI50",)
     MERGE_KEYS = ["event_id"]
-    TITLE = "JMA Typhoon Information"
+    TITLE = "JMA General Typhoon Information"
     DESCRIPTION = (
         "全般台風情報 — General Typhoon Information. "
         "JMA typhoon bulletins with current position, central pressure, maximum wind speed, "
@@ -92,12 +92,12 @@ class TyphoonInfoGeneral(JMADatasetBase):
 class TyphoonInfoStandardized(JMADatasetBase):
     """Standardized typhoon information from JMA VPTI51."""
 
-    NAME = "jma-typhoon-standardized-data"
-    CSV_FILENAME = "jma_typhoon_standardized_data.csv"
+    NAME = "jma-general-typhoon-info-standardized"
+    CSV_FILENAME = "jma_general_typhoon_info_standardized.csv"
     FEED_NAME = "regular_l.xml"
     TYPE_CODES = ("VPTI51",)
     MERGE_KEYS = ["event_id"]
-    TITLE = "JMA Typhoon Standardized Data"
+    TITLE = "JMA General Typhoon Info Standardized"
     DESCRIPTION = (
         "全般台風情報（定型） — Standardized Typhoon Information. "
         "JMA typhoon data in a fixed structured format for automated processing, "
@@ -149,12 +149,12 @@ class TyphoonInfoStandardized(JMADatasetBase):
 class TyphoonInfoDetailed(JMADatasetBase):
     """Detailed typhoon information from JMA VPTI52."""
 
-    NAME = "jma-typhoon-detailed-forecasts"
-    CSV_FILENAME = "jma_typhoon_detailed_forecasts.csv"
+    NAME = "jma-general-typhoon-info-detailed"
+    CSV_FILENAME = "jma_general_typhoon_info_detailed.csv"
     FEED_NAME = "regular_l.xml"
     TYPE_CODES = ("VPTI52",)
     MERGE_KEYS = ["event_id"]
-    TITLE = "JMA Typhoon Detailed Forecasts"
+    TITLE = "JMA General Typhoon Info Detailed"
     DESCRIPTION = (
         "全般台風情報（詳細） — Detailed Typhoon Information. "
         "Comprehensive JMA typhoon data with extended forecast track positions, latitude/longitude, "

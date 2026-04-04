@@ -31,12 +31,12 @@ __all__ = [
 class VolcanoStatusExplanation(JMADatasetBase):
     """Volcano status and alert level information from JMA VFVO51."""
 
-    NAME = "jma-volcano-status-reports"
-    CSV_FILENAME = "jma_volcano_status_reports.csv"
+    NAME = "jma-volcanic-situation-explanation"
+    CSV_FILENAME = "jma_volcanic_situation_explanation.csv"
     FEED_NAME = "eqvol_l.xml"
     TYPE_CODES = ("VFVO51",)
     MERGE_KEYS = ["event_id"]
-    TITLE = "JMA Volcano Status Reports"
+    TITLE = "JMA Volcanic Situation Explanation"
     DESCRIPTION = (
         "火山の状況に関する解説情報 — Volcano Status Explanation. "
         "Detailed JMA explanations of current volcanic activity with alert levels (1–5) "
@@ -123,12 +123,12 @@ class VolcanoStatusExplanation(JMADatasetBase):
 class VolcanicAshForecast(JMADatasetBase):
     """Volcanic ash forecast data from JMA VFVO53."""
 
-    NAME = "jma-volcanic-ash-forecasts"
-    CSV_FILENAME = "jma_volcanic_ash_forecasts.csv"
+    NAME = "jma-volcanic-ash-forecast"
+    CSV_FILENAME = "jma_volcanic_ash_forecast.csv"
     FEED_NAME = "eqvol_l.xml"
     TYPE_CODES = ("VFVO53",)
     MERGE_KEYS = ["event_id"]
-    TITLE = "JMA Volcanic Ash Forecasts"
+    TITLE = "JMA Volcanic Ash Forecast"
     DESCRIPTION = (
         "降灰予報 — Volcanic Ash Forecast. "
         "6-hour window ash dispersion forecasts from JMA predicting fallout areas "
@@ -216,12 +216,12 @@ class VolcanicAshForecast(JMADatasetBase):
 class EruptionWarning(JMADatasetBase):
     """Eruption warning and forecast data from JMA VFVO50."""
 
-    NAME = "jma-eruption-warnings"
-    CSV_FILENAME = "jma_eruption_warnings.csv"
+    NAME = "jma-eruption-warning-and-forecast"
+    CSV_FILENAME = "jma_eruption_warning_and_forecast.csv"
     FEED_NAME = "eqvol_l.xml"
     TYPE_CODES = ("VFVO50",)
     MERGE_KEYS = ["event_id"]
-    TITLE = "JMA Eruption Warnings"
+    TITLE = "JMA Eruption Warning and Forecast"
     DESCRIPTION = (
         "噴火警報・予報 — Eruption Warning/Forecast. "
         "JMA eruption warnings and forecasts with alert levels (1–5) for Japanese volcanoes, "
@@ -285,12 +285,12 @@ class EruptionWarning(JMADatasetBase):
 class EruptionFlashReport(JMADatasetBase):
     """Eruption flash reports from JMA VFVO56."""
 
-    NAME = "jma-eruption-flash-reports"
-    CSV_FILENAME = "jma_eruption_flash_reports.csv"
+    NAME = "jma-eruption-flash-report"
+    CSV_FILENAME = "jma_eruption_flash_report.csv"
     FEED_NAME = "eqvol_l.xml"
     TYPE_CODES = ("VFVO56",)
     MERGE_KEYS = ["event_id"]
-    TITLE = "JMA Eruption Flash Reports"
+    TITLE = "JMA Eruption Flash Report"
     DESCRIPTION = (
         "噴火速報 — Eruption Flash Report. "
         "Rapid JMA notifications issued within minutes of confirmed eruptions, "
@@ -352,12 +352,12 @@ class EruptionFlashReport(JMADatasetBase):
 class EruptionObservation(JMADatasetBase):
     """Eruption-related volcanic observation reports from JMA VFVO52."""
 
-    NAME = "jma-eruption-observations"
-    CSV_FILENAME = "jma_eruption_observations.csv"
+    NAME = "jma-volcanic-eruption-observation"
+    CSV_FILENAME = "jma_volcanic_eruption_observation.csv"
     FEED_NAME = "eqvol_l.xml"
     TYPE_CODES = ("VFVO52",)
     MERGE_KEYS = ["event_id"]
-    TITLE = "JMA Eruption Observations"
+    TITLE = "JMA Volcanic Eruption Observation"
     DESCRIPTION = (
         "噴火に関する火山観測報 — Eruption-related Volcanic Observation Report. "
         "Detailed JMA ground and satellite observation records of volcanic activity, "
@@ -419,12 +419,12 @@ class EruptionObservation(JMADatasetBase):
 class EstimatedPlumeDirection(JMADatasetBase):
     """Estimated volcanic plume flow direction from JMA VFVO60."""
 
-    NAME = "jma-volcanic-plume-direction"
-    CSV_FILENAME = "jma_volcanic_plume_direction.csv"
+    NAME = "jma-estimated-plume-direction"
+    CSV_FILENAME = "jma_estimated_plume_direction.csv"
     FEED_NAME = "eqvol_l.xml"
     TYPE_CODES = ("VFVO60",)
     MERGE_KEYS = ["event_id"]
-    TITLE = "JMA Volcanic Plume Direction"
+    TITLE = "JMA Estimated Plume Direction"
     DESCRIPTION = (
         "火山プルームの移流方向 — Estimated Volcanic Plume Direction. "
         "JMA predictions of volcanic ash plume dispersal direction based on wind fields "

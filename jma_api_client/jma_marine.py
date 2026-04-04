@@ -26,12 +26,12 @@ __all__ = [
 class GeneralMarineWarning(JMADatasetBase):
     """General marine warnings from JMA VPZU50."""
 
-    NAME = "jma-marine-warnings"
-    CSV_FILENAME = "jma_marine_warnings.csv"
+    NAME = "jma-general-marine-warning"
+    CSV_FILENAME = "jma_general_marine_warning.csv"
     FEED_NAME = "regular_l.xml"
     TYPE_CODES = ("VPZU50", "VPZU54", "VPZU51")
     MERGE_KEYS = ["event_id"]
-    TITLE = "JMA Marine Warnings"
+    TITLE = "JMA General Marine Warning"
     DESCRIPTION = (
         "全般海上警報 — General Marine Warning. "
         "JMA warnings for open ocean and adjacent coastal areas covering strong winds, "
@@ -89,12 +89,12 @@ class GeneralMarineWarning(JMADatasetBase):
 class RegionalTidalInfo(JMADatasetBase):
     """Regional tidal information from JMA VMCJ51."""
 
-    NAME = "jma-regional-tidal-forecasts"
-    CSV_FILENAME = "jma_regional_tidal_forecasts.csv"
+    NAME = "jma-regional-tidal-information"
+    CSV_FILENAME = "jma_regional_tidal_information.csv"
     FEED_NAME = "other_l.xml"
     TYPE_CODES = ("VMCJ51",)
     MERGE_KEYS = ["event_id"]
-    TITLE = "JMA Regional Tidal Forecasts"
+    TITLE = "JMA Regional Tidal Information"
     DESCRIPTION = (
         "地方潮位情報 — Regional Tidal Information. "
         "JMA tidal predictions for specified coastal regions including high/low tide times "
@@ -152,12 +152,12 @@ class RegionalTidalInfo(JMADatasetBase):
 class GeneralTidalInfo(JMADatasetBase):
     """General tidal information from JMA VMCJ50."""
 
-    NAME = "jma-tidal-information"
-    CSV_FILENAME = "jma_tidal_information.csv"
+    NAME = "jma-general-tidal-information"
+    CSV_FILENAME = "jma_general_tidal_information.csv"
     FEED_NAME = "other_l.xml"
     TYPE_CODES = ("VMCJ50",)
     MERGE_KEYS = ["event_id"]
-    TITLE = "JMA Tidal Information"
+    TITLE = "JMA General Tidal Information"
     DESCRIPTION = (
         "全般潮位情報 — General Tidal Information. "
         "JMA nationwide tidal forecasts and anomaly observations, including tidal anomaly "

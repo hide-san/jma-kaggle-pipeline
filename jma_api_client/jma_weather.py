@@ -26,12 +26,12 @@ __all__ = [
 class WeatherWarning(JMADatasetBase):
     """General weather warnings and advisories from JMA VPWW53."""
 
-    NAME = "jma-weather-warnings-and-advisories"
-    CSV_FILENAME = "jma_weather_warnings_and_advisories.csv"
+    NAME = "jma-weather-warning-and-advisory"
+    CSV_FILENAME = "jma_weather_warning_and_advisory.csv"
     FEED_NAME = "regular_l.xml"
     TYPE_CODES = ("VPWW53", "VPWW54", "VPWW55", "VPWW56", "VPWW57", "VPWW58", "VPWW59", "VPWW60", "VPWW61")
     MERGE_KEYS = ["event_id"]
-    TITLE = "JMA Weather Warnings & Advisories"
+    TITLE = "JMA Weather Warning and Advisory"
     DESCRIPTION = (
         "気象警報・注意報 — Weather Warnings & Advisories. "
         "JMA severe weather alerts covering heavy rain, snow, strong winds, high waves, "
@@ -89,12 +89,12 @@ class WeatherWarning(JMADatasetBase):
 class HeavyRainWarning(JMADatasetBase):
     """Record short-term heavy rain alerts from JMA VPOA50."""
 
-    NAME = "jma-heavy-rain-alerts"
-    CSV_FILENAME = "jma_heavy_rain_alerts.csv"
+    NAME = "jma-record-heavy-rain-information"
+    CSV_FILENAME = "jma_record_heavy_rain_information.csv"
     FEED_NAME = "regular_l.xml"
     TYPE_CODES = ("VPOA50",)
     MERGE_KEYS = ["event_id"]
-    TITLE = "JMA Heavy Rain Alerts"
+    TITLE = "JMA Record Heavy Rain Information"
     DESCRIPTION = (
         "記録的短時間大雨情報 — Record Short-term Heavy Rain Information. "
         "JMA alerts for exceptionally intense short-duration rainfall events that may "
@@ -149,12 +149,12 @@ class HeavyRainWarning(JMADatasetBase):
 class TornadoWatchInfo(JMADatasetBase):
     """Tornado watch information from JMA VPHW50/51."""
 
-    NAME = "jma-tornado-watch-alerts"
-    CSV_FILENAME = "jma_tornado_watch_alerts.csv"
+    NAME = "jma-tornado-watch-information"
+    CSV_FILENAME = "jma_tornado_watch_information.csv"
     FEED_NAME = "regular_l.xml"
     TYPE_CODES = ("VPHW50", "VPHW51")
     MERGE_KEYS = ["event_id"]
-    TITLE = "JMA Tornado Watch Alerts"
+    TITLE = "JMA Tornado Watch Information"
     DESCRIPTION = (
         "竜巻注意情報 — Tornado Watch Information. "
         "JMA alerts issued when atmospheric conditions become favorable for tornado development, "

@@ -24,12 +24,12 @@ __all__ = [
 class GeneralSeasonalForecast(JMADatasetBase):
     """General monthly and seasonal forecasts from JMA VPZK50."""
 
-    NAME = "jma-seasonal-weather-forecasts"
-    CSV_FILENAME = "jma_seasonal_weather_forecasts.csv"
+    NAME = "jma-general-seasonal-forecast"
+    CSV_FILENAME = "jma_general_seasonal_forecast.csv"
     FEED_NAME = "regular_l.xml"
     TYPE_CODES = ("VPZK50",)
     MERGE_KEYS = ["event_id"]
-    TITLE = "JMA Seasonal Weather Forecasts"
+    TITLE = "JMA General Seasonal Forecast"
     DESCRIPTION = (
         "全般１か月予報・３か月予報・暖寒候期予報 — General Monthly/Seasonal Forecast. "
         "JMA extended forecasts covering 1-month, 3-month, and warm/cold season outlooks "
@@ -84,12 +84,12 @@ class GeneralSeasonalForecast(JMADatasetBase):
 class RegionalSeasonalForecast(JMADatasetBase):
     """Regional monthly and seasonal forecasts from JMA VPCK50."""
 
-    NAME = "jma-regional-seasonal-forecasts"
-    CSV_FILENAME = "jma_regional_seasonal_forecasts.csv"
+    NAME = "jma-regional-seasonal-forecast"
+    CSV_FILENAME = "jma_regional_seasonal_forecast.csv"
     FEED_NAME = "regular_l.xml"
     TYPE_CODES = ("VPCK50",)
     MERGE_KEYS = ["event_id"]
-    TITLE = "JMA Regional Seasonal Forecasts"
+    TITLE = "JMA Regional Seasonal Forecast"
     DESCRIPTION = (
         "地方１か月予報・３か月予報・暖寒候期予報 — Regional Monthly/Seasonal Forecast. "
         "JMA district-level extended forecasts providing 1-month, 3-month, and seasonal "

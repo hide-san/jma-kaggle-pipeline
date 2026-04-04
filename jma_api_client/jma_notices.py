@@ -24,12 +24,12 @@ __all__ = [
 class EarthquakeTsunamiNotice(JMADatasetBase):
     """Earthquake and tsunami informational notices from JMA VZSE40."""
 
-    NAME = "jma-earthquake-and-tsunami-notices"
-    CSV_FILENAME = "jma_earthquake_and_tsunami_notices.csv"
+    NAME = "jma-earthquake-and-tsunami-notice"
+    CSV_FILENAME = "jma_earthquake_and_tsunami_notice.csv"
     FEED_NAME = "eqvol_l.xml"
     TYPE_CODES = ("VZSE40",)
     MERGE_KEYS = ["event_id"]
-    TITLE = "JMA Earthquake & Tsunami Notices"
+    TITLE = "JMA Earthquake and Tsunami Notice"
     DESCRIPTION = (
         "地震・津波に関するお知らせ — Earthquake/Tsunami Notice. "
         "JMA informational notices providing explanations, clarifications, and supplementary "
@@ -86,12 +86,12 @@ class EarthquakeTsunamiNotice(JMADatasetBase):
 class VolcanoNotice(JMADatasetBase):
     """Volcano informational notices from JMA VZVO40."""
 
-    NAME = "jma-volcano-notices"
-    CSV_FILENAME = "jma_volcano_notices.csv"
+    NAME = "jma-volcano-notice"
+    CSV_FILENAME = "jma_volcano_notice.csv"
     FEED_NAME = "eqvol_l.xml"
     TYPE_CODES = ("VZVO40",)
     MERGE_KEYS = ["event_id"]
-    TITLE = "JMA Volcano Notices"
+    TITLE = "JMA Volcano Notice"
     DESCRIPTION = (
         "火山に関するお知らせ — Volcano Notice. "
         "JMA informational notices and announcements about volcanic activity, providing "

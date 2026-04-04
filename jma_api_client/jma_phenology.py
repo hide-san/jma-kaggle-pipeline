@@ -102,12 +102,12 @@ class PhenologicalObservation(JMADatasetBase):
 class SeasonalObservation(JMADatasetBase):
     """General seasonal observations from JMA VGSK50."""
 
-    NAME = "jma-seasonal-nature-observations"
-    CSV_FILENAME = "jma_seasonal_nature_observations.csv"
+    NAME = "jma-seasonal-observation"
+    CSV_FILENAME = "jma_seasonal_observation.csv"
     FEED_NAME = "other_l.xml"
     TYPE_CODES = ("VGSK50",)
     MERGE_KEYS = ["event_id"]
-    TITLE = "JMA Seasonal Nature Observations"
+    TITLE = "JMA Seasonal Observation"
     DESCRIPTION = (
         "季節観測 — Seasonal Observation. "
         "JMA nationwide observations of seasonal natural phenomena including "
@@ -171,12 +171,12 @@ class SeasonalObservation(JMADatasetBase):
 class SpecialWeatherReport(JMADatasetBase):
     """Special weather reports from JMA VGSK60."""
 
-    NAME = "jma-special-weather-reports"
-    CSV_FILENAME = "jma_special_weather_reports.csv"
+    NAME = "jma-special-weather-report"
+    CSV_FILENAME = "jma_special_weather_report.csv"
     FEED_NAME = "other_l.xml"
     TYPE_CODES = ("VGSK60",)
     MERGE_KEYS = ["event_id"]
-    TITLE = "JMA Special Weather Reports"
+    TITLE = "JMA Special Weather Report"
     DESCRIPTION = (
         "特殊気象報 — Special Weather Report. "
         "JMA documentation of unusual or historically significant weather phenomena "

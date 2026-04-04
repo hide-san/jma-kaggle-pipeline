@@ -46,12 +46,12 @@ class EarthquakeIntensityInfo(JMADatasetBase):
     Includes hypocenter coordinates, magnitude type, and per-prefecture intensity.
     """
 
-    NAME = "jma-earthquake-intensity-reports"
-    CSV_FILENAME = "jma_earthquake_intensity_reports.csv"
+    NAME = "jma-hypocenter-and-seismic-intensity"
+    CSV_FILENAME = "jma_hypocenter_and_seismic_intensity.csv"
     FEED_NAME = "eqvol_l.xml"
     TYPE_CODES = ("VXSE53",)
     MERGE_KEYS = ["event_id"]
-    TITLE = "JMA Earthquake Intensity Reports"
+    TITLE = "JMA Hypocenter and Seismic Intensity"
     DESCRIPTION = (
         "震源・震度に関する情報 — Earthquake hypocenter and seismic intensity reports issued by the "
         "Japan Meteorological Agency (JMA) for every significant seismic event across Japan. "
@@ -160,12 +160,12 @@ class EarthquakeIntensityInfo(JMADatasetBase):
 class SeismicIntensityReport(JMADatasetBase):
     """Seismic intensity rapid reports from JMA VXSE51."""
 
-    NAME = "jma-seismic-intensity-rapid-reports"
-    CSV_FILENAME = "jma_seismic_intensity_rapid_reports.csv"
+    NAME = "jma-seismic-intensity-flash-report"
+    CSV_FILENAME = "jma_seismic_intensity_flash_report.csv"
     FEED_NAME = "eqvol_l.xml"
     TYPE_CODES = ("VXSE51",)
     MERGE_KEYS = ["event_id"]
-    TITLE = "JMA Seismic Intensity Rapid Reports"
+    TITLE = "JMA Seismic Intensity Flash Report"
     DESCRIPTION = (
         "震度速報 — Rapid seismic intensity reports published by JMA within minutes of earthquake detection, "
         "before full hypocenter analysis is complete. Provides preliminary maximum seismic intensity (震度) "
@@ -241,12 +241,12 @@ class SeismicIntensityReport(JMADatasetBase):
 class TsunamiWarning(JMADatasetBase):
     """Tsunami warning and advisory information from JMA VTSE41."""
 
-    NAME = "jma-tsunami-warnings-and-advisories"
-    CSV_FILENAME = "jma_tsunami_warnings_and_advisories.csv"
+    NAME = "jma-tsunami-warning-advisory-forecast"
+    CSV_FILENAME = "jma_tsunami_warning_advisory_forecast.csv"
     FEED_NAME = "eqvol_l.xml"
     TYPE_CODES = ("VTSE41",)
     MERGE_KEYS = ["event_id"]
-    TITLE = "JMA Tsunami Warnings & Advisories"
+    TITLE = "JMA Tsunami Warning Advisory Forecast"
     DESCRIPTION = (
         "津波警報・注意報・予報 — Official tsunami warnings, advisories, and forecasts issued by JMA "
         "for Japanese coastal regions following significant seismic events. Includes estimated wave heights, "
@@ -338,12 +338,12 @@ class TsunamiWarning(JMADatasetBase):
 class EarthquakeEarlyWarning(JMADatasetBase):
     """Earthquake early warning alerts from JMA VXSE43/VXSE44."""
 
-    NAME = "jma-earthquake-early-warnings"
-    CSV_FILENAME = "jma_earthquake_early_warnings.csv"
+    NAME = "jma-earthquake-early-warning"
+    CSV_FILENAME = "jma_earthquake_early_warning.csv"
     FEED_NAME = "eqvol_l.xml"
     TYPE_CODES = ("VXSE43", "VXSE44")
     MERGE_KEYS = ["event_id"]
-    TITLE = "JMA Earthquake Early Warnings"
+    TITLE = "JMA Earthquake Early Warning"
     DESCRIPTION = (
         "緊急地震速報 — Earthquake Early Warning (EEW) alerts broadcast by JMA seconds after P-wave "
         "detection, before strong shaking arrives. Predicts ground motion intensities by region to "
@@ -406,12 +406,12 @@ class EarthquakeEarlyWarning(JMADatasetBase):
 class TsunamiInfo(JMADatasetBase):
     """Tsunami observation information from JMA VTSE51."""
 
-    NAME = "jma-tsunami-observations"
-    CSV_FILENAME = "jma_tsunami_observations.csv"
+    NAME = "jma-tsunami-information"
+    CSV_FILENAME = "jma_tsunami_information.csv"
     FEED_NAME = "eqvol_l.xml"
     TYPE_CODES = ("VTSE51",)
     MERGE_KEYS = ["event_id"]
-    TITLE = "JMA Tsunami Observations"
+    TITLE = "JMA Tsunami Information"
     DESCRIPTION = (
         "津波情報 — Tsunami observation reports published by JMA from coastal seismic stations and "
         "tide gauges throughout Japan. Records confirmed wave heights, arrival times, and propagation "
@@ -476,12 +476,12 @@ class TsunamiInfo(JMADatasetBase):
 class EarthquakeActivityInfo(JMADatasetBase):
     """Earthquake activity status information from JMA VXSE56."""
 
-    NAME = "jma-earthquake-activity-reports"
-    CSV_FILENAME = "jma_earthquake_activity_reports.csv"
+    NAME = "jma-earthquake-activity-status"
+    CSV_FILENAME = "jma_earthquake_activity_status.csv"
     FEED_NAME = "eqvol_l.xml"
     TYPE_CODES = ("VXSE56",)
     MERGE_KEYS = ["event_id"]
-    TITLE = "JMA Earthquake Activity Reports"
+    TITLE = "JMA Earthquake Activity Status"
     DESCRIPTION = (
         "震源活動特性解説情報 — Earthquake activity status reports published by JMA summarising "
         "ongoing seismic trends, aftershock sequences, foreshock patterns, and swarm activity. "
@@ -529,12 +529,12 @@ class EarthquakeActivityInfo(JMADatasetBase):
 class SeismicObservationInfo(JMADatasetBase):
     """Seismic observation status information from JMA VXSE60-62."""
 
-    NAME = "jma-seismic-network-status"
-    CSV_FILENAME = "jma_seismic_network_status.csv"
+    NAME = "jma-earthquake-frequency-information"
+    CSV_FILENAME = "jma_earthquake_frequency_information.csv"
     FEED_NAME = "eqvol_l.xml"
     TYPE_CODES = ("VXSE60", "VXSE61", "VXSE62")
     MERGE_KEYS = ["event_id"]
-    TITLE = "JMA Seismic Network Status"
+    TITLE = "JMA Earthquake Frequency Information"
     DESCRIPTION = (
         "地震観測情報 — Seismic observation status reports (VXSE60-62) from JMA's nationwide "
         "monitoring network. Covers weekly earthquake count summaries (VXSE60), long-period ground "
