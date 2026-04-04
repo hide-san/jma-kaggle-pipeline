@@ -47,9 +47,9 @@ class KaggleUploader:
             os.environ["KAGGLE_USERNAME"] = username
             os.environ["KAGGLE_API_TOKEN"] = api_token
 
-            # Verify the token actually works by listing datasets (cheap read call)
+            # Verify the token actually works by listing own datasets (cheap read call)
             returncode, stdout, stderr = self._run_kaggle_command([
-                "datasets", "list", "--user", username, "--mine", "--max-size", "1",
+                "datasets", "list", "--mine",
             ])
             if returncode != 0:
                 output = (stdout + stderr).strip()
