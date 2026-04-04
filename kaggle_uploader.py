@@ -34,7 +34,7 @@ class KaggleUploader:
     # ------------------------------------------------------------------ #
 
     def authenticate(self) -> bool:
-        """Authenticate with Kaggle. Checks that credentials are available. Returns True on success."""
+        """Authenticate with Kaggle. Verifies credentials via a live API call. Returns True on success."""
         try:
             username = os.environ.get("KAGGLE_USERNAME")
             api_token = os.environ.get("KAGGLE_API_TOKEN")
@@ -47,7 +47,20 @@ class KaggleUploader:
             os.environ["KAGGLE_USERNAME"] = username
             os.environ["KAGGLE_API_TOKEN"] = api_token
 
-            log.info("Kaggle authentication successful")
+            # Verify the token actually works by listing datasets (cheap read call)
+            returncode, stdout, stderr = self._run_kaggle_command([
+                "datasets", "list", "--user", username, "--mine", "--max-size", "1",
+            ])
+            if returncode != 0:
+                output = (stdout + stderr).strip()
+                log.error(
+                    "Kaggle authentication failed for user '%s': %s\n"
+                    "  Check that KAGGLE_API_TOKEN belongs to this user and has read/write scope.",
+                    username, output,
+                )
+                return False
+
+            log.info("Kaggle authentication successful (user: %s)", username)
             return True
         except Exception as exc:
             log.error("Kaggle authentication failed: %s", exc)
@@ -205,13 +218,26 @@ class KaggleUploader:
                 "--dir-mode",
                 "zip",
             ])
-            create_ok = returncode == 0
 
-            if create_ok:
+            if returncode == 0:
                 log.info("Created new dataset successfully: %s", kaggle_dataset)
                 return True
 
-            # Dataset exists, try to create a new version
+            create_output = (stdout + stderr).lower()
+            dataset_already_exists = (
+                "already exists" in create_output
+                or "category already exists" in create_output
+            )
+
+            if not dataset_already_exists:
+                log.error(
+                    "Create failed for %s (rc=%d) — not retrying as version\n"
+                    "  stdout: %s\n  stderr: %s",
+                    kaggle_dataset, returncode, stdout.strip(), stderr.strip(),
+                )
+                return False
+
+            # Dataset exists — create a new version
             log.info("Dataset exists — adding new version: %s", kaggle_dataset)
             version_notes = description or "Automated daily update"
             returncode, stdout, stderr = self._run_kaggle_command([
