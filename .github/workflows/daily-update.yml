@@ -36,15 +36,15 @@ jobs:
       matrix:
         include:
           - name: Earthquakes & Seismic
-            datasets: "japan-earthquake-activity-information,japan-earthquake-and-seismic-information,japan-earthquake-early-warning,japan-seismic-intensity-report,japan-seismic-observation-information,japan-earthquake-tsunami-notice"
+            datasets: "jma-earthquake-activity-status,jma-hypocenter-and-seismic-intensity,jma-earthquake-early-warning,jma-seismic-intensity-flash-report,jma-earthquake-frequency-information,jma-earthquake-and-tsunami-notice"
           - name: Volcanoes & Eruptions
-            datasets: "japan-eruption-flash-report,japan-eruption-observation,japan-eruption-warning,japan-estimated-plume-direction,japan-volcanic-ash-forecast,japan-volcano-status-explanation,japan-volcano-notice"
+            datasets: "jma-eruption-flash-report,jma-volcanic-eruption-observation,jma-eruption-warning-and-forecast,jma-estimated-plume-direction,jma-volcanic-ash-forecast,jma-volcanic-situation-explanation,jma-volcano-notice"
           - name: Tsunamis & Marine
-            datasets: "japan-tsunami-information,japan-tsunami-warning,japan-general-marine-warning,japan-regional-tidal-information,japan-general-tidal-information"
+            datasets: "jma-tsunami-information,jma-tsunami-warning-advisory-forecast,jma-general-marine-warning,jma-regional-tidal-information,jma-general-tidal-information"
           - name: Weather & Hazards
-            datasets: "japan-weather-warning,japan-heavy-rain-warning,japan-tornado-watch,japan-special-weather-report,japan-river-flood-forecast,japan-landslide-hazard-alert"
+            datasets: "jma-weather-warning-and-advisory,jma-record-heavy-rain-information,jma-tornado-watch-information,jma-special-weather-report,jma-designated-river-flood-forecast,jma-landslide-warning-information"
           - name: Forecasts & Observations
-            datasets: "japan-typhoon-information,japan-typhoon-information-standardized,japan-typhoon-information-detailed,japan-general-seasonal-forecast,japan-regional-seasonal-forecast,japan-phenological-observation,japan-regional-sea-alert,japan-regional-sea-forecast,japan-seasonal-observation"
+            datasets: "jma-general-typhoon-information,jma-general-typhoon-info-standardized,jma-general-typhoon-info-detailed,jma-general-seasonal-forecast,jma-regional-seasonal-forecast,jma-phenological-observations,jma-regional-sea-warning,jma-regional-sea-forecast,jma-seasonal-observation"
 
     steps:
       - name: Checkout repository
