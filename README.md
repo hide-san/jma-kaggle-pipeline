@@ -6,7 +6,6 @@ Manages **33 JMA datasets** across earthquakes, volcanoes, tsunamis, typhoons, w
 
 ## Features
 
-- **33 JMA Datasets**: Earthquakes, volcanoes, tsunamis, typhoons, weather warnings, marine data, seasonal forecasts, and more
 - **Plugin Registry Architecture**: Extensible design with automatic dataset discovery and registration
 - **Dual-Language CSVs**: Japanese text + English translations for all fields
 - **Hourly Automated Updates**: Runs every hour via GitHub Actions (5 parallel jobs by category)
@@ -18,52 +17,52 @@ Manages **33 JMA datasets** across earthquakes, volcanoes, tsunamis, typhoons, w
 
 ## Datasets (33 Total)
 
-This pipeline manages 33 official JMA information resources organized by category:
+### 1. Earthquakes & Seismic (7 datasets)
+- **JMA Tsunami Warning Advisory Forecast** (VTSE41) - Coastal tsunami alerts with estimated wave heights and arrival times by region
+- **JMA Tsunami Information** (VTSE51) - Observed tsunami wave heights and arrival times from coastal monitoring stations
+- **JMA Earthquake Early Warning** (VXSE43/VXSE44) - Real-time EEW predictions with automated broadcast alerts for hazard mitigation
+- **JMA Seismic Intensity Flash Report** (VXSE51) - Fast seismic intensity reports with per-prefecture maximum intensity values
+- **JMA Hypocenter and Seismic Intensity** (VXSE53) - Earthquake hypocenter, magnitude (Mjma), and per-prefecture seismic intensity
+- **JMA Earthquake Activity Status** (VXSE56) - Seismic activity summaries with aftershock stats and ongoing trend reports
+- **JMA Seismic Observation Information** (VXSE60/61/62) - Seismic network status with earthquake counts and long-period oscillations
 
-### 1. Earthquakes & Seismic (8 datasets)
-- **japan-earthquake-and-seismic-information** (VXSE53) - Hypocenter, magnitude, per-prefecture intensity
-- **japan-seismic-intensity-report** (VXSE51) - Rapid intensity reports
-- **japan-earthquake-early-warning** (VXSE43/44) - Real-time EEW predictions
-- **japan-earthquake-activity-information** (VXSE56) - Aftershock sequences and trends
-- **japan-seismic-observation-information** (VXSE60-62) - Network monitoring data
-- **japan-tsunami-information** (VTSE51) - Observed tsunami wave heights
-- **japan-tsunami-warning** (VTSE41) - Tsunami alerts and forecasts
-- **japan-earthquake-tsunami-notice** (VZSE40) - Explanatory information
-
-### 2. Volcanoes & Eruptions (7 datasets)
-- **japan-volcano-status-explanation** (VFVO51) - Volcano alert levels (1-5)
-- **japan-volcanic-ash-forecast** (VFVO53) - 6-hour ash dispersion forecasts
-- **japan-eruption-warning** (VFVO50) - Eruption alert levels
-- **japan-eruption-flash-report** (VFVO56) - Rapid eruption notifications
-- **japan-eruption-observation** (VFVO52) - Active eruption monitoring data
-- **japan-estimated-plume-direction** (VFVO60) - Ash plume direction forecasts
-- **japan-volcano-notice** (VZVO40) - Volcanic activity announcements
+### 2. Volcanoes & Eruptions (6 datasets)
+- **JMA Eruption Warning and Forecast** (VFVO50) - Eruption warning levels (1-5) with expected volcanic hazards and impact areas
+- **JMA Volcanic Situation Explanation** (VFVO51) - Volcano alert level (1-5) explanations with activity and prevention summaries
+- **JMA Volcanic Eruption Observation Report** (VFVO52) - Detailed eruption observations with activity characteristics and plume data
+- **JMA Volcanic Ash Forecast** (VFVO53) - 6-hour window volcanic ash dispersion forecasts with affected regions and dates
+- **JMA Eruption Flash Report** (VFVO56) - Rapid eruption notifications with eruption type and affected volcano
+- **JMA Estimated Plume Direction Report** (VFVO60) - Volcanic ash plume direction forecasts with time-stamped directional predictions
 
 ### 3. Tsunamis & Marine (5 datasets)
-- **japan-regional-sea-alert** (VPCU51) - Maritime hazard alerts
-- **japan-regional-sea-forecast** (VPCY51) - Maritime forecasts
-- **japan-general-marine-warning** (VPZU50/51/54) - Open ocean warnings
-- **japan-regional-tidal-information** (VMCJ51) - Regional tide predictions
-- **japan-general-tidal-information** (VMCJ50) - Nationwide tidal forecasts
+- **JMA General Tidal Information** (VMCJ50) - National tidal forecasts with tidal anomaly observations and event details
+- **JMA Regional Tidal Information** (VMCJ51) - Tidal predictions with high/low tide times and heights by coastal region
+- **JMA Regional Sea Warning** (VPCU51) - Regional maritime hazard alerts with warning types and affected coastal regions
+- **JMA Regional Sea Forecast** (VPCY51) - Maritime forecasts with predicted wave heights, wind, and conditions by region
+- **JMA General Marine Warning** (VPZU50/51/54) - Open ocean marine warnings with sea state and wind hazard information
 
-### 4. Weather & Hazards (6 datasets)
-- **japan-weather-warning** (VPWW53-61) - Severe weather alerts (rain, snow, wind, flooding)
-- **japan-heavy-rain-warning** (VPOA50) - Exceptional rainfall alerts
-- **japan-tornado-watch** (VPHW50/51) - Tornado watch information
-- **japan-special-weather-report** (VGSK60) - Notable weather phenomena
-- **japan-river-flood-forecast** (VXKO50-89) - 63-river flood stage forecasts
-- **japan-landslide-hazard-alert** (VXWW50) - Landslide risk alerts
+### 4. Weather & Hazards (5 datasets)
+- **JMA Tornado Watch Information** (VPHW50/VPHW51) - Tornado watch alerts with affected areas and atmospheric conditions
+- **JMA Record Short-time Heavy Rain Information** (VPOA50) - Exceptional rainfall event alerts with affected regions and intensity
+- **JMA Weather Warning and Advisory** (VPWW53-61) - Severe weather alerts (rain, snow, wind, waves, floods) by region and type
+- **JMA Designated River Flood Forecast** (VXKO50-89) - River flood forecasts by designated river with stage predictions and timing
+- **JMA Landslide Warning Information** (VXWW50) - Landslide risk alerts with trigger conditions and affected areas
 
-### 5. Forecasts & Observations (7 datasets)
-- **japan-typhoon-information** (VPTI50) - Typhoon position/intensity/track
-- **japan-typhoon-information-standardized** (VPTI51) - Standardized typhoon data
-- **japan-typhoon-information-detailed** (VPTI52) - Extended typhoon forecasts
-- **japan-general-seasonal-forecast** (VPZK50) - 1/3-month national forecasts
-- **japan-regional-seasonal-forecast** (VPCK50) - District-level seasonal forecasts
-- **japan-phenological-observation** (VGSK55) - Cherry blossom & tree phenophases
-- **japan-seasonal-observation** (VGSK50) - Seasonal observations by station
+### 5. Typhoons & Forecasts (5 datasets)
+- **JMA Regional Seasonal Forecast** (VPCK50) - Regional 1-month, 3-month, and seasonal forecasts by district
+- **JMA General Typhoon Information** (VPTI50) - Typhoon position, intensity (pressure/wind), and forecast track information
+- **JMA General Typhoon Information Standardized** (VPTI51) - Standardized-format typhoon data with pressure and wind speed
+- **JMA General Typhoon Information Detailed** (VPTI52) - Detailed typhoon forecasts with extended track and impact predictions
+- **JMA General Seasonal Forecast** (VPZK50) - 1-month, 3-month, and warm/cold season temperature and precipitation forecasts
 
-**All datasets available on Kaggle**: https://www.kaggle.com/user/datasets (replace `user` with actual Kaggle username)
+### 6. Phenology & Observations (3 datasets)
+- **JMA Seasonal Observation** (VGSK50) - Seasonal tree and plant phenophase observations with station data
+- **JMA Phenological Observations** (VGSK55) - Biological phenophase observations (plants, insects, birds) by station and date
+- **JMA Special Weather Report** (VGSK60) - Notable weather phenomena reports with locations and descriptions
+
+### 7. Informational Notices (2 datasets)
+- **JMA Earthquake and Tsunami Notice** (VZSE40) - Explanatory notices and clarifications about earthquake/tsunami events
+- **JMA Volcano Notice** (VZVO40) - Explanatory notices and announcements about volcanic activity
 
 ## Prerequisites
 
