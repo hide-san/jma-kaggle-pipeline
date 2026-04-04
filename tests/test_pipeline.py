@@ -230,6 +230,19 @@ def test_fetch_all_feeds_saves_files(tmp_path, monkeypatch):
 # Dataset metadata validation                                          #
 # ------------------------------------------------------------------ #
 
+def test_all_datasets_title_length():
+    """Every registered dataset title must be 6–50 characters (Kaggle limit)."""
+    from jma_api_client.base import DATASET_REGISTRY
+
+    violations = []
+    for name, cls in DATASET_REGISTRY.items():
+        title = getattr(cls, "TITLE", "")
+        if title and not (6 <= len(title) <= 50):
+            violations.append(f"{name}: {len(title)} chars — '{title}'")
+
+    assert not violations, "Dataset titles outside 6–50 char Kaggle limit:\n" + "\n".join(violations)
+
+
 def test_all_datasets_keywords_max_five():
     """Every registered dataset must have at most 5 Kaggle keywords."""
     from jma_api_client.base import DATASET_REGISTRY

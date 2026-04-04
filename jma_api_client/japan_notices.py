@@ -29,7 +29,7 @@ class EarthquakeTsunamiNotice(JMADatasetBase):
     FEED_NAME = "eqvol_l.xml"
     TYPE_CODES = ("VZSE40",)
     MERGE_KEYS = ["event_id"]
-    TITLE = "JMA Earthquake & Tsunami Informational Notices (VZSE40)"
+    TITLE = "JMA Earthquake & Tsunami Notices (VZSE40)"
     DESCRIPTION = (
         "地震・津波に関するお知らせ — Earthquake/Tsunami Notice. "
         "JMA informational notices providing explanations, clarifications, and supplementary "
