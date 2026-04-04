@@ -17,7 +17,7 @@ Endpoints:
 from .base import DATASET_REGISTRY, JMADatasetBase, register_dataset
 
 # Dataset classes (new plugin architecture)
-from .japan_earthquakes import (
+from .jma_earthquakes import (
     EarthquakeIntensityInfo,
     SeismicIntensityReport,
     TsunamiWarning,
@@ -26,7 +26,7 @@ from .japan_earthquakes import (
     EarthquakeActivityInfo,
     SeismicObservationInfo,
 )
-from .japan_volcanoes import (
+from .jma_volcanoes import (
     VolcanoStatusExplanation,
     VolcanicAshForecast,
     EruptionWarning,
@@ -34,45 +34,45 @@ from .japan_volcanoes import (
     EruptionObservation,
     EstimatedPlumeDirection,
 )
-from .japan_sea import RegionalSeaAlert, RegionalSeaForecast
-from .japan_phenology import (
+from .jma_sea import RegionalSeaAlert, RegionalSeaForecast
+from .jma_phenology import (
     PhenologicalObservation,
     SeasonalObservation,
     SpecialWeatherReport,
 )
-from .japan_weather import (
+from .jma_weather import (
     WeatherWarning,
     HeavyRainWarning,
     TornadoWatchInfo,
 )
-from .japan_marine import (
+from .jma_marine import (
     GeneralMarineWarning,
     RegionalTidalInfo,
     GeneralTidalInfo,
 )
-from .japan_typhoon import (
+from .jma_typhoon import (
     TyphoonInfoGeneral,
     TyphoonInfoStandardized,
     TyphoonInfoDetailed,
 )
-from .japan_hazards import (
+from .jma_hazards import (
     RiverFloodForecast,
     LandslideHazardAlert,
 )
-from .japan_forecasts import (
+from .jma_forecasts import (
     GeneralSeasonalForecast,
     RegionalSeasonalForecast,
 )
-from .japan_notices import (
+from .jma_notices import (
     EarthquakeTsunamiNotice,
     VolcanoNotice,
 )
 
 # Legacy functions (backwards compatibility)
-from .japan_earthquakes import fetch_earthquakes_enhanced
-from .japan_volcanoes import fetch_volcanic_ash_forecasts, fetch_volcano_status
-from .japan_sea import fetch_sea_warnings, fetch_sea_forecasts
-from .japan_phenology import fetch_cherry_blossom_observations
+from .jma_earthquakes import fetch_earthquakes_enhanced
+from .jma_volcanoes import fetch_volcanic_ash_forecasts, fetch_volcano_status
+from .jma_sea import fetch_sea_warnings, fetch_sea_forecasts
+from .jma_phenology import fetch_cherry_blossom_observations
 from .temperature import fetch_temperature_data
 
 __all__ = [

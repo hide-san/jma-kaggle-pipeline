@@ -42,16 +42,16 @@ OUTPUT_DIR = Path(__file__).resolve().parent.parent / "notebooks" / "jma_dataset
 
 # Map jma_api_client module suffix → display category
 _MODULE_TO_CATEGORY: dict[str, str] = {
-    "japan_earthquakes": "Earthquakes & Seismic",
-    "japan_volcanoes": "Volcanoes & Eruptions",
-    "japan_sea": "Tsunamis & Marine",
-    "japan_marine": "Tsunamis & Marine",
-    "japan_weather": "Weather & Hazards",
-    "japan_hazards": "Weather & Hazards",
-    "japan_typhoon": "Typhoons & Forecasts",
-    "japan_forecasts": "Typhoons & Forecasts",
-    "japan_phenology": "Phenology & Observations",
-    "japan_notices": "Informational Notices",
+    "jma_earthquakes": "Earthquakes & Seismic",
+    "jma_volcanoes": "Volcanoes & Eruptions",
+    "jma_sea": "Tsunamis & Marine",
+    "jma_marine": "Tsunamis & Marine",
+    "jma_weather": "Weather & Hazards",
+    "jma_hazards": "Weather & Hazards",
+    "jma_typhoon": "Typhoons & Forecasts",
+    "jma_forecasts": "Typhoons & Forecasts",
+    "jma_phenology": "Phenology & Observations",
+    "jma_notices": "Informational Notices",
 }
 
 # Display order for categories
@@ -92,7 +92,7 @@ def code_cell(source: str, index: int) -> dict:
 
 def _dataset_category(cls) -> str:
     """Return display category for a dataset class based on its module name."""
-    module = cls.__module__  # e.g. 'jma_api_client.japan_earthquakes'
+    module = cls.__module__  # e.g. 'jma_api_client.jma_earthquakes'
     suffix = module.split(".")[-1]
     return _MODULE_TO_CATEGORY.get(suffix, "Other")
 
