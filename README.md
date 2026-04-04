@@ -256,7 +256,9 @@ Each feed is parsed into Atom entries with data type codes (VXSE53, VFVO51, etc.
 - VGSK55 - 生物季節観測 (Phenological Observation - Cherry Blossom)
 - VGSK60 - 特殊気象報 (Special Weather Report)
 
-**Reference**: [JMA XML Format Specification v1.3](https://xml.kishou.go.jp/jmaxml_20260129_format_v1_3_hyo1_1.pdf)
+**References**:
+- [JMA XML Format Portal](https://xml.kishou.go.jp/index.html) — Official index of all JMA XML data types, schemas, and feed documentation
+- [JMA XML Format Specification v1.3](https://xml.kishou.go.jp/jmaxml_20260129_format_v1_3_hyo1_1.pdf) — Full specification document
 
 ## CI/CD
 
