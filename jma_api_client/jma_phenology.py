@@ -24,31 +24,28 @@ __all__ = [
 
 @register_dataset
 class PhenologicalObservation(JMADatasetBase):
-    """
-    Cherry blossom and other phenological observations from JMA.
+    """Phenological observations (plants, insects, birds) from JMA VGSK55."""
 
-    Extracts observation date, phenophase (e.g., "full bloom"), and station info.
-    """
-
-    NAME = "jma-cherry-blossom-observations"
-    CSV_FILENAME = "jma_cherry_blossom_observations.csv"
+    NAME = "jma-phenological-observations"
+    CSV_FILENAME = "jma_phenological_observations.csv"
     FEED_NAME = "other_l.xml"
     TYPE_CODES = ("VGSK55",)
     MERGE_KEYS = ["event_id"]
-    TITLE = "JMA Cherry Blossom Observations"
+    TITLE = "JMA Phenological Observations"
     DESCRIPTION = (
         "生物季節観測 — Phenological Observation. "
-        "JMA observations of cherry blossom blooming and other biological phenophases "
-        "from monitoring stations nationwide, tracking first bloom and full bloom dates.\n\n"
+        "JMA observations of biological phenophases from monitoring stations nationwide, "
+        "covering plants (cherry blossom, plum, maple), insects (first firefly, cicada), "
+        "and birds (first cuckoo, swallow), tracking first and full phenophase dates.\n\n"
         "**Columns include:** event_id, report_datetime, info_type_en, title_en, "
         "observation_date, phenophase_en, phenophase_code, "
         "station_name_en, station_location_en\n\n"
         "**Feed:** other_l.xml | **Type code:** VGSK55\n"
         "**Updates:** Hourly automated pipeline | **Max entries per run:** 100\n"
-        "**Use cases:** cherry blossom front tracking, phenology research, "
-        "climate change impact studies, tourism planning"
+        "**Use cases:** phenology research, climate change impact studies, "
+        "seasonal pattern analysis, biodiversity monitoring"
     )
-    SUBTITLE = "Cherry blossom and tree phenophase observations by monitoring station and date"
+    SUBTITLE = "Biological phenophase observations (plants, insects, birds) by station and date"
     KEYWORDS = ["japan", "plants", "environment", "climate-change", "asia"]
     MAX_ENTRIES = 100
 
