@@ -176,6 +176,9 @@ def build_notebook(username: str) -> dict:
 
 def write_kernel_metadata(username: str) -> None:
     """Write kernel-metadata.json for the Kaggle Kernels API."""
+    dataset_sources = sorted(
+        f"{username}/{cls.NAME}" for cls in DATASET_REGISTRY.values()
+    )
     metadata = {
         "id": f"{username}/{NOTEBOOK_SLUG}",
         "title": NOTEBOOK_TITLE,
@@ -186,7 +189,7 @@ def write_kernel_metadata(username: str) -> None:
         "enable_tpu": False,
         "is_private": False,
         "enable_internet": True,
-        "dataset_sources": [],
+        "dataset_sources": dataset_sources,
         "competition_sources": [],
         "kernel_sources": [],
     }
