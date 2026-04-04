@@ -122,6 +122,7 @@ def run_pipeline(dry_run: bool = False, preview: bool = False, skip_feed_fetch: 
                     dataset_cfg["kaggle_dataset"],
                     dataset_cfg["csv_filename"],
                     merged_df,
+                    title=dataset_cfg.get("title", ""),
                     description=dataset_cfg.get("description", ""),
                     keywords=dataset_cfg.get("keywords", []),
                     subtitle=dataset_cfg.get("subtitle", ""),

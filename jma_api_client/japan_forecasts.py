@@ -29,7 +29,18 @@ class GeneralSeasonalForecast(JMADatasetBase):
     FEED_NAME = "regular_l.xml"
     TYPE_CODES = ("VPZK50",)
     MERGE_KEYS = ["event_id"]
-    DESCRIPTION = "General seasonal forecasts (VPZK50) providing 1-month, 3-month, and warm/cold season predictions for Japan. Includes temperature and precipitation anomaly forecasts."
+    TITLE = "JMA General Seasonal Forecasts (VPZK50)"
+    DESCRIPTION = (
+        "全般１か月予報・３か月予報・暖寒候期予報 — General Monthly/Seasonal Forecast. "
+        "JMA extended forecasts covering 1-month, 3-month, and warm/cold season outlooks "
+        "for Japan, including temperature and precipitation anomaly predictions.\n\n"
+        "**Columns include:** event_id, report_datetime, info_type_en, title_en, "
+        "forecast_issued_time, forecast_type_en, forecast_period\n\n"
+        "**Feed:** regular_l.xml | **Type code:** VPZK50\n"
+        "**Updates:** Hourly automated pipeline | **Max entries per run:** 100\n"
+        "**Use cases:** seasonal climate outlooks, agricultural planning, "
+        "energy demand forecasting, climate anomaly research"
+    )
     SUBTITLE = "1-month, 3-month, and warm/cold season temperature and precipitation forecasts"
     KEYWORDS = ["jma", "japan", "forecast", "seasonal", "monthly", "temperature", "precipitation"]
     MAX_ENTRIES = 100
@@ -78,7 +89,18 @@ class RegionalSeasonalForecast(JMADatasetBase):
     FEED_NAME = "regular_l.xml"
     TYPE_CODES = ("VPCK50",)
     MERGE_KEYS = ["event_id"]
-    DESCRIPTION = "Regional seasonal forecasts (VPCK50) providing district-level 1-month, 3-month, and seasonal predictions. Detailed regional temperature and precipitation anomaly forecasts."
+    TITLE = "JMA Regional Seasonal Forecasts (VPCK50)"
+    DESCRIPTION = (
+        "地方１か月予報・３か月予報・暖寒候期予報 — Regional Monthly/Seasonal Forecast. "
+        "JMA district-level extended forecasts providing 1-month, 3-month, and seasonal "
+        "temperature and precipitation anomaly predictions by region across Japan.\n\n"
+        "**Columns include:** event_id, report_datetime, info_type_en, title_en, "
+        "forecast_issued_time, forecast_type_en, forecast_period, region_name_en\n\n"
+        "**Feed:** regular_l.xml | **Type code:** VPCK50\n"
+        "**Updates:** Hourly automated pipeline | **Max entries per run:** 100\n"
+        "**Use cases:** regional climate outlooks, prefectural planning, "
+        "agricultural decisions, climate trend analysis"
+    )
     SUBTITLE = "Regional 1-month, 3-month, and seasonal forecasts by district"
     KEYWORDS = ["jma", "japan", "regional", "forecast", "seasonal", "district", "temperature"]
     MAX_ENTRIES = 100

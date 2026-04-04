@@ -145,6 +145,7 @@ class JMADatasetBase(ABC):
     FEED_NAME: ClassVar[str]                 # 'eqvol_l.xml' | 'other_l.xml' | 'regular_l.xml' | 'extra_l.xml'
     TYPE_CODES: ClassVar[tuple[str, ...]]    # Data type code prefixes (e.g., ('VXSE53',))
     MERGE_KEYS: ClassVar[list[str]]          # Columns to deduplicate on (e.g., ['event_id'])
+    TITLE: ClassVar[str] = ""               # Human-readable dataset title shown on Kaggle
     DESCRIPTION: ClassVar[str] = ""
     SUBTITLE: ClassVar[str] = ""
     KEYWORDS: ClassVar[list[str]] = []
@@ -264,6 +265,7 @@ class JMADatasetBase(ABC):
             "kaggle_dataset": f"{{KAGGLE_USERNAME}}/{cls.NAME}",
             "csv_filename": cls.CSV_FILENAME,
             "merge_keys": cls.MERGE_KEYS,
+            "title": cls.TITLE,
             "description": cls.DESCRIPTION,
             "subtitle": cls.SUBTITLE,
             "keywords": cls.KEYWORDS,

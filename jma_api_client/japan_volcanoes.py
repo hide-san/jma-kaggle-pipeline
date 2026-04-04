@@ -36,7 +36,19 @@ class VolcanoStatusExplanation(JMADatasetBase):
     FEED_NAME = "eqvol_l.xml"
     TYPE_CODES = ("VFVO51",)
     MERGE_KEYS = ["event_id"]
-    DESCRIPTION = "Detailed volcano status explanations (VFVO51) with JMA alert levels (1-5) for all active Japanese volcanoes. Explains current volcanic activity, alert level justifications, and relevant monitoring observations."
+    TITLE = "JMA Volcano Status Explanations (VFVO51)"
+    DESCRIPTION = (
+        "火山の状況に関する解説情報 — Volcano Status Explanation. "
+        "Detailed JMA explanations of current volcanic activity with alert levels (1–5) "
+        "for all monitored volcanoes in Japan.\n\n"
+        "**Columns include:** event_id, report_datetime, info_type_en, volcano_name_en, "
+        "alert_level_en, alert_level_code, alert_condition_en, activity_summary_en, "
+        "prevention_summary_en\n\n"
+        "**Feed:** eqvol_l.xml | **Type code:** VFVO51\n"
+        "**Updates:** Hourly automated pipeline | **Max entries per run:** 100\n"
+        "**Use cases:** volcano hazard monitoring, alert level trend analysis, "
+        "public safety research, emergency preparedness"
+    )
     SUBTITLE = "Volcano alert level (1-5) explanations with activity and prevention summaries"
     KEYWORDS = ["jma", "japan", "volcano", "alert-level", "monitoring", "hazard", "volcanology"]
     MAX_ENTRIES = 100
@@ -116,7 +128,18 @@ class VolcanicAshForecast(JMADatasetBase):
     FEED_NAME = "eqvol_l.xml"
     TYPE_CODES = ("VFVO53",)
     MERGE_KEYS = ["event_id"]
-    DESCRIPTION = "Volcanic ash forecasts (VFVO53) with 6-hour time windows predicting ash dispersion and affected regions. Includes multiple forecast windows per eruption and affected prefectures/regions for aviation and public safety planning."
+    TITLE = "JMA Volcanic Ash Forecasts (VFVO53)"
+    DESCRIPTION = (
+        "降灰予報 — Volcanic Ash Forecast. "
+        "6-hour window ash dispersion forecasts from JMA predicting fallout areas "
+        "and affected regions following eruptions, for aviation and public safety.\n\n"
+        "**Columns include:** event_id, report_datetime, info_type_en, volcano_name_en, "
+        "window_1_start, window_1_end, window_1_areas_en, window_2_start ... window_6_end\n\n"
+        "**Feed:** eqvol_l.xml | **Type code:** VFVO53\n"
+        "**Updates:** Hourly automated pipeline | **Max entries per run:** 100\n"
+        "**Use cases:** aviation safety, ashfall impact assessment, "
+        "emergency preparedness, air quality forecasting"
+    )
     SUBTITLE = "6-hour window volcanic ash dispersion forecasts with affected regions and dates"
     KEYWORDS = ["jma", "japan", "volcano", "ash", "forecast", "dispersion", "hazard", "aviation"]
     MAX_ENTRIES = 100
@@ -198,7 +221,18 @@ class EruptionWarning(JMADatasetBase):
     FEED_NAME = "eqvol_l.xml"
     TYPE_CODES = ("VFVO50",)
     MERGE_KEYS = ["event_id"]
-    DESCRIPTION = "Eruption warnings and forecasts (VFVO50) providing alert levels (1-5) for Japanese volcanoes. Indicates level of volcanic danger and expected eruption impacts (ash fall, pyroclastic flows, lahars)."
+    TITLE = "JMA Eruption Warnings & Forecasts (VFVO50)"
+    DESCRIPTION = (
+        "噴火警報・予報 — Eruption Warning/Forecast. "
+        "JMA eruption warnings and forecasts with alert levels (1–5) for Japanese volcanoes, "
+        "indicating danger zones and expected hazards such as ash, pyroclastic flows, and lahars.\n\n"
+        "**Columns include:** event_id, report_datetime, info_type_en, volcano_name_en, "
+        "warning_type_en, warning_code\n\n"
+        "**Feed:** eqvol_l.xml | **Type code:** VFVO50\n"
+        "**Updates:** Hourly automated pipeline | **Max entries per run:** 100\n"
+        "**Use cases:** volcanic hazard monitoring, evacuation planning, "
+        "alert level trend analysis, disaster risk research"
+    )
     SUBTITLE = "Eruption warning levels (1-5) with expected volcanic hazards and impact areas"
     KEYWORDS = ["jma", "japan", "volcano", "eruption", "warning", "alert-level", "hazard"]
     MAX_ENTRIES = 100
@@ -256,7 +290,18 @@ class EruptionFlashReport(JMADatasetBase):
     FEED_NAME = "eqvol_l.xml"
     TYPE_CODES = ("VFVO56",)
     MERGE_KEYS = ["event_id"]
-    DESCRIPTION = "Eruption flash reports (VFVO56) issued within minutes of confirmed eruptions. Provides rapid notification with eruption type, time, and affected volcano for emergency response."
+    TITLE = "JMA Eruption Flash Reports (VFVO56)"
+    DESCRIPTION = (
+        "噴火速報 — Eruption Flash Report. "
+        "Rapid JMA notifications issued within minutes of confirmed eruptions, "
+        "providing eruption time, type, and affected volcano for immediate emergency response.\n\n"
+        "**Columns include:** event_id, report_datetime, info_type_en, volcano_name_en, "
+        "eruption_time, eruption_type_en\n\n"
+        "**Feed:** eqvol_l.xml | **Type code:** VFVO56\n"
+        "**Updates:** Hourly automated pipeline | **Max entries per run:** 100\n"
+        "**Use cases:** eruption event detection, emergency response, "
+        "volcanic activity timelines, hazard research"
+    )
     SUBTITLE = "Rapid eruption notifications with eruption type and affected volcano"
     KEYWORDS = ["jma", "japan", "volcano", "eruption", "flash-report", "alert", "emergency"]
     MAX_ENTRIES = 100
@@ -312,7 +357,18 @@ class EruptionObservation(JMADatasetBase):
     FEED_NAME = "eqvol_l.xml"
     TYPE_CODES = ("VFVO52",)
     MERGE_KEYS = ["event_id"]
-    DESCRIPTION = "Eruption observation reports (VFVO52) from ground and satellite observations detailing volcanic activity characteristics, eruption phenomena, and plume information. Provides detailed monitoring data during active eruptions."
+    TITLE = "JMA Eruption Observation Reports (VFVO52)"
+    DESCRIPTION = (
+        "噴火に関する火山観測報 — Eruption-related Volcanic Observation Report. "
+        "Detailed JMA ground and satellite observation records of volcanic activity, "
+        "including eruption phenomena, plume height, and eruptive characteristics.\n\n"
+        "**Columns include:** event_id, report_datetime, info_type_en, volcano_name_en, "
+        "observation_time, observation_type_en\n\n"
+        "**Feed:** eqvol_l.xml | **Type code:** VFVO52\n"
+        "**Updates:** Hourly automated pipeline | **Max entries per run:** 100\n"
+        "**Use cases:** volcanic activity monitoring, eruption characterization, "
+        "scientific research, geophysical studies"
+    )
     SUBTITLE = "Detailed eruption observations with activity characteristics and plume data"
     KEYWORDS = ["jma", "japan", "volcano", "eruption", "observation", "monitoring", "activity"]
     MAX_ENTRIES = 100
@@ -368,7 +424,18 @@ class EstimatedPlumeDirection(JMADatasetBase):
     FEED_NAME = "eqvol_l.xml"
     TYPE_CODES = ("VFVO60",)
     MERGE_KEYS = ["event_id"]
-    DESCRIPTION = "Estimated volcanic plume direction (VFVO60) predicting ash dispersal direction based on wind fields and atmospheric conditions. Multiple time-stamped forecasts showing expected plume movement for aviation and public safety."
+    TITLE = "JMA Estimated Volcanic Plume Direction (VFVO60)"
+    DESCRIPTION = (
+        "火山プルームの移流方向 — Estimated Volcanic Plume Direction. "
+        "JMA predictions of volcanic ash plume dispersal direction based on wind fields "
+        "and atmospheric modeling, with multiple time-stamped directional forecasts.\n\n"
+        "**Columns include:** event_id, report_datetime, info_type_en, volcano_name_en, "
+        "plume_directions_json (list of {forecast_time, direction_en})\n\n"
+        "**Feed:** eqvol_l.xml | **Type code:** VFVO60\n"
+        "**Updates:** Hourly automated pipeline | **Max entries per run:** 100\n"
+        "**Use cases:** aviation ash avoidance, ashfall trajectory modeling, "
+        "atmospheric dispersion research, public safety"
+    )
     SUBTITLE = "Volcanic ash plume direction forecasts with time-stamped directional predictions"
     KEYWORDS = ["jma", "japan", "volcano", "plume", "ash", "direction", "wind", "forecast"]
     MAX_ENTRIES = 100

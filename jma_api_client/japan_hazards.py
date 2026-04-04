@@ -29,7 +29,18 @@ class RiverFloodForecast(JMADatasetBase):
     FEED_NAME = "regular_l.xml"
     TYPE_CODES = tuple(f"VXKO{i:02d}" for i in range(50, 90))
     MERGE_KEYS = ["event_id"]
-    DESCRIPTION = "Designated river flood forecasts (VXKO50-89) for 63 major rivers in Japan. Provides flood stage forecasts, timing predictions, and affected regions for emergency preparedness."
+    TITLE = "JMA Designated River Flood Forecasts (VXKO50-89)"
+    DESCRIPTION = (
+        "指定河川洪水予報 — Designated River Flood Forecast. "
+        "JMA flood forecasts for 63 major designated rivers in Japan, providing flood stage "
+        "predictions, peak timing, and affected prefectures for emergency preparedness.\n\n"
+        "**Columns include:** event_id, report_datetime, info_type_en, title_en, "
+        "forecast_time, river_name_en, region_name_en\n\n"
+        "**Feed:** regular_l.xml | **Type codes:** VXKO50–VXKO89\n"
+        "**Updates:** Hourly automated pipeline | **Max entries per run:** 500\n"
+        "**Use cases:** flood risk management, river monitoring, "
+        "emergency evacuation planning, hydrological research"
+    )
     SUBTITLE = "River flood forecasts by designated river with stage predictions and timing"
     KEYWORDS = ["jma", "japan", "river", "flood", "forecast", "hazard", "emergency"]
     MAX_ENTRIES = 500
@@ -81,7 +92,18 @@ class LandslideHazardAlert(JMADatasetBase):
     FEED_NAME = "regular_l.xml"
     TYPE_CODES = ("VXWW50",)
     MERGE_KEYS = ["event_id"]
-    DESCRIPTION = "Landslide hazard alerts (VXWW50) issued when rainfall conditions trigger increased landslide risks. Includes alert levels and affected regions for public safety."
+    TITLE = "JMA Landslide Hazard Alerts (VXWW50)"
+    DESCRIPTION = (
+        "土砂災害警戒情報 — Landslide Hazard Alert. "
+        "JMA alerts issued when accumulated rainfall exceeds thresholds for dangerous "
+        "landslide conditions, specifying hazard types and affected municipalities.\n\n"
+        "**Columns include:** event_id, report_datetime, info_type_en, title_en, "
+        "alert_time, hazard_type_en, region_name_en, region_code\n\n"
+        "**Feed:** regular_l.xml | **Type code:** VXWW50\n"
+        "**Updates:** Hourly automated pipeline | **Max entries per run:** 100\n"
+        "**Use cases:** landslide risk monitoring, rainfall-triggered hazard research, "
+        "evacuation planning, disaster prevention"
+    )
     SUBTITLE = "Landslide risk alerts with trigger conditions and affected areas"
     KEYWORDS = ["jma", "japan", "landslide", "hazard", "alert", "rainfall", "emergency"]
     MAX_ENTRIES = 100

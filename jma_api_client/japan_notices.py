@@ -29,7 +29,18 @@ class EarthquakeTsunamiNotice(JMADatasetBase):
     FEED_NAME = "eqvol_l.xml"
     TYPE_CODES = ("VZSE40",)
     MERGE_KEYS = ["event_id"]
-    DESCRIPTION = "Earthquake and tsunami informational notices (VZSE40) providing explanatory information, clarifications, and updates from JMA. Includes textual descriptions of seismic events and impacts."
+    TITLE = "JMA Earthquake & Tsunami Informational Notices (VZSE40)"
+    DESCRIPTION = (
+        "地震・津波に関するお知らせ — Earthquake/Tsunami Notice. "
+        "JMA informational notices providing explanations, clarifications, and supplementary "
+        "updates about seismic and tsunami events beyond the standard alert messages.\n\n"
+        "**Columns include:** event_id, report_datetime, info_type_en, title_en, "
+        "notice_time, notice_content_en, notice_type_en\n\n"
+        "**Feed:** eqvol_l.xml | **Type code:** VZSE40\n"
+        "**Updates:** Hourly automated pipeline | **Max entries per run:** 100\n"
+        "**Use cases:** seismic event supplementary context, public information, "
+        "disaster communication research, JMA advisory tracking"
+    )
     SUBTITLE = "Explanatory notices and clarifications about earthquake/tsunami events"
     KEYWORDS = ["jma", "japan", "earthquake", "tsunami", "notice", "information", "clarification"]
     MAX_ENTRIES = 100
@@ -80,7 +91,18 @@ class VolcanoNotice(JMADatasetBase):
     FEED_NAME = "eqvol_l.xml"
     TYPE_CODES = ("VZVO40",)
     MERGE_KEYS = ["event_id"]
-    DESCRIPTION = "Volcano informational notices (VZVO40) providing explanatory information and announcements from JMA about volcanic activity. Includes textual descriptions and updates on active volcanoes."
+    TITLE = "JMA Volcano Informational Notices (VZVO40)"
+    DESCRIPTION = (
+        "火山に関するお知らせ — Volcano Notice. "
+        "JMA informational notices and announcements about volcanic activity, providing "
+        "supplementary explanations and updates beyond standard volcanic alert messages.\n\n"
+        "**Columns include:** event_id, report_datetime, info_type_en, title_en, "
+        "notice_time, notice_content_en, volcano_name_en\n\n"
+        "**Feed:** eqvol_l.xml | **Type code:** VZVO40\n"
+        "**Updates:** Hourly automated pipeline | **Max entries per run:** 100\n"
+        "**Use cases:** volcanic activity supplementary context, public advisories, "
+        "volcano monitoring, disaster communication research"
+    )
     SUBTITLE = "Explanatory notices and announcements about volcanic activity"
     KEYWORDS = ["jma", "japan", "volcano", "notice", "activity", "information", "alert"]
     MAX_ENTRIES = 100

@@ -164,6 +164,7 @@ class KaggleUploader:
         description: str = "",
         keywords: list[str] | None = None,
         subtitle: str = "",
+        title: str = "",
     ) -> bool:
         """
         Write *df* to a temporary CSV and push it to *kaggle_dataset*.
@@ -180,7 +181,7 @@ class KaggleUploader:
             # Write dataset-metadata.json required by the CLI
             # Note: isPrivate=true ensures datasets are created as private
             metadata = {
-                "title": dataset_slug.replace("-", " ").title(),
+                "title": title or dataset_slug.replace("-", " ").title(),
                 "id": kaggle_dataset,
                 "licenses": [{"name": "CC0-1.0"}],
                 "isPrivate": True,  # JSON encoder converts this to 'true'

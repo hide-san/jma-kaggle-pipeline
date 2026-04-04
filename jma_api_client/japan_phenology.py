@@ -35,7 +35,19 @@ class PhenologicalObservation(JMADatasetBase):
     FEED_NAME = "other_l.xml"
     TYPE_CODES = ("VGSK55",)
     MERGE_KEYS = ["event_id"]
-    DESCRIPTION = "Phenological observations (VGSK55) tracking cherry blossom blooming phenophases from JMA monitoring stations nationwide. Includes observation dates, blooming stages, and station locations for seasonal research."
+    TITLE = "JMA Phenological Observations - Cherry Blossom & Plants (VGSK55)"
+    DESCRIPTION = (
+        "生物季節観測 — Phenological Observation. "
+        "JMA observations of cherry blossom blooming and other biological phenophases "
+        "from monitoring stations nationwide, tracking first bloom and full bloom dates.\n\n"
+        "**Columns include:** event_id, report_datetime, info_type_en, title_en, "
+        "observation_date, phenophase_en, phenophase_code, "
+        "station_name_en, station_location_en\n\n"
+        "**Feed:** other_l.xml | **Type code:** VGSK55\n"
+        "**Updates:** Hourly automated pipeline | **Max entries per run:** 100\n"
+        "**Use cases:** cherry blossom front tracking, phenology research, "
+        "climate change impact studies, tourism planning"
+    )
     SUBTITLE = "Cherry blossom and tree phenophase observations by monitoring station and date"
     KEYWORDS = ["jma", "japan", "cherry-blossom", "phenology", "observation", "bloom", "seasonal"]
     MAX_ENTRIES = 100
@@ -98,7 +110,19 @@ class SeasonalObservation(JMADatasetBase):
     FEED_NAME = "other_l.xml"
     TYPE_CODES = ("VGSK50",)
     MERGE_KEYS = ["event_id"]
-    DESCRIPTION = "Seasonal observations (VGSK50) of various tree and plant phenophases from nationwide JMA monitoring stations. Records observation dates, phenophase types, and station information for seasonal ecology research."
+    TITLE = "JMA Seasonal Observations (VGSK50)"
+    DESCRIPTION = (
+        "季節観測 — Seasonal Observation. "
+        "JMA nationwide observations of seasonal natural phenomena including "
+        "first frost, ice, and other weather-related seasonal indicators by station.\n\n"
+        "**Columns include:** event_id, report_datetime, info_type_en, title_en, "
+        "observation_date, observation_type_en, observation_code, "
+        "station_name_en, station_location_en\n\n"
+        "**Feed:** other_l.xml | **Type code:** VGSK50\n"
+        "**Updates:** Hourly automated pipeline | **Max entries per run:** 100\n"
+        "**Use cases:** seasonal climate monitoring, first-frost/ice records, "
+        "ecological research, long-term climate trend analysis"
+    )
     SUBTITLE = "Seasonal tree and plant phenophase observations with station data"
     KEYWORDS = ["jma", "japan", "seasonal", "observation", "phenology", "plants", "trees"]
     MAX_ENTRIES = 100
@@ -155,7 +179,18 @@ class SpecialWeatherReport(JMADatasetBase):
     FEED_NAME = "other_l.xml"
     TYPE_CODES = ("VGSK60",)
     MERGE_KEYS = ["event_id"]
-    DESCRIPTION = "Special weather reports (VGSK60) documenting unusual or notable weather phenomena observed nationwide. Includes phenomenon type, location, and observation details for meteorological documentation."
+    TITLE = "JMA Special Weather Reports (VGSK60)"
+    DESCRIPTION = (
+        "特殊気象報 — Special Weather Report. "
+        "JMA documentation of unusual or historically significant weather phenomena "
+        "observed at monitoring stations across Japan, with location and phenomenon details.\n\n"
+        "**Columns include:** event_id, report_datetime, info_type_en, title_en, "
+        "report_date, weather_phenomenon_en, area_name_en\n\n"
+        "**Feed:** other_l.xml | **Type code:** VGSK60\n"
+        "**Updates:** Hourly automated pipeline | **Max entries per run:** 100\n"
+        "**Use cases:** extreme weather documentation, climate records, "
+        "meteorological history research, rare event cataloging"
+    )
     SUBTITLE = "Notable weather phenomena reports with locations and descriptions"
     KEYWORDS = ["jma", "japan", "weather", "special-report", "phenomenon", "unusual"]
     MAX_ENTRIES = 100

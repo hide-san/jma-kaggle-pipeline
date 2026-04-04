@@ -31,7 +31,18 @@ class WeatherWarning(JMADatasetBase):
     FEED_NAME = "regular_l.xml"
     TYPE_CODES = ("VPWW53", "VPWW54", "VPWW55", "VPWW56", "VPWW57", "VPWW58", "VPWW59", "VPWW60", "VPWW61")
     MERGE_KEYS = ["event_id"]
-    DESCRIPTION = "Weather warnings and advisories (VPWW53-61) covering severe weather hazards including heavy rain, snow, strong winds, high waves, flooding, and lightning. Issued nationwide with affected regions and warning levels."
+    TITLE = "JMA Weather Warnings & Advisories (VPWW53-61)"
+    DESCRIPTION = (
+        "気象警報・注意報 — Weather Warnings & Advisories. "
+        "JMA severe weather alerts covering heavy rain, snow, strong winds, high waves, "
+        "flooding, and lightning issued nationwide with affected regions and warning severity.\n\n"
+        "**Columns include:** event_id, report_datetime, info_type_en, title_en, "
+        "warning_type_en, region_name_en\n\n"
+        "**Feed:** regular_l.xml | **Type codes:** VPWW53–VPWW61\n"
+        "**Updates:** Hourly automated pipeline | **Max entries per run:** 500\n"
+        "**Use cases:** severe weather monitoring, disaster preparedness, "
+        "regional hazard analysis, climate risk research"
+    )
     SUBTITLE = "Severe weather alerts (rain, snow, wind, waves, floods) by region and type"
     KEYWORDS = ["jma", "japan", "weather", "warning", "advisory", "hazard", "rain", "snow", "wind"]
     MAX_ENTRIES = 500
@@ -83,7 +94,18 @@ class HeavyRainWarning(JMADatasetBase):
     FEED_NAME = "regular_l.xml"
     TYPE_CODES = ("VPOA50",)
     MERGE_KEYS = ["event_id"]
-    DESCRIPTION = "Record short-term heavy rain alerts (VPOA50) reporting exceptionally intense rainfall events that may cause flooding or landslides. Issued with affected regions for emergency response."
+    TITLE = "JMA Record Short-term Heavy Rain Alerts (VPOA50)"
+    DESCRIPTION = (
+        "記録的短時間大雨情報 — Record Short-term Heavy Rain Information. "
+        "JMA alerts for exceptionally intense short-duration rainfall events that may "
+        "trigger flash floods or landslides, issued with affected regions for emergency response.\n\n"
+        "**Columns include:** event_id, report_datetime, info_type_en, title_en, "
+        "rainfall_type_en, region_name_en\n\n"
+        "**Feed:** regular_l.xml | **Type code:** VPOA50\n"
+        "**Updates:** Hourly automated pipeline | **Max entries per run:** 100\n"
+        "**Use cases:** flash flood detection, landslide risk, extreme rainfall events, "
+        "climate extremes research"
+    )
     SUBTITLE = "Exceptional rainfall event alerts with affected regions and intensity"
     KEYWORDS = ["jma", "japan", "rain", "heavy", "rainfall", "alert", "flooding"]
     MAX_ENTRIES = 100
@@ -132,7 +154,18 @@ class TornadoWatchInfo(JMADatasetBase):
     FEED_NAME = "regular_l.xml"
     TYPE_CODES = ("VPHW50", "VPHW51")
     MERGE_KEYS = ["event_id"]
-    DESCRIPTION = "Tornado watch information (VPHW50/51) alerting to atmospheric conditions favorable for tornado development. Provides watch zones and time windows for severe weather preparedness."
+    TITLE = "JMA Tornado Watch Alerts (VPHW50/51)"
+    DESCRIPTION = (
+        "竜巻注意情報 — Tornado Watch Information. "
+        "JMA alerts issued when atmospheric conditions become favorable for tornado development, "
+        "specifying watch zones and time windows for severe weather preparedness.\n\n"
+        "**Columns include:** event_id, report_datetime, info_type_en, title_en, "
+        "alert_type_en, region_name_en, region_code\n\n"
+        "**Feed:** regular_l.xml | **Type codes:** VPHW50, VPHW51\n"
+        "**Updates:** Hourly automated pipeline | **Max entries per run:** 100\n"
+        "**Use cases:** severe weather monitoring, tornado risk research, "
+        "emergency preparedness, atmospheric science"
+    )
     SUBTITLE = "Tornado watch alerts with affected areas and atmospheric conditions"
     KEYWORDS = ["jma", "japan", "tornado", "watch", "severe-weather", "alert"]
     MAX_ENTRIES = 100

@@ -26,7 +26,18 @@ class RegionalSeaAlert(JMADatasetBase):
     FEED_NAME = "other_l.xml"
     TYPE_CODES = ("VPCU51",)
     MERGE_KEYS = ["event_id"]
-    DESCRIPTION = "Regional sea alert warnings (VPCU51) for maritime hazards including tsunamis, high waves, and strong winds. Provides affected regions and warning types for maritime safety operations."
+    TITLE = "JMA Regional Sea Alert Warnings (VPCU51)"
+    DESCRIPTION = (
+        "地方海上警報 — Regional Sea Alert Warning. "
+        "JMA maritime hazard warnings for designated coastal sea regions, covering "
+        "strong winds, high waves, fog, and storm surge affecting coastal navigation.\n\n"
+        "**Columns include:** event_id, report_datetime, warning_type_en, "
+        "region_name_en, region_code\n\n"
+        "**Feed:** other_l.xml | **Type code:** VPCU51\n"
+        "**Updates:** Hourly automated pipeline | **Max entries per run:** 250\n"
+        "**Use cases:** coastal maritime safety, fishing vessel alerts, "
+        "storm surge monitoring, port operations"
+    )
     SUBTITLE = "Regional maritime hazard alerts with warning types and affected coastal regions"
     KEYWORDS = ["jma", "japan", "sea", "alert", "maritime", "tsunami", "high-wave", "coastal"]
     MAX_ENTRIES = 250
@@ -94,7 +105,18 @@ class RegionalSeaForecast(JMADatasetBase):
     FEED_NAME = "other_l.xml"
     TYPE_CODES = ("VPCY51",)
     MERGE_KEYS = ["event_id"]
-    DESCRIPTION = "Regional sea forecasts (VPCY51) predicting maritime conditions including wave heights, wind, and swell for Japanese coastal regions. Essential for maritime operations and safety planning."
+    TITLE = "JMA Regional Sea Forecasts (VPCY51)"
+    DESCRIPTION = (
+        "地方海上予報 — Regional Sea Forecast. "
+        "JMA maritime condition forecasts for designated coastal sea regions, predicting "
+        "wave heights, wind speed and direction, and swell for safe navigation planning.\n\n"
+        "**Columns include:** event_id, report_datetime, forecast_type_en, "
+        "region_name_en, region_code\n\n"
+        "**Feed:** other_l.xml | **Type code:** VPCY51\n"
+        "**Updates:** Hourly automated pipeline | **Max entries per run:** 250\n"
+        "**Use cases:** maritime route planning, fishing operations, "
+        "coastal engineering, ocean weather research"
+    )
     SUBTITLE = "Maritime forecasts with predicted wave heights, wind, and conditions by region"
     KEYWORDS = ["jma", "japan", "sea", "forecast", "maritime", "wave-height", "wind", "coastal"]
     MAX_ENTRIES = 250

@@ -31,7 +31,18 @@ class GeneralMarineWarning(JMADatasetBase):
     FEED_NAME = "regular_l.xml"
     TYPE_CODES = ("VPZU50", "VPZU54", "VPZU51")
     MERGE_KEYS = ["event_id"]
-    DESCRIPTION = "General marine warnings (VPZU50/51/54) for open ocean and adjacent coastal areas. Covers strong winds, high waves, fog, and icing conditions affecting shipping and maritime operations."
+    TITLE = "JMA General Marine Warnings (VPZU50/51/54)"
+    DESCRIPTION = (
+        "全般海上警報 — General Marine Warning. "
+        "JMA warnings for open ocean and adjacent coastal areas covering strong winds, "
+        "high waves, fog, and icing conditions affecting shipping and maritime operations.\n\n"
+        "**Columns include:** event_id, report_datetime, info_type_en, title_en, "
+        "warning_type_en, area_name_en\n\n"
+        "**Feed:** regular_l.xml | **Type codes:** VPZU50, VPZU51, VPZU54\n"
+        "**Updates:** Hourly automated pipeline | **Max entries per run:** 250\n"
+        "**Use cases:** maritime safety, shipping route planning, "
+        "ocean hazard monitoring, marine meteorology research"
+    )
     SUBTITLE = "Open ocean marine warnings with sea state and wind hazard information"
     KEYWORDS = ["jma", "japan", "marine", "warning", "sea", "ocean", "wave", "wind", "shipping"]
     MAX_ENTRIES = 250
@@ -83,7 +94,18 @@ class RegionalTidalInfo(JMADatasetBase):
     FEED_NAME = "other_l.xml"
     TYPE_CODES = ("VMCJ51",)
     MERGE_KEYS = ["event_id"]
-    DESCRIPTION = "Regional tidal information (VMCJ51) with tidal predictions for specified coastal regions. Includes high/low tide times and heights for maritime operations and tsunami monitoring."
+    TITLE = "JMA Regional Tidal Information (VMCJ51)"
+    DESCRIPTION = (
+        "地方潮位情報 — Regional Tidal Information. "
+        "JMA tidal predictions for specified coastal regions including high/low tide times "
+        "and heights, used for maritime operations and tsunami baseline monitoring.\n\n"
+        "**Columns include:** event_id, report_datetime, info_type_en, title_en, "
+        "forecast_time, region_name_en, tidal_type_en\n\n"
+        "**Feed:** other_l.xml | **Type code:** VMCJ51\n"
+        "**Updates:** Hourly automated pipeline | **Max entries per run:** 100\n"
+        "**Use cases:** coastal navigation, tsunami detection baseline, "
+        "tidal research, port operations planning"
+    )
     SUBTITLE = "Tidal predictions with high/low tide times and heights by coastal region"
     KEYWORDS = ["jma", "japan", "tidal", "tide", "ocean", "marine", "predictions", "coastal"]
     MAX_ENTRIES = 100
@@ -135,7 +157,18 @@ class GeneralTidalInfo(JMADatasetBase):
     FEED_NAME = "other_l.xml"
     TYPE_CODES = ("VMCJ50",)
     MERGE_KEYS = ["event_id"]
-    DESCRIPTION = "General tidal information (VMCJ50) covering nationwide tidal forecasts and anomaly observations. Includes tidal anomaly types and event information for tsunami detection and marine monitoring."
+    TITLE = "JMA General Tidal Information (VMCJ50)"
+    DESCRIPTION = (
+        "全般潮位情報 — General Tidal Information. "
+        "JMA nationwide tidal forecasts and anomaly observations, including tidal anomaly "
+        "types and event data used for tsunami detection and marine environmental monitoring.\n\n"
+        "**Columns include:** event_id, report_datetime, info_type_en, title_en, "
+        "forecast_time, information_type_en\n\n"
+        "**Feed:** other_l.xml | **Type code:** VMCJ50\n"
+        "**Updates:** Hourly automated pipeline | **Max entries per run:** 100\n"
+        "**Use cases:** tsunami monitoring, tidal anomaly detection, "
+        "sea level research, marine environmental monitoring"
+    )
     SUBTITLE = "National tidal forecasts with tidal anomaly observations and event details"
     KEYWORDS = ["jma", "japan", "tidal", "tide", "coast", "marine", "anomaly", "forecast"]
     MAX_ENTRIES = 100

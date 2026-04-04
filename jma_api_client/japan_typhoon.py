@@ -31,7 +31,18 @@ class TyphoonInfoGeneral(JMADatasetBase):
     FEED_NAME = "regular_l.xml"
     TYPE_CODES = ("VPTI50",)
     MERGE_KEYS = ["event_id"]
-    DESCRIPTION = "General typhoon information (VPTI50) with current position, central pressure, maximum wind speed, and forecast track. Updated regularly during typhoon seasons."
+    TITLE = "JMA General Typhoon Information (VPTI50)"
+    DESCRIPTION = (
+        "全般台風情報 — General Typhoon Information. "
+        "JMA typhoon bulletins with current position, central pressure, maximum wind speed, "
+        "and forecast track for tropical cyclones affecting Japan.\n\n"
+        "**Columns include:** event_id, report_datetime, info_type_en, title_en, "
+        "forecast_time, central_pressure_hpa, max_wind_speed_kmh, forecast_direction_en\n\n"
+        "**Feed:** regular_l.xml | **Type code:** VPTI50\n"
+        "**Updates:** Hourly automated pipeline | **Max entries per run:** 100\n"
+        "**Use cases:** typhoon tracking, landfall prediction, disaster preparedness, "
+        "climate research, storm intensity analysis"
+    )
     SUBTITLE = "Typhoon position, intensity (pressure/wind), and forecast track information"
     KEYWORDS = ["jma", "japan", "typhoon", "tropical", "cyclone", "forecast", "position", "intensity"]
     MAX_ENTRIES = 100
@@ -86,7 +97,18 @@ class TyphoonInfoStandardized(JMADatasetBase):
     FEED_NAME = "regular_l.xml"
     TYPE_CODES = ("VPTI51",)
     MERGE_KEYS = ["event_id"]
-    DESCRIPTION = "Standardized typhoon information (VPTI51) in fixed format for automated processing. Includes pressure, wind speed, and observation times in consistent structure."
+    TITLE = "JMA Standardized Typhoon Information (VPTI51)"
+    DESCRIPTION = (
+        "全般台風情報（定型） — Standardized Typhoon Information. "
+        "JMA typhoon data in a fixed structured format for automated processing, "
+        "providing pressure, wind speed, and observation times in a consistent schema.\n\n"
+        "**Columns include:** event_id, report_datetime, info_type_en, title_en, "
+        "observation_time, central_pressure_hpa, max_wind_speed_kmh\n\n"
+        "**Feed:** regular_l.xml | **Type code:** VPTI51\n"
+        "**Updates:** Hourly automated pipeline | **Max entries per run:** 100\n"
+        "**Use cases:** automated typhoon monitoring, time-series analysis, "
+        "machine learning datasets, structured storm data"
+    )
     SUBTITLE = "Standardized-format typhoon data with pressure and wind speed"
     KEYWORDS = ["jma", "japan", "typhoon", "standardized", "cyclone", "data-format"]
     MAX_ENTRIES = 100
@@ -132,7 +154,18 @@ class TyphoonInfoDetailed(JMADatasetBase):
     FEED_NAME = "regular_l.xml"
     TYPE_CODES = ("VPTI52",)
     MERGE_KEYS = ["event_id"]
-    DESCRIPTION = "Detailed typhoon information (VPTI52) with extended forecast positions and impacts. Provides comprehensive data for serious typhoon impacts on Japan."
+    TITLE = "JMA Detailed Typhoon Information (VPTI52)"
+    DESCRIPTION = (
+        "全般台風情報（詳細） — Detailed Typhoon Information. "
+        "Comprehensive JMA typhoon data with extended forecast track positions, latitude/longitude, "
+        "pressure, and wind speed for serious typhoon impacts on Japan.\n\n"
+        "**Columns include:** event_id, report_datetime, info_type_en, title_en, "
+        "forecast_time, central_pressure_hpa, max_wind_speed_kmh, latitude, longitude\n\n"
+        "**Feed:** regular_l.xml | **Type code:** VPTI52\n"
+        "**Updates:** Hourly automated pipeline | **Max entries per run:** 100\n"
+        "**Use cases:** typhoon track modeling, impact assessment, "
+        "GIS visualization, wind field analysis"
+    )
     SUBTITLE = "Detailed typhoon forecasts with extended track and impact predictions"
     KEYWORDS = ["jma", "japan", "typhoon", "detailed", "forecast", "extended", "impacts"]
     MAX_ENTRIES = 100
