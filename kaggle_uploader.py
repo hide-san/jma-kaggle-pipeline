@@ -288,12 +288,16 @@ class KaggleUploader:
             if "ready" in output:
                 log.info("Dataset is ready: %s", kaggle_dataset)
                 return True
-            if "error" in output:
-                log.error("Dataset processing failed for %s: %s", kaggle_dataset, output)
-                return False
             if time.monotonic() - start > timeout_sec:
                 log.error("Timed out waiting for %s to become ready", kaggle_dataset)
                 return False
-
-            log.info("Dataset %s not ready yet — waiting %ds", kaggle_dataset, poll_interval_sec)
+            # 403 is common immediately after creation while Kaggle indexes the dataset;
+            # treat it as transient and keep polling rather than aborting.
+            if "403" in output or "forbidden" in output:
+                log.info("Dataset %s not indexed yet (403) — waiting %ds", kaggle_dataset, poll_interval_sec)
+            elif "error" in output:
+                log.error("Dataset processing failed for %s: %s", kaggle_dataset, output)
+                return False
+            else:
+                log.info("Dataset %s not ready yet — waiting %ds", kaggle_dataset, poll_interval_sec)
             time.sleep(poll_interval_sec)
