@@ -98,19 +98,19 @@ pip install -r requirements.txt
 ### 4. Run the Pipeline
 ```bash
 # Full pipeline run (fetches, merges, uploads)
-python data_pipeline.py
+python scripts/data_pipeline.py
 
 # Dry-run mode (test without uploading)
-python data_pipeline.py --dry-run
+python scripts/data_pipeline.py --dry-run
 
 # Dry-run with data preview
-python data_pipeline.py --dry-run --preview
+python scripts/data_pipeline.py --dry-run --preview
 
 # Process specific datasets only
-python data_pipeline.py --datasets japan-earthquakes,japan-typhoons
+python scripts/data_pipeline.py --datasets japan-earthquakes,japan-typhoons
 
 # List all available datasets
-python data_pipeline.py --list-datasets
+python scripts/data_pipeline.py --list-datasets
 ```
 
 ## Configuration
@@ -341,7 +341,6 @@ kaggle datasets list
 
 ```
 jma-kaggle-pipeline/
-├── data_pipeline.py                    # Main orchestrator
 ├── kaggle_uploader.py                  # Kaggle API integration
 ├── config.py                           # Dataset config & dynamic generation
 ├── logger.py                           # Logging setup
@@ -350,22 +349,30 @@ jma-kaggle-pipeline/
 ├── README.md                           # This file
 ├── CLAUDE.md                           # Claude Code instructions
 │
+├── scripts/
+│   ├── data_pipeline.py                # Main pipeline orchestrator
+│   └── jma_datasets_overview.py        # Publish overview notebook to Kaggle
+│
 ├── jma_api_client/                     # JMA API client (plugin architecture)
 │   ├── __init__.py                     # Package exports
 │   ├── base.py                         # JMADatasetBase + registry
-│   ├── japan_earthquakes.py            # 8 earthquake/tsunami datasets
-│   ├── japan_volcanoes.py              # 6 volcano/eruption datasets
-│   ├── japan_sea.py                    # 2 regional sea datasets
-│   ├── japan_marine.py                 # 3 marine/tidal datasets
-│   ├── japan_weather.py                # 3 weather warning datasets
-│   ├── japan_hazards.py                # 2 hazard (river/landslide) datasets
-│   ├── japan_typhoon.py                # 3 typhoon information datasets
-│   ├── japan_forecasts.py              # 2 seasonal forecast datasets
-│   ├── japan_phenology.py              # 3 phenology/seasonal datasets
-│   ├── japan_notices.py                # 2 informational notice datasets
+│   ├── jma_earthquakes.py              # 7 earthquake/tsunami datasets
+│   ├── jma_volcanoes.py                # 6 volcano/eruption datasets
+│   ├── jma_sea.py                      # 2 regional sea datasets
+│   ├── jma_marine.py                   # 3 marine/tidal datasets
+│   ├── jma_weather.py                  # 3 weather warning datasets
+│   ├── jma_hazards.py                  # 2 hazard (river/landslide) datasets
+│   ├── jma_typhoon.py                  # 3 typhoon information datasets
+│   ├── jma_forecasts.py                # 2 seasonal forecast datasets
+│   ├── jma_phenology.py                # 3 phenology/seasonal datasets
+│   ├── jma_notices.py                  # 2 informational notice datasets
 │   ├── translate.py                    # Japanese→English translation
 │   ├── utils.py                        # HTTP fetch, parsing, caching
 │   └── temperature.py                  # (Legacy - AMeDAS)
+│
+├── docs/
+│   ├── jma_datasets.md                 # JMA data type reference
+│   └── kaggle_valid_tags.md            # Validated Kaggle keyword tags
 │
 ├── tests/
 │   └── test_pipeline.py                # Merge logic tests
@@ -374,11 +381,10 @@ jma-kaggle-pipeline/
 │   ├── actions/python-setup/
 │   │   └── action.yml                  # Reusable Python setup action
 │   └── workflows/
-│       └── daily-update.yml            # Hourly GitHub Actions trigger
+│       ├── daily-update.yml            # Hourly data pipeline
+│       └── publish-notebook.yml        # Weekly notebook publish
 │
 ├── data/                               # Generated files (git-ignored)
-│   ├── japan_earthquake_*.csv          # Parsed & merged earthquake data
-│   ├── japan_volcano_*.csv             # Parsed & merged volcano data
 │   └── raw/                            # Cached JMA feeds
 │       ├── regular_l.xml
 │       ├── extra_l.xml

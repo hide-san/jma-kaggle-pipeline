@@ -18,7 +18,7 @@ jobs:
         uses: ./.github/actions/python-setup
 
       - name: Fetch JMA Atom feeds
-        run: python data_pipeline.py --fetch-feeds-only
+        run: python scripts/data_pipeline.py --fetch-feeds-only
 
       - name: Upload feed cache
         uses: actions/upload-artifact@v4
@@ -64,7 +64,7 @@ jobs:
           KAGGLE_USERNAME: ${{ secrets.KAGGLE_USERNAME }}
           KAGGLE_API_TOKEN: ${{ secrets.KAGGLE_API_TOKEN }}
           DATASETS_FILTER: ${{ matrix.datasets }}
-        run: python data_pipeline.py --skip-feed-fetch
+        run: python scripts/data_pipeline.py --skip-feed-fetch
 
       - name: Upload logs on failure
         if: failure()

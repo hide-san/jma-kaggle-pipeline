@@ -2,16 +2,19 @@
 Main orchestration pipeline.
 
 Usage:
-    python data_pipeline.py
-    python data_pipeline.py --dry-run
-    python data_pipeline.py --dry-run --preview
-    python data_pipeline.py --datasets japan-earthquakes,japan-sea-warnings
+    python scripts/data_pipeline.py
+    python scripts/data_pipeline.py --dry-run
+    python scripts/data_pipeline.py --dry-run --preview
+    python scripts/data_pipeline.py --datasets jma-earthquakes,jma-typhoons
 """
 
 import argparse
 import os
 import sys
 import time
+from pathlib import Path
+
+sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
 
 import config
 from jma_api_client.base import DATASET_REGISTRY, fetch_all_feeds

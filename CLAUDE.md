@@ -62,7 +62,7 @@ pip install -r requirements.txt
 
 ### Run the full pipeline (local)
 ```bash
-python data_pipeline.py
+python scripts/data_pipeline.py
 ```
 Requires `.env` file with `KAGGLE_USERNAME` and `KAGGLE_KEY` set. See `.env.example` for template.
 
@@ -104,7 +104,7 @@ Each entry in `DATASETS` list requires:
 
 - Tests use pandas DataFrames directly; no mocking of external APIs
 - `merge_data()` tests verify deduplication, empty-case handling, and multi-key merging
-- To test against live APIs, run `python data_pipeline.py` with valid Kaggle credentials
+- To test against live APIs, run `python scripts/data_pipeline.py` with valid Kaggle credentials
 
 ## Common Issues
 
