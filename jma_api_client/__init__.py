@@ -40,6 +40,7 @@ from .jma_phenology import (
     SeasonalObservation,
     SpecialWeatherReport,
 )
+from .jma_phenology_archive import PhenologicalObservationArchive
 from .jma_weather import (
     WeatherWarning,
     HeavyRainWarning,
@@ -99,6 +100,7 @@ __all__ = [
     "RegionalSeaAlert",
     "RegionalSeaForecast",
     "PhenologicalObservation",
+    "PhenologicalObservationArchive",
     "SeasonalObservation",
     "SpecialWeatherReport",
     # Dataset classes (weather)
