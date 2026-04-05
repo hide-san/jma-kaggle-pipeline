@@ -29,7 +29,6 @@ from pathlib import Path
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
 
 import config  # noqa: E402 — triggers DATASET_REGISTRY population
-
 from jma_api_client.base import DATASET_REGISTRY  # noqa: E402
 
 GITHUB_REPO_URL = "https://github.com/hide-san/jma-kaggle-pipeline"

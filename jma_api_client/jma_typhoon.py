@@ -11,8 +11,6 @@ Source Feed: regular_l.xml
 
 import xml.etree.ElementTree as ET
 
-import pandas as pd
-
 from .base import JMADatasetBase, register_dataset
 
 __all__ = [

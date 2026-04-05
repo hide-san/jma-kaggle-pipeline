@@ -9,6 +9,7 @@ Source: jma.go.jp/bosai/amedas (deprecated)
 """
 
 import pandas as pd
+
 from logger import get_logger
 
 log = get_logger(__name__)

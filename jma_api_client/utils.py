@@ -1,6 +1,7 @@
 """Shared utilities for JMA API client."""
 
 import os
+
 import requests
 
 import config

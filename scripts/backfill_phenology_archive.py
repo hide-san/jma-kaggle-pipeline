@@ -17,7 +17,6 @@ Requires KAGGLE_USERNAME and KAGGLE_API_TOKEN in the environment / .env.
 """
 
 import argparse
-import os
 import sys
 from pathlib import Path
 
@@ -62,7 +61,7 @@ def _split_species_phenophase(ja_name: str) -> tuple[str, str]:
     return ja_name[:idx], ja_name[idx + 1:]
 
 
-def archive_to_feed_schema(archive_df, existing_df=None) -> "pd.DataFrame":
+def archive_to_feed_schema(archive_df, existing_df=None):
     """
     Intelligently map archive columns to the exact 25-column feed schema.
 
@@ -75,6 +74,7 @@ def archive_to_feed_schema(archive_df, existing_df=None) -> "pd.DataFrame":
       - title / title_en generated from phenophase name
     """
     import pandas as pd
+
     from jma_api_client.translate import translate_ja_to_en
 
     df = archive_df.copy()

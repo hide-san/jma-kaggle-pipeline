@@ -13,17 +13,14 @@ Also fetches and caches all 4 JMA Data Feeds for use by other modules.
 """
 
 import json
-import os
 import re
 import xml.etree.ElementTree as ET
 
 import pandas as pd
 
-import config
 from logger import get_logger
-from .base import JMADatasetBase, register_dataset
-from .utils import get
 
+from .base import JMADatasetBase, register_dataset
 
 log = get_logger(__name__)
 

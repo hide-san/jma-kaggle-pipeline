@@ -17,63 +17,62 @@ Endpoints:
 from .base import DATASET_REGISTRY, JMADatasetBase, register_dataset
 
 # Dataset classes (new plugin architecture)
+# Legacy functions (backwards compatibility)
 from .jma_earthquakes import (
+    EarthquakeActivityInfo,
+    EarthquakeEarlyWarning,
     EarthquakeIntensityInfo,
     SeismicIntensityReport,
-    TsunamiWarning,
-    EarthquakeEarlyWarning,
-    TsunamiInfo,
-    EarthquakeActivityInfo,
     SeismicObservationInfo,
-)
-from .jma_volcanoes import (
-    VolcanoStatusExplanation,
-    VolcanicAshForecast,
-    EruptionWarning,
-    EruptionFlashReport,
-    EruptionObservation,
-    EstimatedPlumeDirection,
-)
-from .jma_sea import RegionalSeaAlert, RegionalSeaForecast
-from .jma_phenology import (
-    PhenologicalObservation,
-    SeasonalObservation,
-    SpecialWeatherReport,
-)
-from .jma_phenology_archive import PhenologicalObservationArchive
-from .jma_weather import (
-    WeatherWarning,
-    HeavyRainWarning,
-    TornadoWatchInfo,
-)
-from .jma_marine import (
-    GeneralMarineWarning,
-    RegionalTidalInfo,
-    GeneralTidalInfo,
-)
-from .jma_typhoon import (
-    TyphoonInfoGeneral,
-    TyphoonInfoStandardized,
-    TyphoonInfoDetailed,
-)
-from .jma_hazards import (
-    RiverFloodForecast,
-    LandslideHazardAlert,
+    TsunamiInfo,
+    TsunamiWarning,
+    fetch_earthquakes_enhanced,
 )
 from .jma_forecasts import (
     GeneralSeasonalForecast,
     RegionalSeasonalForecast,
 )
+from .jma_hazards import (
+    LandslideHazardAlert,
+    RiverFloodForecast,
+)
+from .jma_marine import (
+    GeneralMarineWarning,
+    GeneralTidalInfo,
+    RegionalTidalInfo,
+)
 from .jma_notices import (
     EarthquakeTsunamiNotice,
     VolcanoNotice,
 )
-
-# Legacy functions (backwards compatibility)
-from .jma_earthquakes import fetch_earthquakes_enhanced
-from .jma_volcanoes import fetch_volcanic_ash_forecasts, fetch_volcano_status
-from .jma_sea import fetch_sea_warnings, fetch_sea_forecasts
-from .jma_phenology import fetch_cherry_blossom_observations
+from .jma_phenology import (
+    PhenologicalObservation,
+    SeasonalObservation,
+    SpecialWeatherReport,
+    fetch_cherry_blossom_observations,
+)
+from .jma_phenology_archive import PhenologicalObservationArchive
+from .jma_sea import RegionalSeaAlert, RegionalSeaForecast, fetch_sea_forecasts, fetch_sea_warnings
+from .jma_typhoon import (
+    TyphoonInfoDetailed,
+    TyphoonInfoGeneral,
+    TyphoonInfoStandardized,
+)
+from .jma_volcanoes import (
+    EruptionFlashReport,
+    EruptionObservation,
+    EruptionWarning,
+    EstimatedPlumeDirection,
+    VolcanicAshForecast,
+    VolcanoStatusExplanation,
+    fetch_volcanic_ash_forecasts,
+    fetch_volcano_status,
+)
+from .jma_weather import (
+    HeavyRainWarning,
+    TornadoWatchInfo,
+    WeatherWarning,
+)
 from .temperature import fetch_temperature_data
 
 __all__ = [

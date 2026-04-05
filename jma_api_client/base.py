@@ -12,13 +12,13 @@ from abc import ABC, abstractmethod
 from typing import ClassVar, Generator
 
 import pandas as pd
-from tenacity import retry, stop_after_attempt, wait_fixed, Retrying
-
-from logger import get_logger
-from .translate import translate_ja_to_en
-from .utils import get as http_get
+from tenacity import Retrying, retry, stop_after_attempt, wait_fixed
 
 import config
+from logger import get_logger
+
+from .translate import translate_ja_to_en
+from .utils import get as http_get
 
 log = get_logger(__name__)
 
@@ -69,7 +69,8 @@ def fetch_all_feeds() -> None:
     fetch() call, since get_feed() reads from the local cache.
     Raises RuntimeError if any feed fails to download.
     """
-    from .utils import get as http_get, save_raw
+    from .utils import get as http_get
+    from .utils import save_raw
     os.makedirs(config.RAW_DATA_DIR, exist_ok=True)
     failed = []
     for feed_name, feed_url in JMA_FEED_URLS.items():

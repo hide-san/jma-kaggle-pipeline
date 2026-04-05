@@ -1,0 +1,64 @@
+name: Code Quality
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+jobs:
+  lint:
+    name: Lint (ruff)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+          cache: pip
+
+      - name: Install dev dependencies
+        run: pip install -r requirements-dev.txt
+
+      - name: Run ruff
+        run: python -m ruff check .
+
+      - name: Write job summary
+        if: always()
+        run: |
+          if python -m ruff check . > /dev/null 2>&1; then
+            echo "## Lint ✅" >> $GITHUB_STEP_SUMMARY
+            echo "No issues found." >> $GITHUB_STEP_SUMMARY
+          else
+            echo "## Lint ❌" >> $GITHUB_STEP_SUMMARY
+            echo '```' >> $GITHUB_STEP_SUMMARY
+            python -m ruff check . >> $GITHUB_STEP_SUMMARY 2>&1 || true
+            echo '```' >> $GITHUB_STEP_SUMMARY
+          fi
+
+  test:
+    name: Unit Tests (pytest)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+          cache: pip
+
+      - name: Install dev dependencies
+        run: pip install -r requirements-dev.txt
+
+      - name: Run tests
+        run: python -m pytest tests/ -v --tb=short
+
+      - name: Write job summary
+        if: always()
+        run: |
+          python -m pytest tests/ --tb=no -q > pytest_out.txt 2>&1 || true
+          echo "## Tests" >> $GITHUB_STEP_SUMMARY
+          echo '```' >> $GITHUB_STEP_SUMMARY
+          cat pytest_out.txt >> $GITHUB_STEP_SUMMARY
+          echo '```' >> $GITHUB_STEP_SUMMARY

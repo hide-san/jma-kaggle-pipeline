@@ -1,6 +1,7 @@
 """Japanese-to-English translation utilities using deep_translator."""
 
 from functools import lru_cache
+
 from deep_translator import GoogleTranslator
 
 _translator = GoogleTranslator(source='ja', target='en')

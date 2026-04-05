@@ -3,9 +3,6 @@ Unit tests for core pipeline logic.
 Run with: pytest tests/
 """
 
-import json
-import os
-import tempfile
 import xml.etree.ElementTree as ET
 from unittest.mock import MagicMock, patch
 
@@ -14,8 +11,8 @@ import pytest
 
 # config must be imported before jma_api_client to resolve circular import
 import config  # noqa: F401
+from jma_api_client.base import find_all_text, find_text, get_feed, iter_feed_entries, strip_ns
 from kaggle_uploader import KaggleUploader
-from jma_api_client.base import strip_ns, find_text, find_all_text, get_feed, iter_feed_entries
 
 
 @pytest.fixture
@@ -152,7 +149,6 @@ def test_get_feed_returns_element(tmp_path, monkeypatch):
     feed_file = tmp_path / "test_feed.xml"
     feed_file.write_bytes(SAMPLE_ATOM_FEED.encode("utf-8"))
 
-    import config
     monkeypatch.setattr(config, "RAW_DATA_DIR", str(tmp_path))
 
     result = get_feed("test_feed.xml")
@@ -164,7 +160,6 @@ def test_iter_feed_entries_filters_by_type_code(tmp_path, monkeypatch):
     feed_file = tmp_path / "eqvol_l.xml"
     feed_file.write_bytes(SAMPLE_ATOM_FEED.encode("utf-8"))
 
-    import config
     monkeypatch.setattr(config, "RAW_DATA_DIR", str(tmp_path))
 
     entries = list(iter_feed_entries("eqvol_l.xml", "VXSE53"))
@@ -177,7 +172,6 @@ def test_iter_feed_entries_no_match(tmp_path, monkeypatch):
     feed_file = tmp_path / "eqvol_l.xml"
     feed_file.write_bytes(SAMPLE_ATOM_FEED.encode("utf-8"))
 
-    import config
     monkeypatch.setattr(config, "RAW_DATA_DIR", str(tmp_path))
 
     entries = list(iter_feed_entries("eqvol_l.xml", "VXSE99"))
@@ -188,7 +182,6 @@ def test_iter_feed_entries_multiple_type_codes(tmp_path, monkeypatch):
     feed_file = tmp_path / "eqvol_l.xml"
     feed_file.write_bytes(SAMPLE_ATOM_FEED.encode("utf-8"))
 
-    import config
     monkeypatch.setattr(config, "RAW_DATA_DIR", str(tmp_path))
 
     entries = list(iter_feed_entries("eqvol_l.xml", "VXSE53", "VFVO53"))
@@ -200,7 +193,6 @@ def test_iter_feed_entries_multiple_type_codes(tmp_path, monkeypatch):
 # ------------------------------------------------------------------ #
 
 def test_fetch_all_feeds_raises_on_failure(tmp_path, monkeypatch):
-    import config
     from jma_api_client.base import fetch_all_feeds
 
     monkeypatch.setattr(config, "RAW_DATA_DIR", str(tmp_path))
@@ -211,8 +203,7 @@ def test_fetch_all_feeds_raises_on_failure(tmp_path, monkeypatch):
 
 
 def test_fetch_all_feeds_saves_files(tmp_path, monkeypatch):
-    import config
-    from jma_api_client.base import fetch_all_feeds, JMA_FEED_URLS
+    from jma_api_client.base import JMA_FEED_URLS, fetch_all_feeds
 
     monkeypatch.setattr(config, "RAW_DATA_DIR", str(tmp_path))
 
