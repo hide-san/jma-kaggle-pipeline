@@ -76,6 +76,8 @@ class KaggleUploader:
                 [sys.executable, "-m", "kaggle.cli"] + cmd_args,
                 capture_output=True,
                 text=True,
+                encoding="utf-8",
+                errors="replace",
                 env=os.environ.copy(),
             )
             return result.returncode, result.stdout, result.stderr
@@ -214,7 +216,7 @@ class KaggleUploader:
             if keywords:
                 metadata["keywords"] = keywords
             (Path(tmpdir) / "dataset-metadata.json").write_text(
-                json.dumps(metadata, ensure_ascii=False), encoding="utf-8"
+                json.dumps(metadata, ensure_ascii=True), encoding="ascii"
             )
 
             # Try to add a new version first (assumes dataset already exists).
