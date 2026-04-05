@@ -36,20 +36,32 @@ CSV_FILENAME = "jma_phenological_observations.csv"
 MERGE_KEYS = ["event_id"]
 
 
+# Exact column order of the existing jma-phenological-observations dataset
+FEED_COLUMNS = [
+    "event_id", "title", "title_en", "report_datetime", "info_type",
+    "info_type_en", "observation_date", "phenophase", "phenophase_en",
+    "phenophase_code", "station_name", "station_name_en", "station_location",
+    "station_location_en", "publishing_office", "publishing_office_en",
+    "species", "species_en", "condition", "station_code", "station_status",
+    "station_status_en", "deviation_from_normal", "deviation_from_last_year",
+    "observation_remark",
+]
+
+
 def archive_to_feed_schema(archive_df) -> "pd.DataFrame":
     """
-    Map archive columns to the jma-phenological-observations schema.
+    Map archive columns to the exact 25-column jma-phenological-observations
+    schema. No extra columns are added; unmapped columns are left as NaN.
 
-    Feed columns populated from archive data:
-      event_id          — synthetic: "archive_<species_code>_<station_code>_<year>"
-      observation_date  — ISO date derived from year + observation_mmdd
-      station_code      — from archive
-      station_name_en   — from archive
-      species_en        — from archive (species_name_en)
-      deviation_from_normal — days difference (observation − normal), where available
-
-    All other feed columns are left as NaN; archive-specific columns are
-    included as extra columns so the data is not lost.
+    Mappings:
+      event_id            ← synthetic "archive_<species_code>_<station_code>_<year>"
+      observation_date    ← ISO date from archive
+      station_code        ← archive station_code
+      station_name_en     ← archive station_name_en
+      species_en          ← archive species_name_en
+      species             ← archive species_name (Japanese)
+      observation_remark  ← archive remark
+      deviation_from_normal ← days(observation − normal), computed from normal_value_mmdd
     """
     import pandas as pd
 
@@ -64,11 +76,9 @@ def archive_to_feed_schema(archive_df) -> "pd.DataFrame":
         + df["year"].astype(str)
     )
 
-    # Vectorised deviation: convert MMDD to day-of-year then diff
+    # Vectorised deviation_from_normal
     if "normal_value_mmdd" in df.columns:
-        obs_dates = pd.to_datetime(
-            df["observation_date"], errors="coerce"
-        )
+        obs_dates = pd.to_datetime(df["observation_date"], errors="coerce")
         norm_dates = pd.to_datetime(
             df["year"].astype(str)
             + "-"
@@ -81,17 +91,18 @@ def archive_to_feed_schema(archive_df) -> "pd.DataFrame":
     else:
         df["deviation_from_normal"] = None
 
-    df = df.rename(columns={"species_name_en": "species_en"})
+    # Rename archive columns to feed column names
+    df = df.rename(columns={
+        "species_name_en": "species_en",
+        "species_name":    "species",
+        "remark":          "observation_remark",
+    })
 
-    # Keep the columns that match the feed schema plus archive-specific extras
-    keep = [
-        "event_id", "observation_date", "station_code", "station_name_en",
-        "species_en", "deviation_from_normal",
-        "species_code", "year", "observation_mmdd", "remark",
-        "normal_value_mmdd", "latest_date_mmdd", "latest_date_year",
-        "earliest_date_mmdd", "earliest_date_year",
-    ]
-    return df[[c for c in keep if c in df.columns]]
+    # Build output with exactly the feed columns; missing ones become NaN
+    out = pd.DataFrame(index=df.index)
+    for col in FEED_COLUMNS:
+        out[col] = df[col] if col in df.columns else None
+    return out
 
 
 def main(dry_run: bool = False) -> bool:
