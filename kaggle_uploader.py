@@ -217,36 +217,9 @@ class KaggleUploader:
                 json.dumps(metadata, ensure_ascii=False), encoding="utf-8"
             )
 
-            # Try to create a new dataset first
-            returncode, stdout, stderr = self._run_kaggle_command([
-                "datasets",
-                "create",
-                "--path",
-                tmpdir,
-                "--dir-mode",
-                "zip",
-            ])
-
-            if returncode == 0:
-                log.info("Created new dataset successfully: %s", kaggle_dataset)
-                return True
-
-            create_output = (stdout + stderr).lower()
-            dataset_already_exists = (
-                "already exists" in create_output
-                or "category already exists" in create_output
-            )
-
-            if not dataset_already_exists:
-                log.error(
-                    "Create failed for %s (rc=%d) — not retrying as version\n"
-                    "  stdout: %s\n  stderr: %s",
-                    kaggle_dataset, returncode, stdout.strip(), stderr.strip(),
-                )
-                return False
-
-            # Dataset exists — create a new version
-            log.info("Dataset exists — adding new version: %s", kaggle_dataset)
+            # Try to add a new version first (assumes dataset already exists).
+            # This is the common case after the first run and avoids recreating
+            # the dataset (which would reset version history on Kaggle).
             version_notes = description or "Automated daily update"
             returncode, stdout, stderr = self._run_kaggle_command([
                 "datasets",
@@ -263,8 +236,38 @@ class KaggleUploader:
                 log.info("Upload successful (new version): %s", kaggle_dataset)
                 return True
 
+            version_output = (stdout + stderr).lower()
+            dataset_not_found = (
+                "404" in version_output
+                or "not found" in version_output
+                or "doesn't exist" in version_output
+                or "does not exist" in version_output
+            )
+
+            if not dataset_not_found:
+                log.error(
+                    "Version failed for %s (rc=%d)\n  stdout: %s\n  stderr: %s",
+                    kaggle_dataset, returncode, stdout.strip(), stderr.strip(),
+                )
+                return False
+
+            # Dataset doesn't exist yet — create it for the first time
+            log.info("Dataset not found — creating for the first time: %s", kaggle_dataset)
+            returncode, stdout, stderr = self._run_kaggle_command([
+                "datasets",
+                "create",
+                "--path",
+                tmpdir,
+                "--dir-mode",
+                "zip",
+            ])
+
+            if returncode == 0:
+                log.info("Created new dataset successfully: %s", kaggle_dataset)
+                return True
+
             log.error(
-                "Upload failed for %s (rc=%d)\n  stdout: %s\n  stderr: %s",
+                "Create failed for %s (rc=%d)\n  stdout: %s\n  stderr: %s",
                 kaggle_dataset, returncode, stdout.strip(), stderr.strip(),
             )
             return False
