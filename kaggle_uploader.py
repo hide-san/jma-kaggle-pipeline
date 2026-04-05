@@ -133,7 +133,8 @@ class KaggleUploader:
     ) -> pd.DataFrame:
         """
         Combine *existing_df* and *new_df*, deduplicate on *merge_keys*.
-        New rows take precedence over old ones for the same key.
+        Existing rows take precedence over new ones for the same key,
+        preserving previously published data.
         """
         if existing_df.empty:
             log.info("No existing data — using new data as-is (%d rows)", len(new_df))
@@ -149,11 +150,18 @@ class KaggleUploader:
             )
 
         # Deduplicate on merge keys
+        before_dedup = len(combined)
         valid_keys = [k for k in merge_keys if k in combined.columns]
         if valid_keys:
             combined = combined.drop_duplicates(subset=valid_keys, keep="first")
         else:
             log.warning("Merge keys %s not found in DataFrame columns — skipping dedup", merge_keys)
+
+        rows_added = len(combined) - len(existing_df) if not existing_df.empty else len(combined)
+        log.info(
+            "Dedup: %d → %d rows (%d new rows added)",
+            before_dedup, len(combined), rows_added,
+        )
 
         # Sort descending and move key columns to leftmost positions
         if valid_keys:

@@ -116,6 +116,15 @@ def run_pipeline(dry_run: bool = False, preview: bool = False, skip_feed_fetch: 
                 dataset_cfg["merge_keys"],
             )
 
+            # 4.5. Skip upload if no new rows were added
+            if not existing_df.empty and len(merged_df) == len(existing_df):
+                log.info(
+                    "No new rows for %s (merged=%d, existing=%d) — skipping upload",
+                    name, len(merged_df), len(existing_df),
+                )
+                results[name] = True
+                continue
+
             # 5. Upload
             if dry_run:
                 log.info("DRY-RUN: Would upload %d rows to %s", len(merged_df), dataset_cfg["kaggle_dataset"])
