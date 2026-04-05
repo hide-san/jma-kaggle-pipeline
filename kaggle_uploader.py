@@ -72,13 +72,15 @@ class KaggleUploader:
         Returns (returncode, stdout, stderr).
         """
         try:
+            env = os.environ.copy()
+            env["PYTHONUTF8"] = "1"  # force UTF-8 I/O in the Kaggle CLI subprocess
             result = subprocess.run(
                 [sys.executable, "-m", "kaggle.cli"] + cmd_args,
                 capture_output=True,
                 text=True,
                 encoding="utf-8",
                 errors="replace",
-                env=os.environ.copy(),
+                env=env,
             )
             return result.returncode, result.stdout, result.stderr
         except Exception as e:
@@ -216,7 +218,7 @@ class KaggleUploader:
             if keywords:
                 metadata["keywords"] = keywords
             (Path(tmpdir) / "dataset-metadata.json").write_text(
-                json.dumps(metadata, ensure_ascii=True), encoding="ascii"
+                json.dumps(metadata, ensure_ascii=False), encoding="utf-8"
             )
 
             # Try to add a new version first (assumes dataset already exists).
