@@ -16,7 +16,7 @@ import zipfile
 
 import pandas as pd
 
-from .base import JMADatasetBase, register_dataset
+from .base import JMADatasetBase
 from .utils import get as http_get
 
 ARCHIVE_URL = "https://www.data.jma.go.jp/sakura/data/ruinenchi/ruinenchi_all.zip"
@@ -42,12 +42,13 @@ def _mmdd_to_date(year: int, mmdd: int) -> str | None:
     try:
         month = mmdd // 100
         day = mmdd % 100
+        if not (1 <= month <= 12 and 1 <= day <= 31):
+            return None
         return f"{year:04d}-{month:02d}-{day:02d}"
     except Exception:
         return None
 
 
-@register_dataset
 class PhenologicalObservationArchive(JMADatasetBase):
     """
     Historical multi-year phenological archive (累年値) from JMA.
@@ -182,6 +183,8 @@ class PhenologicalObservationArchive(JMADatasetBase):
                     obs_mmdd = int(val_str)
                 except ValueError:
                     continue
+                if obs_mmdd == 0:
+                    continue  # 0 = no observation recorded at this station/year
 
                 remark = ''
                 ri = remark_col.get(year)
