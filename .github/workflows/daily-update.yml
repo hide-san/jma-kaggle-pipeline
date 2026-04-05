@@ -111,6 +111,14 @@ jobs:
               out.write("\n".join(lines) + "\n")
           EOF
 
+      - name: Upload pipeline summary
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: pipeline-summary-${{ matrix.name }}
+          path: data/pipeline_summary.json
+          retention-days: 1
+
       - name: Upload logs on failure
         if: failure()
         uses: actions/upload-artifact@v4
@@ -130,4 +138,48 @@ jobs:
               title: `Pipeline failed - ${{ matrix.name }}: ${new Date().toISOString().slice(0, 10)}`,
               body: `The JMA data pipeline failed for ${{ matrix.name }}.\n\nRun: ${context.serverUrl}/${context.repo.owner}/${context.repo.repo}/actions/runs/${context.runId}`,
               labels: ['pipeline-failure'],
+            });
+
+  trigger-notebook:
+    name: Trigger notebook if new datasets created
+    needs: update-datasets
+    if: success()
+    runs-on: ubuntu-latest
+    steps:
+      - name: Download all pipeline summaries
+        uses: actions/download-artifact@v4
+        with:
+          pattern: pipeline-summary-*
+          path: summaries/
+
+      - name: Check for newly created datasets and trigger notebook
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const fs = require('fs');
+            const path = require('path');
+
+            // Collect all newly created datasets across matrix groups
+            const newDatasets = [];
+            const summaryDir = 'summaries';
+            for (const group of fs.readdirSync(summaryDir)) {
+              const summaryFile = path.join(summaryDir, group, 'pipeline_summary.json');
+              if (!fs.existsSync(summaryFile)) continue;
+              const summary = JSON.parse(fs.readFileSync(summaryFile, 'utf8'));
+              if (summary.newly_created_datasets?.length) {
+                newDatasets.push(...summary.newly_created_datasets);
+              }
+            }
+
+            if (newDatasets.length === 0) {
+              core.info('No new datasets created — skipping notebook trigger.');
+              return;
+            }
+
+            core.info(`New datasets: ${newDatasets.join(', ')} — triggering notebook workflow.`);
+            await github.rest.actions.createWorkflowDispatch({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              workflow_id: 'publish-notebook.yml',
+              ref: 'main',
             });

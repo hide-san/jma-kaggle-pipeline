@@ -27,7 +27,7 @@ log = get_logger(__name__)
 
 class KaggleUploader:
     def __init__(self):
-        pass
+        self.newly_created_datasets: list[str] = []
 
     # ------------------------------------------------------------------ #
     # Authentication                                                       #
@@ -268,6 +268,7 @@ class KaggleUploader:
 
             if returncode == 0:
                 log.info("Created new dataset successfully: %s", kaggle_dataset)
+                self.newly_created_datasets.append(kaggle_dataset)
                 return True
 
             log.error(

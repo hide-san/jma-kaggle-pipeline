@@ -224,6 +224,7 @@ def run_pipeline(dry_run: bool = False, preview: bool = False, skip_feed_fetch: 
         "all_ok": all_ok,
         "total_rows_fetched": total_rows,
         "total_time_sec": round(total_time, 2),
+        "newly_created_datasets": kaggle.newly_created_datasets,
         "datasets": [
             {
                 "name": name,
