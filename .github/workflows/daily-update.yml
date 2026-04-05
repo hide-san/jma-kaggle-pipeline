@@ -20,6 +20,19 @@ jobs:
       - name: Fetch JMA Atom feeds
         run: python scripts/data_pipeline.py --fetch-feeds-only
 
+      - name: Write job summary
+        if: always()
+        run: |
+          echo "## JMA Feed Fetch" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "| Feed | Size |" >> $GITHUB_STEP_SUMMARY
+          echo "|------|------|" >> $GITHUB_STEP_SUMMARY
+          for f in data/raw/*.xml; do
+            name=$(basename "$f")
+            size=$(wc -c < "$f" | tr -d ' ')
+            echo "| \`$name\` | ${size} bytes |" >> $GITHUB_STEP_SUMMARY
+          done
+
       - name: Upload feed cache
         uses: actions/upload-artifact@v4
         with:
@@ -65,6 +78,38 @@ jobs:
           KAGGLE_API_TOKEN: ${{ secrets.KAGGLE_API_TOKEN }}
           DATASETS_FILTER: ${{ matrix.datasets }}
         run: python scripts/data_pipeline.py --skip-feed-fetch
+
+      - name: Write job summary
+        if: always()
+        run: |
+          python - <<'EOF'
+          import json, os, sys
+
+          summary_path = "data/pipeline_summary.json"
+          group = os.environ.get("DATASETS_FILTER", "all")
+
+          if not os.path.exists(summary_path):
+              print(f"## {group}\n\n:warning: No summary file found.", file=open(os.environ["GITHUB_STEP_SUMMARY"], "a"))
+              sys.exit(0)
+
+          with open(summary_path) as f:
+              s = json.load(f)
+
+          lines = []
+          overall = "✅ All passed" if s["all_ok"] else "❌ Some failed"
+          lines.append(f"## {group}")
+          lines.append("")
+          lines.append(f"**Status:** {overall} &nbsp;|&nbsp; **Total rows fetched:** {s['total_rows_fetched']:,} &nbsp;|&nbsp; **Time:** {s['total_time_sec']:.1f}s")
+          lines.append("")
+          lines.append("| Dataset | Status | Rows | Time |")
+          lines.append("|---------|--------|-----:|-----:|")
+          for d in s["datasets"]:
+              icon = "✅" if d["ok"] else "❌"
+              lines.append(f"| `{d['name']}` | {icon} | {d['rows_fetched']:,} | {d['fetch_time_sec']:.1f}s |")
+
+          with open(os.environ["GITHUB_STEP_SUMMARY"], "a", encoding="utf-8") as out:
+              out.write("\n".join(lines) + "\n")
+          EOF
 
       - name: Upload logs on failure
         if: failure()

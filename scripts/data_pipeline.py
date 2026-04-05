@@ -9,6 +9,7 @@ Usage:
 """
 
 import argparse
+import json
 import os
 import sys
 import time
@@ -217,6 +218,27 @@ def run_pipeline(dry_run: bool = False, preview: bool = False, skip_feed_fetch: 
                     "    %s: %.2f seconds",
                     name, data.get("fetch_time_sec", 0)
                 )
+
+    # Write machine-readable summary for CI job summary step
+    summary = {
+        "all_ok": all_ok,
+        "total_rows_fetched": total_rows,
+        "total_time_sec": round(total_time, 2),
+        "datasets": [
+            {
+                "name": name,
+                "ok": results.get(name, False),
+                "rows_fetched": metrics.get(name, {}).get("rows_fetched", 0),
+                "fetch_time_sec": round(metrics.get(name, {}).get("fetch_time_sec", 0), 2),
+            }
+            for name in results
+        ],
+    }
+    summary_path = os.path.join(config.DATA_DIR, "pipeline_summary.json")
+    os.makedirs(config.DATA_DIR, exist_ok=True)
+    with open(summary_path, "w", encoding="utf-8") as f:
+        json.dump(summary, f, indent=2)
+    log.info("Summary written to %s", summary_path.replace(os.sep, "/"))
 
     return all_ok
 
