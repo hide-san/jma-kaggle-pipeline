@@ -48,25 +48,38 @@ FEED_COLUMNS = [
 ]
 
 
-def archive_to_feed_schema(archive_df) -> "pd.DataFrame":
+def _split_species_phenophase(ja_name: str) -> tuple[str, str]:
     """
-    Map archive columns to the exact 25-column jma-phenological-observations
-    schema. No extra columns are added; unmapped columns are left as NaN.
+    Split a JMA archive species name into (species, phenophase).
 
-    Mappings:
-      event_id            ← synthetic "archive_<species_code>_<station_code>_<year>"
-      observation_date    ← ISO date from archive
-      station_code        ← archive station_code
-      station_name_en     ← archive station_name_en
-      species_en          ← archive species_name_en
-      species             ← archive species_name (Japanese)
-      observation_remark  ← archive remark
-      deviation_from_normal ← days(observation − normal), computed from normal_value_mmdd
+    Archive names bundle both: e.g. "ウメの開花" → ("ウメ", "開花")
+    We split on the LAST "の" which separates species from the event.
+    If there is no "の", the whole string is returned as species.
+    """
+    idx = ja_name.rfind("の")
+    if idx == -1:
+        return ja_name, ""
+    return ja_name[:idx], ja_name[idx + 1:]
+
+
+def archive_to_feed_schema(archive_df, existing_df=None) -> "pd.DataFrame":
+    """
+    Intelligently map archive columns to the exact 25-column feed schema.
+
+    Intelligence applied:
+      - species_name split on last "の" → separate species + phenophase (ja + en)
+      - station_location/publishing_office looked up from existing feed rows
+        by station_code where available
+      - deviation_from_normal computed from normal_value_mmdd
+      - info_type_en set to "historical archive"
+      - title / title_en generated from phenophase name
     """
     import pandas as pd
+    from jma_api_client.translate import translate_ja_to_en
 
     df = archive_df.copy()
 
+    # --- event_id ---
     df["event_id"] = (
         "archive_"
         + df["species_code"].astype(str)
@@ -76,7 +89,26 @@ def archive_to_feed_schema(archive_df) -> "pd.DataFrame":
         + df["year"].astype(str)
     )
 
-    # Vectorised deviation_from_normal
+    # --- split species_name into species + phenophase ---
+    split = df["species_name"].apply(_split_species_phenophase)
+    df["species"]       = split.apply(lambda t: t[0])
+    df["phenophase"]    = split.apply(lambda t: t[1])
+    df["species_en"]    = df["species"].apply(translate_ja_to_en)
+    df["phenophase_en"] = df["phenophase"].apply(
+        lambda t: translate_ja_to_en(t) if t else None
+    )
+
+    # --- title: use the full phenophase description (= original species_name) ---
+    df["title"]    = df["species_name"]
+    df["title_en"] = df["species_name_en"]  # already translated full name
+
+    # --- info_type ---
+    df["info_type_en"] = "historical archive"
+
+    # --- station_name (Japanese already in archive) ---
+    # station_name_en already present
+
+    # --- deviation_from_normal ---
     if "normal_value_mmdd" in df.columns:
         obs_dates = pd.to_datetime(df["observation_date"], errors="coerce")
         norm_dates = pd.to_datetime(
@@ -91,14 +123,32 @@ def archive_to_feed_schema(archive_df) -> "pd.DataFrame":
     else:
         df["deviation_from_normal"] = None
 
-    # Rename archive columns to feed column names
-    df = df.rename(columns={
-        "species_name_en": "species_en",
-        "species_name":    "species",
-        "remark":          "observation_remark",
-    })
+    # --- station metadata lookup from existing feed rows ---
+    # The live feed has station_location, publishing_office etc. indexed by station_code.
+    # Fill those in for archive rows where the station appears in the feed.
+    if existing_df is not None and not existing_df.empty:
+        fill_cols = [
+            "station_location", "station_location_en",
+            "publishing_office", "publishing_office_en",
+            "station_status", "station_status_en",
+        ]
+        available = [c for c in fill_cols if c in existing_df.columns]
+        if available:
+            station_meta = (
+                existing_df[["station_code"] + available]
+                .dropna(subset=["station_code"])
+                .drop_duplicates(subset=["station_code"])
+                .set_index("station_code")
+            )
+            for col in available:
+                df[col] = df["station_code"].astype(str).map(
+                    station_meta[col].astype(str).replace("nan", None)
+                )
 
-    # Build output with exactly the feed columns; missing ones become NaN
+    # --- observation_remark ---
+    df = df.rename(columns={"remark": "observation_remark"})
+
+    # --- build output with exactly the feed columns ---
     out = pd.DataFrame(index=df.index)
     for col in FEED_COLUMNS:
         out[col] = df[col] if col in df.columns else None
@@ -125,13 +175,13 @@ def main(dry_run: bool = False) -> bool:
     log.info("Archive: %d rows across %d species",
              len(archive_df), archive_df["species_code"].nunique())
 
-    # 2. Convert to feed schema
-    log.info("Converting archive to feed schema …")
-    new_df = archive_to_feed_schema(archive_df)
-
-    # 3. Download current Kaggle dataset
+    # 2. Download current Kaggle dataset first (needed for station lookup)
     existing_df = kaggle.download_dataset(KAGGLE_DATASET, CSV_FILENAME)
     log.info("Existing Kaggle dataset: %d rows", len(existing_df))
+
+    # 3. Convert to feed schema (uses existing_df for station metadata lookup)
+    log.info("Converting archive to feed schema …")
+    new_df = archive_to_feed_schema(archive_df, existing_df)
 
     # 4. Merge (existing wins for duplicate event_ids — archive rows have
     #    synthetic ids so they won't collide with live feed rows)

@@ -193,10 +193,12 @@ class PhenologicalObservationArchive(JMADatasetBase):
 
                 row: dict = {
                     'species_code': species_code,
-                    'station_code': station_code,
-                    'year': year,
+                    'species_name': species_name,
                     'species_name_en': species_name_en,
+                    'station_code': station_code,
+                    'station_name': station_name,
                     'station_name_en': station_name_en,
+                    'year': year,
                     'observation_mmdd': obs_mmdd,
                     'observation_date': _mmdd_to_date(year, obs_mmdd),
                     'remark': remark,
